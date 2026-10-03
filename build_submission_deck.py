@@ -36,7 +36,7 @@ def build_deck():
         if shape.has_text_frame:
             txt = shape.text_frame.text
             if "Team Name" in txt:
-                shape.text_frame.text = "Team Name :  SupplyChainIQ"
+                shape.text_frame.text = "Team Name :  Aegis"
             elif "Team Leader Name" in txt:
                 shape.text_frame.text = "Team Leader Name :  Chirag H S"
             elif "Team Size" in txt:

@@ -141,7 +141,7 @@ def build_11_slide_deck(output_path):
     p.font.color.rgb = COLOR_EMERALD
 
     p = tf1.add_paragraph()
-    p.text = "\nTeam: SupplyChainIQ  |  Lead: Chirag H S  |  Track 5 Prototype Submission  |  Snowflake GCC Edition"
+    p.text = "\nTeam: Aegis  |  Project: SupplyChainIQ  |  Lead: Chirag H S  |  Track 5 Prototype Submission  |  Snowflake GCC Edition"
     p.font.name = FONT_NAME
     p.font.size = Pt(10)
     p.font.color.rgb = COLOR_MUTED_TEXT
@@ -787,7 +787,7 @@ def build_6_slide_submission_template(output_path):
     p.font.color.rgb = COLOR_BLUE
 
     p = tf.add_paragraph()
-    p.text = "\nTeam Name : SupplyChainIQ"
+    p.text = "\nTeam Name : Aegis"
     p.font.name = FONT_NAME
     p.font.size = Pt(14)
     p.font.bold = True

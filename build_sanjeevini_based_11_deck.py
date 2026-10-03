@@ -130,7 +130,7 @@ def build_deck():
     p.font.color.rgb = COLOR_EMERALD
 
     p = tf1.add_paragraph()
-    p.text = "\nTeam: SupplyChainIQ  |  Lead: Chirag H S  |  Track 5 Prototype Submission  |  Snowflake GCC Edition"
+    p.text = "\nTeam: Aegis  |  Project: SupplyChainIQ  |  Lead: Chirag H S  |  Track 5 Prototype Submission  |  Snowflake GCC Edition"
     p.font.name = FONT_NAME
     p.font.size = Pt(10)
     p.font.color.rgb = COLOR_MUTED_TEXT
