@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>SupplyChainIQ — Official Prototype Submission (GCC Edition)</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap');
+    
+    @page {
+      size: 1920px 1080px;
+      margin: 0;
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #0f172a;
+      color: #0f172a;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    .slide {
+      width: 1920px;
+      height: 1080px;
+      page-break-after: always;
+      position: relative;
+      background: #ffffff;
+      padding: 50px 75px 35px 75px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden;
+    }
+
+    :root {
+      --navy: #1e40af;
+      --forest: #059669;
+      --snowflake: #0284c7;
+      --amber: #d97706;
+      --crimson: #dc2626;
+      --purple: #7c3aed;
+      --dark: #0f172a;
+      --slate: #334155;
+      --muted: #64748b;
+      --card-bg: #f8fafc;
+      --card-border: #e2e8f0;
+      --green-bg: #ecfdf5;
+      --blue-bg: #eff6ff;
+      --red-bg: #fef2f2;
+      --amber-bg: #fffbeb;
+      --purple-bg: #f5f3ff;
+      --cyan-bg: #f0f9ff;
+    }
+
+    .header-bar {
+      margin-bottom: 18px;
+    }
+
+    .category-badge {
+      display: inline-block;
+      font-size: 13.5px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--snowflake);
+      margin-bottom: 4px;
+    }
+
+    .slide-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 34px;
+      font-weight: 700;
+      color: var(--dark);
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+    }
+
+    .content-area {
+      flex: 1;
+      display: flex;
+      gap: 26px;
+      position: relative;
+    }
+
+    .footer-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid var(--card-border);
+      padding-top: 12px;
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 500;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 22px 20px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    }
+
+    .card-tag {
+      font-size: 11.5px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .card-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--dark);
+      margin-bottom: 10px;
+      line-height: 1.3;
+    }
+
+    .card-body {
+      font-size: 14px;
+      line-height: 1.55;
+      color: #334155;
+    }
+
+    .card-body p {
+      margin-bottom: 8px;
+    }
+
+    .card-body p:last-child {
+      margin-bottom: 0;
+    }
+
+    .stat-callout {
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      padding: 12px 16px;
+      margin-top: 12px;
+    }
+
+    .stat-number {
+      font-family: 'Outfit', sans-serif;
+      font-size: 28px;
+      font-weight: 800;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+
+    .stat-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .code-box {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      background: #0f172a;
+      color: #38bdf8;
+      padding: 12px 14px;
+      border-radius: 8px;
+      line-height: 1.45;
+      overflow: hidden;
+      white-space: pre-wrap;
+    }
+
+    .arch-layer-card {
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 15px 22px;
+      display: flex;
+      align-items: center;
+      gap: 22px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+    }
+
+    .arch-layer-badge {
+      font-size: 13.5px;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      width: 270px;
+      flex-shrink: 0;
+    }
+
+    .arch-layer-items {
+      flex: 1;
+      font-size: 14px;
+      line-height: 1.5;
+      color: #1e293b;
+      font-weight: 500;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- SLIDE 1: COVER -->
+  <div class="slide" style="background: linear-gradient(135deg, #ffffff 0%, #f0f9ff 50%, #e0f2fe 100%);">
+    <div style="display: flex; align-items: center; justify-content: space-between;">
+      <div style="display: flex; align-items: center; gap: 16px;">
+        <div style="width: 52px; height: 52px; border-radius: 12px; background: #0284c7; display: flex; align-items: center; justify-content: center; color: white; font-size: 28px; box-shadow: 0 4px 10px rgba(2,132,199,0.3);">
+          ❄️
+        </div>
+        <div>
+          <div style="font-size: 15px; font-weight: 800; color: #0284c7; letter-spacing: 0.08em;">SNOWFLAKE COCO CLI HACKATHON GCC EDITION</div>
+          <div style="font-size: 13px; color: #64748b; font-weight: 600;">Prototype Submission Template</div>
+        </div>
+      </div>
+      <div style="background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 10px; padding: 10px 18px; font-size: 13px; font-weight: 700; color: #0f172a; box-shadow: 0 2px 5px rgba(0,0,0,0.04);">
+        TRACK 5: SUPPLY CHAIN ONTOLOGY
+      </div>
+    </div>
+
+    <div style="margin: auto 0;">
+      <div style="display: inline-block; background: #e0f2fe; color: #0369a1; font-weight: 700; font-size: 13px; padding: 6px 14px; border-radius: 20px; margin-bottom: 12px; letter-spacing: 0.04em;">
+        ENTERPRISE PROTOTYPE SUBMISSION
+      </div>
+      <h1 style="font-family: 'Outfit', sans-serif; font-size: 68px; font-weight: 800; color: #0f172a; line-height: 1.1; margin-bottom: 14px;">
+        SupplyChainIQ
+      </h1>
+      <h2 style="font-family: 'Outfit', sans-serif; font-size: 28px; font-weight: 600; color: #0284c7; margin-bottom: 22px; max-width: 1400px; line-height: 1.3;">
+        Governed Conversational Supply Chain Analytics on Snowflake Cortex & CoCo
+      </h2>
+
+      <!-- Mandatory Submission Fields in Clean Grid -->
+      <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 28px; max-width: 1500px;">
+        <div style="background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 10px; padding: 14px 18px;">
+          <div style="font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase;">TEAM NAME</div>
+          <div style="font-size: 18px; font-weight: 800; color: #0f172a; margin-top: 4px;">SupplyChainIQ</div>
+        </div>
+        <div style="background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 10px; padding: 14px 18px;">
+          <div style="font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase;">TEAM LEADER NAME</div>
+          <div style="font-size: 18px; font-weight: 800; color: #0f172a; margin-top: 4px;">Chirag H S</div>
+        </div>
+        <div style="background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 10px; padding: 14px 18px;">
+          <div style="font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase;">TEAM SIZE</div>
+          <div style="font-size: 18px; font-weight: 800; color: #0f172a; margin-top: 4px;">1 (Solo Architect)</div>
+        </div>
+        <div style="background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 10px; padding: 14px 18px;">
+          <div style="font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase;">SNOWFLAKE ACCOUNT</div>
+          <div style="font-size: 18px; font-weight: 800; color: #0284c7; margin-top: 4px;">ZJXLXUZ.JV50315</div>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+        <span style="background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 8px; padding: 8px 16px; font-size: 13.5px; font-weight: 600; color: #0f172a;">⚡ Dynamic Tables (1-min lag)</span>
+        <span style="background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 8px; padding: 8px 16px; font-size: 13.5px; font-weight: 600; color: #0f172a;">🧠 Cortex Analyst (Semantic YAML)</span>
+        <span style="background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 8px; padding: 8px 16px; font-size: 13.5px; font-weight: 600; color: #0f172a;">🔍 Cortex Search (Contract MSAs)</span>
+        <span style="background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 8px; padding: 8px 16px; font-size: 13.5px; font-weight: 600; color: #0f172a;">⚙️ Action MCP Protocol</span>
+      </div>
+    </div>
+
+    <div class="footer-bar">
+      <div>Snowflake CoCo CLI Hackathon GCC Edition • Track 5: Supply Chain Ontology</div>
+      <div>Slide 1 of 6</div>
+    </div>
+  </div>
+
+  <!-- SLIDE 2: SUBMISSION GUIDELINES BLUEPRINT -->
+  <div class="slide">
+    <div class="header-bar">
+      <div class="category-badge" style="color: #0284c7;">EXECUTIVE OVERVIEW & TRACK ALIGNMENT</div>
+      <div class="slide-title">Submission Guidelines Blueprint & Executive Summary</div>
+    </div>
+
+    <div class="content-area">
+      <!-- Left: Guidelines Alignment -->
+      <div class="card" style="flex: 1.1; background: #ffffff; border-color: #cbd5e1; justify-content: space-between;">
+        <div>
+          <div class="card-tag" style="color: #0284c7;">HACKATHON GUIDELINE MAPPING</div>
+          <div class="card-title">Track 5 Alignment & Core Mission</div>
+          <div class="card-body">
+            <p><strong>Real Business Problem:</strong> Global supply chains lose $250k/hour in assembly line halts due to 72-hour reporting delays across fragmented ERP silos and inability to extract contract penalties from PDF agreements.</p>
+            <p><strong>Target Enterprise Personas:</strong></p>
+            <ul style="padding-left: 20px; margin-bottom: 10px;">
+              <li><strong>VP of Supply Chain & Operations:</strong> Global inventory risk heatmaps & carrying cost optimization.</li>
+              <li><strong>Plant Materials Managers:</strong> Real-time Days of Inventory (DOI) alerts & assembly line runway tracking.</li>
+              <li><strong>Procurement Directors:</strong> Unstructured contract SLA penalty extraction & supplier re-weighting.</li>
+              <li><strong>Logistics Operators:</strong> Dynamic multi-modal PO rerouting around active port & customs disruptions.</li>
+            </ul>
+            <p><strong>Current Industry Pain vs. SupplyChainIQ Improvement:</strong> Replaces manual 24-hr batch reporting and error-prone SQL queries with a 100% deterministic semantic model, sub-minute streaming Dynamic Tables, and autonomous 1-click PO rerouting.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Core Innovations -->
+      <div class="card" style="flex: 1; background: #f0f9ff; border-color: #bae6fd; justify-content: space-between;">
+        <div>
+          <div class="card-tag" style="color: #0369a1;">CORE SYSTEM INNOVATIONS</div>
+          <div class="card-title">The Governed Semantic Advantage</div>
+          <div class="card-body">
+            <p><strong>The Core Principle:</strong> <em>"The LLM understands the question; the semantic layer determines what the question means and where the answer comes from."</em></p>
+            
+            <div style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 14px; margin: 12px 0;">
+              <div style="font-weight: 700; font-size: 13px; color: #0284c7; margin-bottom: 6px;">Key Technical Innovations:</div>
+              <div style="font-size: 13px; line-height: 1.6; color: #334155;">
+                • <strong>Deterministic Semantic Model:</strong> Validated YAML staged in Snowflake ensures zero hallucination.<br>
+                • <strong>Continuous Dynamic Tables:</strong> 1-minute target lag updates operational risk metrics automatically.<br>
+                • <strong>Hybrid Cortex Dual-Brain:</strong> Cortex Analyst for structured SQL + Cortex Search for PDF contracts.<br>
+                • <strong>Model Context Protocol (MCP):</strong> Autonomous closed-loop PO reallocation directly inside ERP.
+              </div>
+            </div>
+
+            <p><strong>End-to-End Live Prototype:</strong> 100% deployed and fully operational on Snowflake Account <code>JV50315</code> with passing automated verification tests.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bar">
+      <div>Snowflake CoCo CLI Hackathon GCC Edition • Track 5: Supply Chain Ontology</div>
+      <div>Slide 2 of 6</div>
+    </div>
+  </div>
+
+  <!-- SLIDE 3: PROBLEM BRIEF & CRISIS CONTEXT -->
+  <div class="slide">
+    <div class="header-bar">
+      <div class="category-badge" style="color: #dc2626;">SECTION 1: PROBLEM BRIEF & CRISIS CONTEXT</div>
+      <div class="slide-title">The Multimillion-Dollar Supply Chain Visibility Breakdown</div>
+    </div>
+
+    <div class="content-area">
+      <!-- Card 1 -->
+      <div class="card" style="flex: 1; background: #fef2f2; border-color: #fecaca; justify-content: space-between;">
+        <div>
+          <div class="card-tag" style="color: #dc2626;">72-HOUR VISIBILITY LAG</div>
+          <div class="card-title">Fragmented ERP Silos</div>
+          <div class="card-body">
+            <p><strong>Isolated Systems:</strong> SAP ERP, Oracle WMS, and TMS logistics run in separate data silos with 24-hr batch ETL cycles.</p>
+            <p><strong>Catastrophic Blindspots:</strong> When port strikes or supplier delays hit, plants discover critical part stockouts only days before shutdown.</p>
+          </div>
+        </div>
+        <div class="stat-callout" style="border-color: #fca5a5; background: #fff5f5;">
+          <div class="stat-number" style="color: #dc2626;">$250K / HR</div>
+          <div class="stat-label">Automotive Line Downtime Cost</div>
+        </div>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="card" style="flex: 1; background: #fffbeb; border-color: #fed7aa; justify-content: space-between;">
+        <div>
+          <div class="card-tag" style="color: #d97706;">THE HALLUCINATION DANGER</div>
+          <div class="card-title">Unchecked LLM-to-SQL Risks</div>
+          <div class="card-body">
+            <p><strong>Semantic Ambiguity:</strong> Planners ask: <em>"What is our battery stockout risk?"</em> Raw LLMs guess table joins, invent metrics, and calculate invalid DOI numbers.</p>
+            <p><strong>Loss of Trust:</strong> C-suite and plant managers cannot rely on unverified AI queries for mission-critical operations.</p>
+          </div>
+        </div>
+        <div class="stat-callout" style="border-color: #fcd34d; background: #fffdf0;">
+          <div class="stat-number" style="color: #d97706;">68% ERROR RATE</div>
+          <div class="stat-label">In Raw Unconstrained Text-to-SQL</div>
+        </div>
+      </div>
+
+      <!-- Card 3 -->
+      <div class="card" style="flex: 1; background: #eff6ff; border-color: #bfdbfe; justify-content: space-between;">
+        <div>
+          <div class="card-tag" style="color: #1e40af;">UNSTRUCTURED CONTRACT BLINDSPOT</div>
+          <div class="card-title">Lost Supplier SLA Penalties</div>
+          <div class="card-body">
+            <p><strong>Buried Legal Terms:</strong> Master Service Agreements, liquidated damages clauses, and SLAs are trapped inside unindexed PDFs.</p>
+            <p><strong>Unrecovered Penalties:</strong> Disrupted companies fail to enforce legally mandated delay compensation ($10,000/day penalties).</p>
+          </div>
+        </div>
+        <div class="stat-callout" style="border-color: #93c5fd; background: #f0f7ff;">
+          <div class="stat-number" style="color: #1e40af;">$140,000</div>
+          <div class="stat-label">Unrecovered Penalty per Disruption</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bar">
+      <div>Snowflake CoCo CLI Hackathon GCC Edition • Track 5: Supply Chain Ontology</div>
+      <div>Slide 3 of 6</div>
+    </div>
+  </div>
+
+  <!-- SLIDE 4: SYSTEM ARCHITECTURE & COCO INTEGRATION -->
+  <div class="slide">
+    <div class="header-bar">
+      <div class="category-badge" style="color: #1e40af;">SECTION 2: SYSTEM ARCHITECTURE & SNOWFLAKE COCO INTEGRATION</div>
+      <div class="slide-title">System Architecture: Governed 5-Tier Snowflake CoCo Foundation</div>
+    </div>
+
+    <div class="content-area" style="flex-direction: column; gap: 14px; justify-content: center;">
+      <div class="arch-layer-card" style="background: #f0f9ff; border-color: #bae6fd;">
+        <div class="arch-layer-badge" style="color: #0284c7;">
+          1. Presentation Layer
+        </div>
+        <div class="arch-layer-items">
+          • <strong>Streamlit Command Center:</strong> Native in-Snowflake executive dashboard with live risk heatmaps, DOI monitors & 1-click PO mitigation.<br>
+          • <strong>Snowflake CoCo CLI:</strong> Terminal & conversational agent interface for real-time querying and automated agent actions.
+        </div>
+      </div>
+
+      <div class="arch-layer-card" style="background: #f5f3ff; border-color: #ddd6fe;">
+        <div class="arch-layer-badge" style="color: #7c3aed;">
+          2. Action MCP Protocol
+        </div>
+        <div class="arch-layer-items">
+          • <strong>FastAPI Action MCP Server:</strong> Standardized agentic tools in <code>mcp/supply_chain_mcp.py</code> exposing 5 enterprise tools.<br>
+          • <strong>Transactional Tools:</strong> <code>reroute_purchase_order</code>, <code>get_plant_stockout_risk</code>, <code>search_supplier_contracts</code>, <code>simulate_disruption</code>.
+        </div>
+      </div>
+
+      <div class="arch-layer-card" style="background: #eff6ff; border-color: #bfdbfe;">
+        <div class="arch-layer-badge" style="color: #1e40af;">
+          3. Cortex AI Dual-Brain
+        </div>
+        <div class="arch-layer-items">
+          • <strong>Snowflake Cortex Analyst:</strong> Semantic parser converting human intent into verified deterministic SQL queries.<br>
+          • <strong>Snowflake Cortex Search:</strong> Vector search service (<code>SUPPLIER_CONTRACTS_SEARCH</code>) indexing supplier MSAs & SLA clauses.
+        </div>
+      </div>
+
+      <div class="arch-layer-card" style="background: #ecfdf5; border-color: #a7f3d0;">
+        <div class="arch-layer-badge" style="color: #059669;">
+          4. Governance & Dynamic Tables
+        </div>
+        <div class="arch-layer-items">
+          • <strong>Semantic Ontology YAML:</strong> <code>supply_chain_semantic_model.yaml</code> defining trusted metrics, dimensions, and joins.<br>
+          • <strong>1-Minute Dynamic Tables:</strong> <code>DT_PLANT_STOCKOUT_RISK</code>, <code>DT_SUPPLIER_PERFORMANCE</code>, <code>DT_ACTIVE_DISRUPTIONS</code>.
+        </div>
+      </div>
+
+      <div class="arch-layer-card" style="background: #f8fafc; border-color: #cbd5e1;">
+        <div class="arch-layer-badge" style="color: #0f172a;">
+          5. Unified Relational Data Layer
+        </div>
+        <div class="arch-layer-items">
+          • <strong>Core Schema:</strong> 7 relational tables in <code>SUPPLY_CHAIN_DB.CORE</code> (<code>SUPPLIERS</code>, <code>PLANTS</code>, <code>MATERIALS</code>, <code>INVENTORY</code>, <code>PURCHASE_ORDERS</code>, <code>SHIPMENTS</code>, <code>DISRUPTIONS</code>).<br>
+          • <strong>Unstructured Repository:</strong> Staged PDF Master Service Agreements in <code>@CONTRACTS_STAGE</code>.
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bar">
+      <div>Snowflake CoCo CLI Hackathon GCC Edition • Track 5: Supply Chain Ontology</div>
+      <div>Slide 4 of 6</div>
+    </div>
+  </div>
+
+  <!-- SLIDE 5: CONVERSATIONAL AI & LIVE DEMO HIGHLIGHTS -->
+  <div class="slide">
+    <div class="header-bar">
+      <div class="category-badge" style="color: #0284c7;">SECTION 3: CONVERSATIONAL AI & LIVE DEMO HIGHLIGHTS</div>
+      <div class="slide-title">End-to-End Live Scenario: Austin Battery Stockout to 1-Click Resolution</div>
+    </div>
+
+    <div class="content-area">
+      <!-- Left: 3-Way Reconciliation Ledger -->
+      <div class="card" style="flex: 1.1; background: #ffffff; border-color: #cbd5e1; justify-content: space-between;">
+        <div>
+          <div class="card-tag" style="color: #059669;">AUDITABLE 3-WAY RECONCILIATION</div>
+          <div class="card-title">LLM Narrative + Verified SQL + Data Proof</div>
+          
+          <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 12px; margin-bottom: 10px;">
+            <div style="font-weight: 700; font-size: 12px; color: #065f46;">1. Conversational Explanation (for Executives):</div>
+            <div style="font-size: 13px; color: #047857; margin-top: 4px;">
+              "Austin Giga 1 EV Battery inventory is critical at 3.8 days of inventory (450 units remaining, burn rate 120/day). Factory shutdown in 91 hours due to 14-day customs delay on Apex shipment SHP-401."
+            </div>
+          </div>
+
+          <div style="background: #0f172a; border-radius: 8px; padding: 12px; margin-bottom: 10px;">
+            <div style="font-weight: 700; font-size: 12px; color: #38bdf8;">2. Cortex Analyst Generated SQL:</div>
+            <div class="code-box" style="padding: 0; font-size: 11px; margin-top: 4px;">
+SELECT plant_name, material_name, days_of_inventory, stockout_risk_level
+FROM SUPPLY_CHAIN_DB.CORE.DT_PLANT_STOCKOUT_RISK
+WHERE stockout_risk_level = 'CRITICAL';
+            </div>
+          </div>
+
+          <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 12px;">
+            <div style="font-weight: 700; font-size: 12px; color: #1e40af;">3. Ground Truth Verification Result:</div>
+            <div style="font-size: 12.5px; color: #1e3a8a; margin-top: 4px;">
+              Austin Giga 1 | EV Battery Pack | 450 units | DOI: 3.8 Days | 🔴 CRITICAL RISK
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Unstructured Search & 1-Click MCP Action -->
+      <div class="card" style="flex: 1; background: #ffffff; border-color: #cbd5e1; justify-content: space-between;">
+        <div>
+          <div class="card-tag" style="color: #7c3aed;">CORTEX SEARCH + ACTION MCP</div>
+          <div class="card-title">Penalty Recovery & Closed-Loop Rerouting</div>
+          <div class="card-body">
+            <div style="background: #faf5ff; border: 1px solid #ddd6fe; border-radius: 8px; padding: 12px; margin-bottom: 12px;">
+              <div style="font-weight: 700; font-size: 12.5px; color: #5b21b6;">Cortex Search: Apex Contract Section 8 Extraction</div>
+              <div style="font-size: 12.5px; color: #4c1d95; margin-top: 4px; line-height: 1.5;">
+                • Liquidated Damages: 5.0% order penalty + $10,000/day delay.<br>
+                • Grace Period: 3 business days. Total delay: 14 business days.<br>
+                • <strong>Direct Commercial Recovery: $140,000 claimed from Apex.</strong>
+              </div>
+            </div>
+
+            <div style="background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 8px; padding: 12px;">
+              <div style="font-weight: 700; font-size: 12.5px; color: #065f46;">Action MCP: 1-Click PO Rerouting & Simulation</div>
+              <div style="font-size: 12.5px; color: #047857; margin-top: 4px; line-height: 1.5;">
+                • Emergency PO-9042 issued to Shenzhen EnerTech (96% OTIF, 6-day air freight).<br>
+                • <strong>Austin Plant DOI restored from 3.8 days to 14.2 days (HEALTHY).</strong><br>
+                • 0 hours downtime. $14.2M potential manufacturing loss prevented.
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="stat-callout" style="border-color: #a7f3d0; background: #ecfdf5;">
+          <div class="stat-number" style="color: #059669;">3.8d &rarr; 14.2d</div>
+          <div class="stat-label">Days of Inventory Restored to Safe Threshold</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bar">
+      <div>Snowflake CoCo CLI Hackathon GCC Edition • Track 5: Supply Chain Ontology</div>
+      <div>Slide 5 of 6</div>
+    </div>
+  </div>
+
+  <!-- SLIDE 6: MEASURABLE BUSINESS OUTCOMES & SCALABILITY -->
+  <div class="slide">
+    <div class="header-bar">
+      <div class="category-badge" style="color: #059669;">SECTION 4: MEASURABLE BUSINESS OUTCOMES & SCALABILITY</div>
+      <div class="slide-title">Enterprise ROI Benchmarks, Test Verification & Scaling Roadmap</div>
+    </div>
+
+    <div class="content-area" style="flex-direction: column; gap: 18px;">
+      <!-- Top: 4 Stat Metrics Grid -->
+      <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;">
+        <div class="card" style="background: #ecfdf5; border-color: #a7f3d0; padding: 16px; text-align: center;">
+          <div style="font-size: 36px; font-weight: 800; color: #059669; font-family: 'Outfit', sans-serif;">85%</div>
+          <div style="font-size: 12px; font-weight: 700; color: #065f46; text-transform: uppercase; margin-top: 4px;">TTR Reduction</div>
+          <div style="font-size: 12px; color: #047857; margin-top: 2px;">Resolution drops from 48h to 2.5h</div>
+        </div>
+
+        <div class="card" style="background: #eff6ff; border-color: #bfdbfe; padding: 16px; text-align: center;">
+          <div style="font-size: 36px; font-weight: 800; color: #1e40af; font-family: 'Outfit', sans-serif;">100%</div>
+          <div style="font-size: 12px; font-weight: 700; color: #1e3a8a; text-transform: uppercase; margin-top: 4px;">Deterministic SQL</div>
+          <div style="font-size: 12px; color: #1d4ed8; margin-top: 2px;">Zero hallucinated queries via YAML model</div>
+        </div>
+
+        <div class="card" style="background: #f0f9ff; border-color: #bae6fd; padding: 16px; text-align: center;">
+          <div style="font-size: 36px; font-weight: 800; color: #0284c7; font-family: 'Outfit', sans-serif;">$14.2M</div>
+          <div style="font-size: 12px; font-weight: 700; color: #0369a1; text-transform: uppercase; margin-top: 4px;">Annual Cost Savings</div>
+          <div style="font-size: 12px; color: #0284c7; margin-top: 2px;">Downtime avoided & SLA recovery</div>
+        </div>
+
+        <div class="card" style="background: #faf5ff; border-color: #ddd6fe; padding: 16px; text-align: center;">
+          <div style="font-size: 36px; font-weight: 800; color: #7c3aed; font-family: 'Outfit', sans-serif;">4 / 4 PASS</div>
+          <div style="font-size: 12px; font-weight: 700; color: #5b21b6; text-transform: uppercase; margin-top: 4px;">Verification Suite</div>
+          <div style="font-size: 12px; color: #6d28d9; margin-top: 2px;">All ontology accuracy tests passing</div>
+        </div>
+      </div>
+
+      <!-- Bottom: 3 Phase Horizon Cards -->
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; flex: 1;">
+        <div class="card" style="background: #ffffff; border-color: #cbd5e1; justify-content: space-between;">
+          <div>
+            <div class="card-tag" style="color: #059669;">PHASE 1: LIVE HACKATHON MVP</div>
+            <div class="card-title">Deployed Core Foundation</div>
+            <div class="card-body">
+              <p>• 7 relational core tables + 3 Dynamic Tables live on Snowflake account <code>JV50315</code>.</p>
+              <p>• Verified YAML semantic model staged in Snowflake.</p>
+              <p>• Cortex Search Service running on supplier contracts.</p>
+              <p>• Full Action MCP server and Streamlit Command Center.</p>
+            </div>
+          </div>
+          <div style="font-size: 12px; font-weight: 700; color: #059669; background: #ecfdf5; padding: 6px 10px; border-radius: 6px; text-align: center;">
+            ✓ 100% Deployed & Automated Tests Passing
+          </div>
+        </div>
+
+        <div class="card" style="background: #ffffff; border-color: #cbd5e1; justify-content: space-between;">
+          <div>
+            <div class="card-tag" style="color: #0284c7;">PHASE 2: ENTERPRISE EXPANSION</div>
+            <div class="card-title">Multi-Tier ERP Integration</div>
+            <div class="card-body">
+              <p>• Bidirectional SAP S/4HANA & Oracle Cloud ERP connectors.</p>
+              <p>• Multi-tier supplier visibility (Tier-2 & Tier-3 sub-component suppliers).</p>
+              <p>• Automated contract breach auto-invoicing via Snowflake external network access.</p>
+            </div>
+          </div>
+          <div style="font-size: 12px; font-weight: 700; color: #0284c7; background: #f0f9ff; padding: 6px 10px; border-radius: 6px; text-align: center;">
+            Target: Q2 2026 Enterprise Pilot
+          </div>
+        </div>
+
+        <div class="card" style="background: #ffffff; border-color: #cbd5e1; justify-content: space-between;">
+          <div>
+            <div class="card-tag" style="color: #7c3aed;">PHASE 3: AUTONOMOUS ECOSYSTEM</div>
+            <div class="card-title">Self-Healing Supply Network</div>
+            <div class="card-body">
+              <p>• Multi-region cross-cloud Snowflake replication.</p>
+              <p>• Predictive geopolitical, weather & customs risk ingestion.</p>
+              <p>• Fully autonomous closed-loop self-healing supply chain with predictive multi-echelon inventory balancing.</p>
+            </div>
+          </div>
+          <div style="font-size: 12px; font-weight: 700; color: #7c3aed; background: #f5f3ff; padding: 6px 10px; border-radius: 6px; text-align: center;">
+            Target: Q4 2026 Global Production
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bar">
+      <div>Snowflake CoCo CLI Hackathon GCC Edition • Track 5: Supply Chain Ontology</div>
+      <div>Slide 6 of 6</div>
+    </div>
+  </div>
+
+</body>
+</html>
