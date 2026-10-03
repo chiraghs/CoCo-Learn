@@ -1,0 +1,153 @@
+name: supply_chain_semantic_model
+description: Governed enterprise supply chain ontology unifying suppliers, parts, plants, shipments, purchase orders, and inventory metrics across Procurement, Logistics, and Plant Operations.
+
+tables:
+  - name: DT_SUPPLIER_PERFORMANCE
+    description: Pre-aggregated supplier reliability metrics, delay days, and liquidated damages penalty liabilities.
+    base_table:
+      database: SUPPLY_CHAIN_DB
+      schema: CORE
+      table: DT_SUPPLIER_PERFORMANCE
+    dimensions:
+      - name: supplier_id
+        description: Unique identifier for the supplier.
+        expr: supplier_id
+        data_type: VARCHAR
+      - name: supplier_name
+        description: Registered legal name of the vendor/supplier.
+        expr: supplier_name
+        data_type: VARCHAR
+      - name: supplier_country
+        description: Country of manufacture/headquarters.
+        expr: supplier_country
+        data_type: VARCHAR
+      - name: supplier_tier
+        description: Criticality tier of supplier (Tier 1 vs Tier 2).
+        expr: supplier_tier
+        data_type: VARCHAR
+    measures:
+      - name: total_orders
+        description: Total purchase orders issued to the supplier.
+        expr: total_orders
+        data_type: NUMBER
+        default_aggregation: sum
+      - name: total_shipments
+        description: Total shipments dispatched by the supplier.
+        expr: total_shipments
+        data_type: NUMBER
+        default_aggregation: sum
+      - name: on_time_shipments
+        description: Number of shipments that arrived on or before promised delivery date.
+        expr: on_time_shipments
+        data_type: NUMBER
+        default_aggregation: sum
+      - name: delayed_shipments
+        description: Number of shipments that breached promised delivery date.
+        expr: delayed_shipments
+        data_type: NUMBER
+        default_aggregation: sum
+      - name: otif_rate_pct
+        description: Governed On-Time In-Full percentage of deliveries.
+        expr: otif_rate_pct
+        data_type: NUMBER
+        default_aggregation: avg
+      - name: total_delay_days
+        description: Cumulative days of delivery delay across all consignments.
+        expr: total_delay_days
+        data_type: NUMBER
+        default_aggregation: sum
+      - name: total_penalty_liability_usd
+        description: Legally enforceable liquidated damages liability calculated based on contract SLA grace periods and daily penalty rates.
+        expr: total_penalty_liability_usd
+        data_type: NUMBER
+        default_aggregation: sum
+      - name: total_demurrage_usd
+        description: Container port demurrage and holding fees incurred.
+        expr: total_demurrage_usd
+        data_type: NUMBER
+        default_aggregation: sum
+
+  - name: DT_PLANT_STOCKOUT_RISK
+    description: Real-time inventory buffer, daily burn rates, and Days of Inventory (DOI) per plant and assembly part.
+    base_table:
+      database: SUPPLY_CHAIN_DB
+      schema: CORE
+      table: DT_PLANT_STOCKOUT_RISK
+    dimensions:
+      - name: plant_id
+        description: Unique identifier of the manufacturing plant.
+        expr: plant_id
+        data_type: VARCHAR
+      - name: plant_name
+        description: Facility name (e.g. Gigafactory Texas, Gigafactory California).
+        expr: plant_name
+        data_type: VARCHAR
+      - name: plant_location
+        description: Geographic city of the assembly plant.
+        expr: plant_location
+        data_type: VARCHAR
+      - name: part_id
+        description: Unique part identifier.
+        expr: part_id
+        data_type: VARCHAR
+      - name: part_number
+        description: Engineering catalog SKU / part number.
+        expr: part_number
+        data_type: VARCHAR
+      - name: part_name
+        description: Common component name.
+        expr: part_name
+        data_type: VARCHAR
+      - name: part_criticality
+        description: Component criticality to vehicle assembly (CRITICAL, HIGH, MEDIUM, LOW).
+        expr: part_criticality
+        data_type: VARCHAR
+      - name: stockout_risk_level
+        description: Governed risk rating (CRITICAL_STOCKOUT_RISK, ELEVATED_WARNING, HEALTHY_BUFFER).
+        expr: stockout_risk_level
+        data_type: VARCHAR
+    measures:
+      - name: on_hand_qty
+        description: Current physical inventory available in warehouse.
+        expr: on_hand_qty
+        data_type: NUMBER
+        default_aggregation: sum
+      - name: in_transit_qty
+        description: Units currently shipped and en-route.
+        expr: in_transit_qty
+        data_type: NUMBER
+        default_aggregation: sum
+      - name: plant_daily_burn_rate
+        description: Daily consumption of units at full line production.
+        expr: plant_daily_burn_rate
+        data_type: NUMBER
+        default_aggregation: avg
+      - name: days_of_inventory
+        description: Canonical metric - Days of production remaining before line stoppage (On-hand / daily burn rate).
+        expr: days_of_inventory
+        data_type: NUMBER
+        default_aggregation: avg
+      - name: safety_stock_deficit_units
+        description: Units below target safety buffer threshold.
+        expr: safety_stock_deficit_units
+        data_type: NUMBER
+        default_aggregation: sum
+
+verified_queries:
+  - name: highest_penalty_supplier
+    question: "Which supplier has the highest delay penalty liability?"
+    verified_at: 1727913600
+    verified_by: "VP of Procurement"
+    sql: "SELECT supplier_name, total_penalty_liability_usd, total_delay_days, otif_rate_pct FROM SUPPLY_CHAIN_DB.CORE.DT_SUPPLIER_PERFORMANCE ORDER BY total_penalty_liability_usd DESC LIMIT 1;"
+
+  - name: plant_2_stockout_runway
+    question: "How many days of battery inventory remain at Gigafactory Texas (Plant 2)?"
+    verified_at: 1727913600
+    verified_by: "Plant Operations Manager"
+    sql: "SELECT plant_name, part_name, on_hand_qty, plant_daily_burn_rate, days_of_inventory, stockout_risk_level FROM SUPPLY_CHAIN_DB.CORE.DT_PLANT_STOCKOUT_RISK WHERE plant_id = 'PLANT_02' AND part_id = 'PART_BAT_402';"
+
+  - name: delayed_battery_shipments
+    question: "What shipments of battery modules are currently delayed?"
+    verified_at: 1727913600
+    verified_by: "Logistics Director"
+    sql: "SELECT shipment_id, carrier, origin_port, dest_port, shipment_status, days_past_promised, demurrage_usd FROM SUPPLY_CHAIN_DB.CORE.DT_ACTIVE_DISRUPTIONS WHERE part_id = 'PART_BAT_402';"
