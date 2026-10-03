@@ -31,17 +31,30 @@ FROM DT_PLANT_STOCKOUT_RISK
 WHERE plant_id = 'PLANT_02' AND part_id = 'PART_BAT_402';
 
 -- TEST 3: Governed Liquidated Damages Calculation Accuracy (Apex Battery Cells)
--- Apex delay days must correctly deduct 3-day SLA grace period
+-- Dynamically validates that accumulated penalty matches the exact contract SLA formula
+WITH EXPECTED_APEX AS (
+    SELECT 
+        SUM(
+            s.daily_liquidated_damages_usd * 
+            GREATEST(0, DATEDIFF(day, po.promised_delivery_date, COALESCE(shp.actual_arrival_date, CURRENT_DATE())) - s.contract_sla_grace_days)
+        ) AS EXPECTED_PENALTY
+    FROM DIM_SUPPLIERS s
+    JOIN FACT_PURCHASE_ORDERS po ON s.supplier_id = po.supplier_id
+    LEFT JOIN FACT_SHIPMENTS shp ON po.po_id = shp.po_id
+    WHERE s.supplier_id = 'SUP_001'
+)
 SELECT 
-    'TEST 3: Legal Penalty Calculation (Apex Battery Cells)' AS TEST_NAME,
-    supplier_name,
-    total_penalty_liability_usd,
+    'TEST 3: Dynamic Legal Penalty Calculation (Apex Battery Cells)' AS TEST_NAME,
+    dt.supplier_name,
+    dt.total_penalty_liability_usd,
     CASE 
-        WHEN total_penalty_liability_usd = 18000.00 THEN 'PASSED' 
+        WHEN dt.total_penalty_liability_usd = exp.EXPECTED_PENALTY AND dt.total_penalty_liability_usd >= 18000.00
+        THEN 'PASSED' 
         ELSE 'FAILED' 
     END AS TEST_STATUS
-FROM DT_SUPPLIER_PERFORMANCE
-WHERE supplier_id = 'SUP_001';
+FROM DT_SUPPLIER_PERFORMANCE dt
+CROSS JOIN EXPECTED_APEX exp
+WHERE dt.supplier_id = 'SUP_001';
 
 -- TEST 4: Boundary Validation - OTIF % must always be between 0 and 100
 SELECT 
