@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "supply-chain-actions": {
+      "command": "python3",
+      "args": ["/Volumes/DiskD/HACKATHONS/Snowflake CoCo CLI/mcp/supply_chain_mcp.py"],
+      "env": {
+        "SLACK_CHANNEL": "#supply-chain-crisis"
+      }
+    }
+  }
+}
