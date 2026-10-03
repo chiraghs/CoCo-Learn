@@ -5,7 +5,7 @@ import json
 
 # Set Page Config
 st.set_page_config(
-    page_title="Snowflake CoCo - Supply Chain Command Center",
+    page_title="SupplyChainIQ — Governed Conversational Analytics",
     page_icon="⚡",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -16,14 +16,15 @@ st.markdown("""
 <style>
     .main-header {
         font-size: 2.2rem;
-        font-weight: 700;
+        font-weight: 800;
         color: #1E3A8A;
-        margin-bottom: 0.2rem;
+        margin-bottom: 0.1rem;
     }
     .sub-header {
-        font-size: 1.1rem;
+        font-size: 1.05rem;
         color: #4B5563;
-        margin-bottom: 1.5rem;
+        margin-bottom: 1.2rem;
+        font-style: italic;
     }
     .alert-banner {
         background-color: #FEF2F2;
@@ -33,21 +34,6 @@ st.markdown("""
         margin-bottom: 20px;
         color: #991B1B;
         font-weight: 500;
-    }
-    .metric-card {
-        background-color: #F8FAFC;
-        border: 1px solid #E2E8F0;
-        border-radius: 8px;
-        padding: 16px;
-        text-align: center;
-    }
-    .critical-badge {
-        background-color: #FEE2E2;
-        color: #B91C1C;
-        padding: 4px 10px;
-        border-radius: 12px;
-        font-weight: 600;
-        font-size: 0.85rem;
     }
     .governed-box {
         background-color: #F0FDF4;
@@ -60,6 +46,14 @@ st.markdown("""
         border: 1px solid #FCD34D;
         border-radius: 8px;
         padding: 16px;
+    }
+    .trust-card {
+        background-color: #F8FAFC;
+        border: 1px solid #CBD5E1;
+        border-radius: 6px;
+        padding: 12px;
+        font-family: monospace;
+        font-size: 0.85rem;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -86,7 +80,7 @@ def load_data(table_name):
     # Realistic Seed Data fallback for standalone/local mode
     if table_name == "DT_SUPPLIER_PERFORMANCE":
         return pd.DataFrame([
-            {"SUPPLIER_ID": "SUP_001", "SUPPLIER_NAME": "Apex Battery Cells Ltd", "SUPPLIER_COUNTRY": "South Korea", "SUPPLIER_TIER": "Tier 1", "TOTAL_ORDERS": 6, "TOTAL_SHIPMENTS": 6, "ON_TIME_SHIPMENTS": 2, "DELAYED_SHIPMENTS": 4, "OTIF_RATE_PCT": 33.3, "TOTAL_DELAY_DAYS": 21, "TOTAL_PENALTY_LIABILITY_USD": 18000.0, "TOTAL_DEMURRAGE_USD": 20000.0},
+            {"SUPPLIER_ID": "SUP_001", "SUPPLIER_NAME": "Apex Battery Cells Ltd", "SUPPLIER_COUNTRY": "South Korea", "SUPPLIER_TIER": "Tier 1", "TOTAL_ORDERS": 6, "TOTAL_SHIPMENTS": 6, "ON_TIME_SHIPMENTS": 2, "DELAYED_SHIPMENTS": 4, "OTIF_RATE_PCT": 33.3, "TOTAL_DELAY_DAYS": 21, "TOTAL_PENALTY_LIABILITY_USD": 22500.0, "TOTAL_DEMURRAGE_USD": 20000.0},
             {"SUPPLIER_ID": "SUP_002", "SUPPLIER_NAME": "MicroSilicon Dynamics", "SUPPLIER_COUNTRY": "Taiwan", "SUPPLIER_TIER": "Tier 1", "TOTAL_ORDERS": 3, "TOTAL_SHIPMENTS": 3, "ON_TIME_SHIPMENTS": 3, "DELAYED_SHIPMENTS": 0, "OTIF_RATE_PCT": 100.0, "TOTAL_DELAY_DAYS": 0, "TOTAL_PENALTY_LIABILITY_USD": 0.0, "TOTAL_DEMURRAGE_USD": 0.0},
             {"SUPPLIER_ID": "SUP_003", "SUPPLIER_NAME": "Nordic Precision Metals", "SUPPLIER_COUNTRY": "Sweden", "SUPPLIER_TIER": "Tier 2", "TOTAL_ORDERS": 2, "TOTAL_SHIPMENTS": 2, "ON_TIME_SHIPMENTS": 2, "DELAYED_SHIPMENTS": 0, "OTIF_RATE_PCT": 100.0, "TOTAL_DELAY_DAYS": 0, "TOTAL_PENALTY_LIABILITY_USD": 0.0, "TOTAL_DEMURRAGE_USD": 0.0},
             {"SUPPLIER_ID": "SUP_004", "SUPPLIER_NAME": "VoltStorage Chem Inc", "SUPPLIER_COUNTRY": "Japan", "SUPPLIER_TIER": "Tier 1", "TOTAL_ORDERS": 2, "TOTAL_SHIPMENTS": 2, "ON_TIME_SHIPMENTS": 2, "DELAYED_SHIPMENTS": 0, "OTIF_RATE_PCT": 100.0, "TOTAL_DELAY_DAYS": 0, "TOTAL_PENALTY_LIABILITY_USD": 0.0, "TOTAL_DEMURRAGE_USD": 0.0},
@@ -109,43 +103,129 @@ def load_data(table_name):
 
 # Sidebar Setup
 with st.sidebar:
-    st.image("https://upload.wikimedia.org/wikipedia/commons/f/ff/Snowflake_Logo.svg", width=160)
+    st.image("https://upload.wikimedia.org/wikipedia/commons/f/ff/Snowflake_Logo.svg", width=150)
     st.markdown("### **Operational Persona**")
     persona = st.radio(
-        "Select your active persona:",
+        "Active Business View:",
         ["💼 VP of Procurement", "🏭 Plant Operations Manager", "🚢 Logistics & Freight Director"],
         index=1
     )
     st.markdown("---")
-    st.markdown("### **System Status**")
-    st.success("● Snowflake Connected: `SUPPLY_CHAIN_DB.CORE`")
-    st.info("● Dynamic Tables: **Live (1m lag)**")
-    st.info("● Cortex Search: **Active**")
+    st.markdown("### **Architectural Boundary**")
+    st.markdown("""
+    **Intelligent Layer (LLM):**
+    * Natural Language Intent
+    * Entity Extraction
+    * Conversational Synthesis
+    
+    **Deterministic Layer (Snowflake):**
+    * Governed Metric Registry
+    * Semantic Views & Lineage
+    * Dynamic Tables (1m Lag)
+    """)
     st.markdown("---")
-    st.caption("Powered by **Snowflake CoCo CLI** full-lifecycle agentic framework.")
+    st.success("● Snowflake: `SUPPLY_CHAIN_DB.CORE`")
+    st.caption("Powered by **Snowflake CoCo CLI**.")
 
-# Main Header
-st.markdown('<div class="main-header">⚡ Snowflake CoCo Supply Chain Command Center</div>', unsafe_allow_html=True)
-st.markdown('<div class="sub-header">Industry Ontology & Governed Conversational Intelligence Engine</div>', unsafe_allow_html=True)
+# Main Title & Positioning
+st.markdown('<div class="main-header">⚡ SupplyChainIQ — Governed Conversational Intelligence</div>', unsafe_allow_html=True)
+st.markdown('<div class="sub-header">"The LLM understands the question; the governed ontology decides what it means and where the answer comes from."</div>', unsafe_allow_html=True)
 
 # Incident Alert Banner
 st.markdown("""
 <div class="alert-banner">
-    ⚠️ <strong>ACTIVE CRISIS DETECTED:</strong> Port of Houston congestion holding battery cell shipments (PART_BAT_402) from Apex Battery Cells. 
-    <strong>Gigafactory Texas (Austin) has only 3.8 Days of Inventory remaining before assembly line shutdown.</strong>
+    ⚠️ <strong>ACTIVE DISRUPTION DETECTED:</strong> Port of Houston congestion holding battery cell shipments (PART_BAT_402) from Apex Battery Cells. 
+    <strong>Gigafactory Texas (Austin) has only 3.8 Days of Inventory remaining before assembly line stoppage.</strong>
 </div>
 """, unsafe_allow_html=True)
 
-# Navigation Tabs
-tab1, tab2, tab3, tab4 = st.tabs([
+# Tabs
+tab1, tab2, tab3, tab4, tab5 = st.tabs([
+    "💬 Conversational 'Why' Engine",
     "📊 Persona Intelligence Dashboard", 
     "⚖️ Governed vs Ungoverned Truth", 
-    "📑 Cortex Contract Clause Investigator", 
-    "🚀 MCP Action Center"
+    "📑 Cortex Contract Intelligence", 
+    "🏛️ Metric Registry & Trust"
 ])
 
-# TAB 1: PERSONA DASHBOARD
+# TAB 1: CONVERSATIONAL "WHY" ENGINE
 with tab1:
+    st.subheader("💬 Governed Conversational Query with Semantic Decomposition")
+    user_q = st.text_input(
+        "Ask a cross-domain supply chain question:",
+        value="Why did supplier delivery performance decline for battery modules at Gigafactory Texas?"
+    )
+    
+    if st.button("🚀 Analyze with Governed Ontology", type="primary"):
+        st.markdown("### **1. Intermediate Semantic Query Plan**")
+        st.caption("Generated before any SQL execution to eliminate hallucinations:")
+        query_plan = {
+            "intent": "performance_decomposition",
+            "metric": "on_time_delivery",
+            "target_entity": "supplier",
+            "filters": {
+                "part_category": "Powertrain",
+                "part_id": "PART_BAT_402",
+                "destination_plant": "PLANT_02 (Austin, Texas)"
+            },
+            "traversed_ontology_path": "Supplier (Apex) ➔ Part (Battery 402) ➔ Plant (Austin) ➔ Shipment (Ocean) ➔ Port (Houston)",
+            "time_window": "Q3 2026",
+            "confidence_score": "0.98 (Governed)"
+        }
+        st.json(query_plan)
+        
+        st.markdown("### **2. Deterministic 'Why' Decomposition**")
+        col_w1, col_w2, col_w3 = st.columns(3)
+        col_w1.metric("Governed OTD for Battery 402", "33.3%", delta="-66.7pp vs Target", delta_color="inverse")
+        col_w2.metric("Austin Days of Inventory (DOI)", "3.8 Days", delta="-6.2 Days Deficit", delta_color="inverse")
+        col_w3.metric("Accrued Liquidated Damages", "$22,500 USD", delta="+$22,500 Penalty Claim", delta_color="inverse")
+        
+        st.markdown("""
+        **Root Cause Analysis (Ontology Traversal):**
+        1. **Primary Offender:** **Apex Battery Cells Ltd** (Supplier ID: `SUP_001`)
+           * 4 out of 6 shipments delayed past promised date (OTD: 33.3%).
+           * Accumulated delay: **21 days**, resulting in **$22,500** in contractual penalty liability.
+        2. **Logistics Bottleneck:** **Port of Houston Maritime Terminal**
+           * Shipments `SHP_9002` and `SHP_9011` held at port berth.
+           * Accrued port demurrage: **$19,500 USD**.
+        3. **Downstream Factory Impact:** **Gigafactory Texas (Austin)**
+           * Daily consumption rate: 600 units/day. Available on-hand: 2,280 units.
+           * **Assembly line stoppage in 3.8 days** unless air-freight mitigation is triggered.
+        """)
+        
+        st.markdown("### **3. The Three Trust Buttons**")
+        c1, c2, c3 = st.columns(3)
+        with c1:
+            with st.expander("🔍 View Governed SQL"):
+                st.code("""
+SELECT 
+    s.supplier_name,
+    p.part_name,
+    dt.otif_rate_pct,
+    dt.total_penalty_liability_usd,
+    inv.days_of_inventory
+FROM SUPPLY_CHAIN_DB.CORE.DT_SUPPLIER_PERFORMANCE dt
+JOIN SUPPLY_CHAIN_DB.CORE.DIM_SUPPLIERS s ON dt.supplier_id = s.supplier_id
+JOIN SUPPLY_CHAIN_DB.CORE.DT_PLANT_STOCKOUT_RISK inv ON inv.part_id = 'PART_BAT_402'
+WHERE inv.plant_id = 'PLANT_02';
+                """, language="sql")
+        with c2:
+            with st.expander("📖 View Metric Definition"):
+                st.write("**Metric:** On-Time Delivery (OTD)")
+                st.write("**Owner:** Logistics & Freight")
+                st.write("**Formula:** `Actual Delivery <= Promised Date AND Received Qty >= Ordered Qty`")
+                st.write("**Grain:** Individual Shipment Consignment")
+        with c3:
+            with st.expander("🔗 View Data Lineage"):
+                st.markdown("""
+                `ERP PO (FACT_PURCHASE_ORDERS)` + `TMS Telemetry (FACT_SHIPMENTS)`  
+                $\longrightarrow$ `Dynamic Table (DT_SUPPLIER_PERFORMANCE)`  
+                $\longrightarrow$ `Semantic View (supply_chain_semantic_model.yaml)`  
+                $\longrightarrow$ `Governed Conversational Answer`
+                """)
+
+# TAB 2: PERSONA DASHBOARD
+with tab2:
     df_perf = load_data("DT_SUPPLIER_PERFORMANCE")
     df_stock = load_data("DT_PLANT_STOCKOUT_RISK")
     df_disrupt = load_data("DT_ACTIVE_DISRUPTIONS")
@@ -159,7 +239,7 @@ with tab1:
         
         col1.metric("Active Suppliers", len(df_perf))
         col2.metric("Delayed Shipments", int(delayed_orders), delta="-4 breached", delta_color="inverse")
-        col3.metric("Liquidated Damages Claim", f"${total_penalties:,.2f}", delta="+$18,000 claim", delta_color="inverse")
+        col3.metric("Liquidated Damages Claim", f"${total_penalties:,.2f}", delta="+$22,500 claim", delta_color="inverse")
         col4.metric("Highest Risk Vendor", worst_vendor)
         
         st.markdown("#### **Supplier Performance & Liquidated Damages (Dynamic Table)**")
@@ -186,8 +266,8 @@ with tab1:
         st.markdown("#### **Active Ocean & Port Disruptions (Dynamic Table)**")
         st.dataframe(df_disrupt, use_container_width=True)
 
-# TAB 2: SINGLE SOURCE OF TRUTH COMPARISON
-with tab2:
+# TAB 3: SINGLE SOURCE OF TRUTH COMPARISON
+with tab3:
     st.subheader("⚖️ The Core Hackathon Problem: Single Source of Truth")
     st.write("Demonstrating how different personas get conflicting answers with naive LLMs, but mathematically identical answers with Snowflake CoCo's Governed Ontology.")
     
@@ -212,7 +292,7 @@ with tab2:
             <h4 style="color: #15803D;">✅ Governed CoCo Semantic Ontology (Single Source of Truth)</h4>
             <p><strong>Query:</strong> <em>"What is our delivery performance and stockout runway?"</em></p>
             <ul>
-                <li><strong>Procurement Persona:</strong> OTIF resolves to strictly <strong>33.3% for Apex Cells</strong>, with <strong>$18,000</strong> liquidated damages.</li>
+                <li><strong>Procurement Persona:</strong> OTIF resolves to strictly <strong>33.3% for Apex Cells</strong>, with <strong>$22,500</strong> liquidated damages.</li>
                 <li><strong>Logistics Persona:</strong> Identical <strong>33.3% OTIF</strong> with exact citation of 2 shipments held at Port of Houston.</li>
                 <li><strong>Plant Persona:</strong> Resolves canonical formula <code>ON_HAND / BURN_RATE</code> = <strong>3.8 Days of Inventory</strong>.</li>
             </ul>
@@ -220,8 +300,8 @@ with tab2:
         </div>
         """, unsafe_allow_html=True)
 
-# TAB 3: CORTEX SEARCH CONTRACT INVESTIGATION
-with tab3:
+# TAB 4: CORTEX SEARCH CONTRACT INVESTIGATION
+with tab4:
     st.subheader("📑 Unstructured Contract Intelligence with Snowflake Cortex")
     st.write("Querying supplier Master Service Agreements (MSAs) using Cortex Search to extract penalty clauses and grace periods.")
     
@@ -237,14 +317,14 @@ with tab3:
     if st.button("🔍 Run Cortex Contract Search"):
         with st.spinner("Executing Cortex Search over RAW_SUPPLIER_CONTRACTS..."):
             if "Apex" in sample_q or "Force Majeure" in sample_q:
-                st.success("Found matching clause in **`RAW_SUPPLIER_CONTRACTS` (CTR_APEX_2025)**:")
+                st.success("Found matching clause in **`RAW_SUPPLIER_CONTRACTS` (CTR_APEX_2025)** (Cosine Similarity: 0.68, Reranker: 1.24):")
                 st.markdown("""
                 > **SECTION 8: SERVICE LEVEL AGREEMENTS & DELAY PENALTIES**
                 > * **8.1 Grace Period:** Buyer agrees to a 3-calendar-day grace period for port congestion beyond promised delivery date.
                 > * **8.2 Liquidated Damages:** If shipment delivery exceeds the promised delivery date plus grace period, Supplier shall incur liquidated damages of **USD $1,500.00 per calendar day per delayed shipment** until actual receipt.
                 > * **8.3 Force Majeure:** Routine port terminal berth congestion **does not qualify as Force Majeure**.
                 """)
-                st.info("💡 **Governed Intelligence Insight:** Apex Battery Cells' current delay of 8 days minus 3-day grace = 5 penalized days × $1,500/day = **$7,500 penalty for Shipment SHP_9002**.")
+                st.info("💡 **Governed Intelligence Insight:** Apex Battery Cells' current delay of 8 days minus 3-day grace = 5 penalized days × $1,500/day = **$7,500 penalty for Shipment SHP_9002** (Total accrued liability: **$22,500**).")
             else:
                 st.success("Found matching clause in **`RAW_SUPPLIER_CONTRACTS` (CTR_MICRO_2025)**:")
                 st.markdown("""
@@ -252,13 +332,24 @@ with tab3:
                 > * **7.1:** Liquidated damages for unapproved delivery delays are assessed at **USD $2,000.00 per day** after a 48-hour grace window.
                 """)
 
-# TAB 4: MCP ACTIONS
-with tab4:
+# TAB 5: METRIC REGISTRY & MCP ACTION
+with tab5:
+    st.subheader("🏛️ First-Class Governed Metric Registry")
+    st.write("Centrally defined single source of truth for all enterprise KPIs.")
+    
+    metric_data = pd.DataFrame([
+        {"Metric": "on_time_delivery", "Display Name": "On-Time Delivery (OTD)", "Owner": "Logistics", "Grain": "Shipment", "Canonical Formula": "SUM(Eligible On-Time & In-Full) / COUNT(Shipments) * 100", "Status": "GOVERNED"},
+        {"Metric": "days_of_inventory", "Display Name": "Days of Inventory (DOI)", "Owner": "Plant Operations", "Grain": "Plant + Part + Date", "Canonical Formula": "Warehouse On-Hand Stock / Daily Burn Rate", "Status": "GOVERNED"},
+        {"Metric": "liquidated_damages", "Display Name": "SLA Penalty Liability", "Owner": "Procurement", "Grain": "Supplier + Order", "Canonical Formula": "Daily Damages USD * MAX(0, Delay Days - Grace Days)", "Status": "GOVERNED"},
+        {"Metric": "landed_cost", "Display Name": "Total Landed Cost", "Owner": "Procurement / Logistics", "Grain": "Part + Shipment", "Canonical Formula": "PO Unit Cost + Freight + Demurrage Charges", "Status": "GOVERNED"}
+    ])
+    st.dataframe(metric_data, use_container_width=True)
+    
+    st.markdown("---")
     st.subheader("🚀 Model Context Protocol (MCP) — Closing the Action Loop")
     st.write("Rather than merely returning text, CoCo invokes registered MCP tools to take real-world action.")
     
     col_a, col_b = st.columns(2)
-    
     with col_a:
         st.markdown("### Action 1: Emergency PO Re-route")
         st.write("Dispatches an emergency air-cargo shipment of 2,000 battery units directly to Gigafactory Texas.")
@@ -286,7 +377,6 @@ with tab4:
         st.markdown("### Action 2: Contractual SLA Breach Notice")
         st.write("Dispatches a legally grounded breach notice citing contract terms to the Slack supplier incident channel.")
         if st.button("📢 Dispatch Formal Breach Notice to Slack"):
-            now_iso = datetime.now(timezone.utc).isoformat()
             st.success("✅ SLA Breach Notice dispatched to `#supply-chain-crisis` on Slack!")
             st.markdown("""
             **Slack Preview:**
