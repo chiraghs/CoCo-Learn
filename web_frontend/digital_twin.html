@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WareTrack — Facility Operational Digital Twin | SupplyChainIQ</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', -apple-system, sans-serif; }
+    .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(12px); }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col">
+
+  <!-- 1. TOP NAVIGATION HEADER (Matching Reference) -->
+  <header class="bg-white border-b border-slate-200 px-6 py-3 flex items-center justify-between sticky top-0 z-30 shadow-sm">
+    <div class="flex items-center gap-6 flex-1">
+      <div class="flex items-center gap-2.5 cursor-pointer">
+        <div class="w-9 h-9 bg-blue-600 rounded-lg flex items-center justify-center text-white font-black text-xl shadow-md shadow-blue-500/20">
+          📦
+        </div>
+        <div class="flex flex-col">
+          <span class="font-black text-slate-900 text-lg tracking-tight leading-none">WareTrack</span>
+          <span class="text-[10px] font-bold text-blue-600 uppercase tracking-wider">SupplyChainIQ • Aegis</span>
+        </div>
+      </div>
+
+      <div class="relative max-w-md w-full">
+        <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400">🔍</span>
+        <input
+          type="text"
+          id="global-search"
+          placeholder="Search sites, trucks, forklifts, pallets, shipments..."
+          class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-xs rounded-full pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+        />
+      </div>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <!-- Onboard Plant Button -->
+      <button onclick="openOnboardModal()" class="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg text-xs font-semibold border border-blue-200 transition-colors">
+        <span>➕ Onboard Plant</span>
+      </button>
+
+      <!-- Rules Config Button -->
+      <button onclick="openRulesModal()" class="flex items-center gap-1.5 px-3 py-1.5 bg-slate-50 hover:bg-slate-100 text-slate-700 rounded-lg text-xs font-semibold border border-slate-200 transition-colors">
+        <span>⚙️ Config Rules</span>
+      </button>
+
+      <!-- Facility Switcher Dropdown -->
+      <div class="relative">
+        <select id="facility-select" onchange="changeFacility(this.value)" class="bg-slate-50 border border-slate-200 text-slate-800 font-semibold text-xs rounded-lg pl-3 pr-8 py-1.5 cursor-pointer hover:bg-slate-100 focus:outline-none">
+          <option value="WH_RIVERSIDE_01">Riverside Hub (78% full • 1/2 docked)</option>
+          <option value="PLANT_02">Austin Gigafactory (46% full • 3/4 docked)</option>
+          <option value="PLANT_01">Fremont Assembly Plant (84% full • 1/3 docked)</option>
+        </select>
+      </div>
+
+      <!-- Live Indicator -->
+      <div class="flex items-center gap-1.5 px-2.5 py-1 bg-emerald-50 text-emerald-700 rounded-full border border-emerald-200 text-[11px] font-bold">
+        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        <span id="live-clock">Live 09:40</span>
+      </div>
+
+      <!-- User Profile -->
+      <div class="flex items-center gap-2 pl-2 border-l border-slate-200">
+        <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-bold text-xs flex items-center justify-center shadow-sm">
+          AC
+        </div>
+        <div class="hidden lg:flex flex-col text-left">
+          <span class="text-xs font-bold text-slate-800 leading-tight">Alex Chen</span>
+          <span class="text-[10px] text-slate-500 leading-tight">Operations Manager</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN DASHBOARD WRAPPER -->
+  <main class="flex-1 max-w-[1600px] w-full mx-auto px-6 py-4 flex flex-col gap-5">
+
+    <!-- 2. TOP KPI RIBBON (Matching Reference) -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <!-- Card 1: Stock on hand -->
+      <div class="glass-card border border-slate-200/90 rounded-xl p-3.5 shadow-sm flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-lg">📦</div>
+          <div>
+            <div class="text-[11px] font-bold text-slate-500 uppercase tracking-wide">Stock on hand</div>
+            <div class="flex items-baseline gap-2">
+              <span id="kpi-stock-val" class="text-2xl font-black text-slate-900 leading-tight">1,412</span>
+              <span class="text-xs font-bold text-emerald-600">+15</span>
+            </div>
+            <div id="kpi-stock-sub" class="text-[10px] text-slate-400 font-medium">pallets • WH-01</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 2: Trucks on site -->
+      <div class="glass-card border border-slate-200/90 rounded-xl p-3.5 shadow-sm flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-lg bg-sky-50 text-sky-600 flex items-center justify-center font-bold text-lg">🚛</div>
+          <div>
+            <div class="text-[11px] font-bold text-slate-500 uppercase tracking-wide">Trucks on site</div>
+            <div class="flex items-baseline gap-2">
+              <span id="kpi-trucks-val" class="text-2xl font-black text-slate-900 leading-tight">1</span>
+              <span class="text-xs font-bold text-emerald-600">+1</span>
+            </div>
+            <div id="kpi-trucks-sub" class="text-[10px] text-slate-400 font-medium">1 inbound • WH-01</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 3: On-time delivery -->
+      <div class="glass-card border border-slate-200/90 rounded-xl p-3.5 shadow-sm flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-lg">⏱️</div>
+          <div>
+            <div class="text-[11px] font-bold text-slate-500 uppercase tracking-wide">On-time delivery</div>
+            <div class="flex items-baseline gap-2">
+              <span id="kpi-otif-val" class="text-2xl font-black text-slate-900 leading-tight">96.6%</span>
+              <span class="text-xs font-bold text-emerald-600">+0.4%</span>
+            </div>
+            <div id="kpi-otif-sub" class="text-[10px] text-slate-400 font-medium">last 30 days • WH-01</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. ISOMETRIC DIGITAL TWIN & DEPOT DETAILS (2-Column Grid) -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+      
+      <!-- Left Column (8 cols): 3D Canvas + Shipment Stepper -->
+      <div class="lg:col-span-8 flex flex-col gap-4">
+        
+        <!-- 3D/Isometric Canvas -->
+        <div class="relative w-full h-[540px] bg-gradient-to-b from-sky-50 via-slate-100 to-slate-200 rounded-2xl overflow-hidden border border-slate-200 shadow-inner flex items-center justify-center">
+          
+          <!-- Zoom Controls -->
+          <div class="absolute right-4 top-4 bg-white/95 backdrop-blur-md rounded-xl p-1.5 shadow-md border border-slate-200 flex flex-col gap-1 z-20">
+            <button class="w-7 h-7 rounded-lg hover:bg-slate-100 font-bold text-xs">➕</button>
+            <button class="w-7 h-7 rounded-lg hover:bg-slate-100 font-bold text-xs">➖</button>
+            <div class="h-px bg-slate-200"></div>
+            <button class="w-7 h-7 rounded-lg hover:bg-slate-100 text-xs">⟳</button>
+            <button class="w-7 h-7 rounded-lg hover:bg-slate-100 text-xs">🖵</button>
+          </div>
+
+          <!-- Isometric SVG Drawing -->
+          <svg viewBox="0 0 1100 620" class="w-full h-full object-contain filter drop-shadow-sm">
+            <defs>
+              <linearGradient id="gGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#f8fafc" />
+                <stop offset="100%" stopColor="#e2e8f0" />
+              </linearGradient>
+              <linearGradient id="rBlue" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#2563eb" />
+                <stop offset="100%" stopColor="#1d4ed8" />
+              </linearGradient>
+              <linearGradient id="wBlue" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stopColor="#1e40af" />
+                <stop offset="100%" stopColor="#1e3a8a" />
+              </linearGradient>
+              <linearGradient id="pWood" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#d97706" />
+                <stop offset="100%" stopColor="#b45309" />
+              </linearGradient>
+            </defs>
+
+            <!-- Ground Base -->
+            <polygon points="550,20 1080,310 550,600 20,310" fill="url(#gGrad)" stroke="#cbd5e1" strokeWidth="1" />
+            <line x1="550" y1="20" x2="550" y2="600" stroke="#e2e8f0" strokeDasharray="4 4" />
+            
+            <!-- Left Container -->
+            <g transform="translate(40, 290)">
+              <polygon points="0,40 100,-15 130,2 30,57" fill="#0f766e" />
+              <polygon points="0,40 30,57 30,105 0,88" fill="#115e59" />
+              <polygon points="30,57 130,2 130,50 30,105" fill="#0d9488" />
+              <text x="45" y="75" fill="#ffffff" fontSize="9" fontWeight="bold" opacity="0.8" transform="rotate(-15, 45, 75)">EVERGREEN LINE</text>
+            </g>
+
+            <!-- Yellow Forklift in Yard -->
+            <g transform="translate(100, 220)">
+              <rect x="0" y="0" width="36" height="24" rx="4" fill="#eab308" />
+              <rect x="24" y="4" width="10" height="16" rx="2" fill="#3b82f6" />
+              <circle cx="8" cy="24" r="6" fill="#1e293b" />
+              <circle cx="28" cy="24" r="6" fill="#1e293b" />
+              <rect x="36" y="-6" width="3" height="30" fill="#64748b" />
+              <rect x="39" y="14" width="12" height="3" fill="#94a3b8" />
+            </g>
+
+            <!-- Main Warehouse Building -->
+            <polygon points="260,260 520,130 520,310 260,440" fill="url(#wBlue)" stroke="#1e3a8a" strokeWidth="1.5" />
+            <polygon points="520,130 740,240 740,410 520,310" fill="#1d4ed8" stroke="#1e3a8a" strokeWidth="1.5" />
+            <polygon points="250,250 515,115 745,230 480,365" fill="url(#rBlue)" stroke="#1e40af" strokeWidth="2" />
+            
+            <!-- Circular Depot Badge on Roof -->
+            <ellipse cx="500" cy="235" rx="30" ry="16" fill="#ffffff" opacity="0.9" />
+            <ellipse cx="500" cy="235" rx="24" ry="12" fill="#1d4ed8" />
+            <text x="486" y="239" fill="#ffffff" fontSize="10" fontWeight="bold" id="canvas-building-badge">WH-01</text>
+
+            <!-- Bay 1 & Bay 2 Docks -->
+            <polygon points="360,385 410,360 410,410 360,435" fill="#0f172a" stroke="#60a5fa" strokeWidth="1.5" />
+            <polygon points="430,350 480,325 480,375 430,400" fill="#0f172a" stroke="#60a5fa" strokeWidth="1.5" />
+
+            <!-- Pallet Racks Right -->
+            <g transform="translate(620, 200)">
+              <line x1="0" y1="0" x2="0" y2="120" stroke="#0284c7" strokeWidth="3" />
+              <line x1="60" y1="30" x2="60" y2="150" stroke="#0284c7" strokeWidth="3" />
+              <rect x="5" y="20" width="22" height="16" fill="url(#pWood)" rx="2" />
+              <rect x="30" y="32" width="22" height="16" fill="url(#pWood)" rx="2" />
+              <rect x="5" y="60" width="22" height="16" fill="url(#pWood)" rx="2" />
+              <rect x="30" y="72" width="22" height="16" fill="url(#pWood)" rx="2" />
+            </g>
+
+            <!-- Pallet Stacks Forecourt -->
+            <g transform="translate(140, 310)">
+              <rect x="0" y="0" width="24" height="18" fill="url(#pWood)" rx="2" stroke="#78350f" strokeWidth="0.5" />
+              <rect x="26" y="0" width="24" height="18" fill="url(#pWood)" rx="2" stroke="#78350f" strokeWidth="0.5" />
+              <rect x="13" y="-18" width="24" height="18" fill="url(#pWood)" rx="2" stroke="#78350f" strokeWidth="0.5" />
+            </g>
+
+            <!-- WareTrack Delivery Truck at Dock 1 -->
+            <g transform="translate(240, 420)">
+              <polygon points="0,40 50,20 50,70 0,90" fill="#2563eb" />
+              <polygon points="50,20 100,45 100,95 50,70" fill="#1d4ed8" />
+              <polygon points="55,20 200,-50 200,20 55,90" fill="#ffffff" stroke="#cbd5e1" />
+              <circle cx="20" cy="85" r="9" fill="#1e293b" />
+              <circle cx="150" cy="40" r="9" fill="#1e293b" />
+              <text x="80" y="15" fill="#1e40af" fontSize="11" fontWeight="bold" transform="rotate(-25, 80, 15)">WareTrack</text>
+            </g>
+
+            <!-- Inbound Bluepeak Truck -->
+            <g transform="translate(520, 500)">
+              <rect x="0" y="0" width="130" height="48" rx="4" fill="#ffffff" stroke="#cbd5e1" />
+              <rect x="130" y="10" width="35" height="38" rx="4" fill="#10b981" />
+              <circle cx="30" cy="50" r="8" fill="#1e293b" />
+              <circle cx="110" cy="50" r="8" fill="#1e293b" />
+              <text x="25" y="28" fill="#047857" fontSize="11" fontWeight="bold">Bluepeak</text>
+            </g>
+
+            <!-- Interactive Spatial Pins 📍 -->
+            <g transform="translate(480, 390)" class="cursor-pointer" onclick="handlePin('Bay 1 Dock Loading')">
+              <circle cx="0" cy="0" r="14" fill="#2563eb" opacity="0.3" class="animate-ping" />
+              <circle cx="0" cy="0" r="11" fill="#2563eb" />
+              <text x="-4" y="4" fill="#ffffff" fontSize="10">📍</text>
+            </g>
+
+            <g transform="translate(730, 340)" class="cursor-pointer" onclick="handlePin('Staged Pallet Yard')">
+              <circle cx="0" cy="0" r="14" fill="#2563eb" opacity="0.3" class="animate-ping" />
+              <circle cx="0" cy="0" r="11" fill="#2563eb" />
+              <text x="-4" y="4" fill="#ffffff" fontSize="10">📍</text>
+            </g>
+          </svg>
+
+          <!-- Top Left Active Node Badge -->
+          <div class="absolute left-6 top-6 bg-white/95 backdrop-blur-md border border-slate-200/90 rounded-xl p-3 shadow-md flex items-center gap-3">
+            <span class="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></span>
+            <div>
+              <div class="text-xs font-bold text-slate-900" id="canvas-facility-title">Riverside Hub Digital Twin</div>
+              <div class="text-[11px] text-slate-500 font-medium" id="canvas-facility-sub">12 Riverside Dr, Newark NJ • Real-time telemetry</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4. SHIPMENT TRACKING STEPPER (Bottom Left) -->
+        <div class="glass-card border border-slate-200/90 rounded-2xl p-5 shadow-sm flex flex-col md:flex-row items-center justify-between gap-6">
+          <div class="flex-1 w-full">
+            <div class="flex items-center gap-2 mb-3">
+              <span class="text-base text-blue-600">🚛</span>
+              <span class="text-xs font-black text-slate-800 tracking-tight">Shipment Tracking</span>
+              <span class="text-xs text-slate-400 font-medium ml-auto" id="shipment-carrier-tag">TRK-2051 • WareTrack</span>
+            </div>
+
+            <div class="flex items-center justify-between relative" id="shipment-stepper-steps">
+              <div class="absolute left-6 right-6 top-3.5 h-0.5 bg-slate-200 -z-0"></div>
+
+              <div class="flex flex-col items-center text-center relative z-10">
+                <div class="w-7 h-7 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-bold">✓</div>
+                <span class="text-[11px] font-bold mt-1 text-slate-800">Order Confirmed</span>
+                <span class="text-[10px] text-slate-400">06:49</span>
+              </div>
+              <div class="flex flex-col items-center text-center relative z-10">
+                <div class="w-7 h-7 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-bold">✓</div>
+                <span class="text-[11px] font-bold mt-1 text-slate-800">Picked</span>
+                <span class="text-[10px] text-slate-400">08:20</span>
+              </div>
+              <div class="flex flex-col items-center text-center relative z-10">
+                <div class="w-7 h-7 rounded-full bg-white text-blue-600 border-2 border-blue-600 ring-4 ring-blue-50 flex items-center justify-center text-xs font-bold">3</div>
+                <span class="text-[11px] font-bold mt-1 text-slate-900">Loading 2/6</span>
+                <span class="text-[10px] text-slate-400">ETA 09:53</span>
+              </div>
+              <div class="flex flex-col items-center text-center relative z-10">
+                <div class="w-7 h-7 rounded-full bg-white text-slate-400 border border-slate-300 flex items-center justify-center text-xs font-bold">4</div>
+                <span class="text-[11px] font-medium mt-1 text-slate-500">In Transit</span>
+                <span class="text-[10px] text-slate-400">ETA 10:01</span>
+              </div>
+              <div class="flex flex-col items-center text-center relative z-10">
+                <div class="w-7 h-7 rounded-full bg-white text-slate-400 border border-slate-300 flex items-center justify-center text-xs font-bold">5</div>
+                <span class="text-[11px] font-medium mt-1 text-slate-500">Delivered</span>
+                <span class="text-[10px] text-slate-400">ETA 10:33</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-slate-50/90 border border-slate-200 rounded-xl p-3 min-w-[240px] flex items-center justify-between gap-3 shadow-inner">
+            <div class="w-9 h-9 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-lg">🚛</div>
+            <div>
+              <div class="text-xs font-black text-slate-900" id="shipment-id-tag">#SHP-78442</div>
+              <div class="text-[11px] text-slate-500 font-medium" id="shipment-dest-tag">To: Philadelphia, PA</div>
+              <div class="text-[10px] font-bold text-blue-600 uppercase" id="shipment-bay-tag">WH-01 • Bay 1 - 13 min left</div>
+            </div>
+            <span class="text-slate-400 font-bold">➔</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right Column (4 cols): Depot Details + Docks Status -->
+      <div class="lg:col-span-4 flex flex-col gap-4">
+        
+        <!-- Depot Details Card -->
+        <div class="glass-card border border-slate-200/90 rounded-2xl p-5 shadow-sm flex flex-col gap-4">
+          <div class="flex items-start justify-between">
+            <div>
+              <div class="text-[10px] font-bold text-slate-400 tracking-wider uppercase" id="depot-badge">DEPOT • WH-01</div>
+              <h3 class="text-xl font-black text-slate-900 tracking-tight" id="depot-name">Riverside Hub</h3>
+              <p class="text-xs text-slate-500 font-medium" id="depot-location">12 Riverside Dr, Newark NJ</p>
+            </div>
+            <button onclick="openOnboardModal()" class="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center font-bold text-base">➕</button>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <span id="depot-status-badge" class="px-2.5 py-1 rounded-md text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+              Operational
+            </span>
+            <span class="text-xs text-slate-500 font-medium">1 docked • 1 arriving • 3 staged</span>
+          </div>
+
+          <!-- Capacity Bars -->
+          <div class="grid grid-cols-2 gap-4 pt-2 border-t border-slate-100">
+            <div>
+              <div class="text-[11px] font-bold text-slate-500 mb-1">Stock on hand</div>
+              <div class="text-base font-extrabold text-slate-900 mb-1" id="depot-stock-num">
+                1,412 <span class="text-xs font-medium text-slate-400">/ 1,800</span>
+              </div>
+              <div class="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                <div id="depot-stock-bar" class="h-full bg-blue-600 rounded-full" style="width: 78.4%;"></div>
+              </div>
+            </div>
+
+            <div>
+              <div class="text-[11px] font-bold text-slate-500 mb-1">Truck bays</div>
+              <div class="text-base font-extrabold text-slate-900 mb-1" id="depot-bays-num">
+                2 / 2 <span class="text-xs font-medium text-slate-400">busy</span>
+              </div>
+              <div class="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                <div id="depot-bays-bar" class="h-full bg-emerald-500 rounded-full" style="width: 100%;"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Inbound/Outbound counts -->
+          <div class="grid grid-cols-2 gap-4 text-xs pt-1">
+            <div>
+              <span class="text-slate-400 block text-[10px] uppercase font-bold">Outbound today</span>
+              <span class="font-extrabold text-slate-800 text-sm">23 <span class="text-xs font-normal text-slate-500">trucks</span></span>
+            </div>
+            <div>
+              <span class="text-slate-400 block text-[10px] uppercase font-bold">Put-aways today</span>
+              <span class="font-extrabold text-slate-800 text-sm">15 <span class="text-xs font-normal text-slate-500">pallets</span></span>
+            </div>
+          </div>
+
+          <!-- SKU Inventory Items -->
+          <div class="pt-2 border-t border-slate-100">
+            <div class="flex items-center justify-between text-xs font-bold text-slate-500 uppercase tracking-wide mb-2.5">
+              <span>Inventory</span>
+              <span>Units</span>
+            </div>
+
+            <div class="flex flex-col gap-2 max-h-48 overflow-y-auto pr-1" id="sku-list-container">
+              <!-- Dynamically populated via JS -->
+            </div>
+          </div>
+
+          <!-- Forklift Fleet Telemetry -->
+          <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-xs">
+            <div>
+              <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wide">Forklift fleet</div>
+              <div class="font-semibold text-slate-800" id="depot-forklift-status">FL-01 Loading TRK-2051 at Bay 1</div>
+            </div>
+            <div class="text-right">
+              <span class="text-[10px] text-slate-400 block font-bold" id="depot-forklift-active">1/2 working</span>
+              <span class="text-xs font-extrabold text-emerald-600">75% battery</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dock Bays Status Card (Bottom Right) -->
+        <div class="glass-card border border-slate-200/90 rounded-2xl p-4 shadow-sm flex flex-col gap-3">
+          <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+            <div class="flex items-center gap-2">
+              <button class="px-2.5 py-1 bg-blue-50 text-blue-700 font-bold text-xs rounded-md border border-blue-200">Docks 2/2</button>
+              <button class="px-2.5 py-1 text-slate-500 hover:text-slate-800 font-semibold text-xs rounded-md">Forklifts 1/2</button>
+              <button class="px-2.5 py-1 text-slate-500 hover:text-slate-800 font-semibold text-xs rounded-md">Trucks 2</button>
+            </div>
+            <span class="text-[11px] font-bold text-slate-400 uppercase" id="docks-hub-tag">Riverside Hub</span>
+          </div>
+
+          <div class="flex flex-col gap-2" id="dock-bays-container">
+            <!-- Dynamically populated via JS -->
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- 5. FLOATING CORTEX AI COPILOT LAUNCHER -->
+  <button onclick="toggleCortexDrawer()" class="fixed bottom-6 right-6 px-5 py-3.5 bg-gradient-to-tr from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-extrabold text-xs rounded-full shadow-2xl flex items-center gap-2.5 z-40 transition-transform hover:scale-105">
+    <span>✨ Ask Cortex AI Copilot</span>
+  </button>
+
+  <!-- 6. CORTEX AI DRAWER (3-Way Reconciliation Ledger) -->
+  <div id="cortex-drawer" class="fixed inset-y-0 right-0 z-50 w-full max-w-lg bg-white shadow-2xl border-l border-slate-200 p-6 flex flex-col justify-between hidden overflow-y-auto">
+    <div>
+      <div class="flex items-center justify-between pb-4 border-b border-slate-100 mb-4">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center font-bold">✨</div>
+          <div>
+            <h3 class="font-extrabold text-slate-900 text-base leading-tight">Cortex AI Supply Copilot</h3>
+            <p class="text-[11px] text-slate-500 font-medium">Grounded in Staged YAML Semantic Model</p>
+          </div>
+        </div>
+        <button onclick="toggleCortexDrawer()" class="text-slate-400 hover:text-slate-600 font-bold p-1">✕</button>
+      </div>
+
+      <div class="flex flex-col gap-1.5 mb-4">
+        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Enterprise Suggested Queries:</span>
+        <button onclick="askCortex('austin')" class="text-left p-2.5 bg-slate-50 hover:bg-blue-50 hover:text-blue-700 rounded-lg text-xs font-semibold text-slate-700 border border-slate-200 transition-colors">
+          💬 "Why is Austin battery DOI at 3.8 days?"
+        </button>
+        <button onclick="askCortex('penalty')" class="text-left p-2.5 bg-slate-50 hover:bg-blue-50 hover:text-blue-700 rounded-lg text-xs font-semibold text-slate-700 border border-slate-200 transition-colors">
+          🔍 "What are the Section 8 liquidated damages for Apex Battery?"
+        </button>
+      </div>
+
+      <!-- Result Card -->
+      <div id="cortex-result" class="flex flex-col gap-3 my-4 hidden">
+        <div class="bg-slate-50 border border-slate-200 rounded-xl p-3.5">
+          <div class="text-[10px] font-black text-blue-600 uppercase tracking-wide mb-1 flex items-center gap-1">
+            <span>✓ 1. Conversational Synthesis</span>
+          </div>
+          <p id="cortex-narrative" class="text-xs text-slate-800 leading-relaxed font-medium"></p>
+        </div>
+
+        <div class="bg-slate-900 rounded-xl p-3 text-white font-mono text-[11px]">
+          <div class="text-[10px] font-bold text-sky-400 uppercase tracking-wide mb-1">2. Deterministic Cortex SQL</div>
+          <pre id="cortex-sql" class="overflow-x-auto text-sky-200 text-[10.5px] leading-tight whitespace-pre-wrap"></pre>
+        </div>
+
+        <div id="cortex-remediation-card" class="bg-rose-50 border border-rose-200 rounded-xl p-3.5 flex flex-col gap-2">
+          <div class="flex items-center gap-1.5 text-rose-700 font-extrabold text-xs">
+            <span>⚠️ Action Recommendation Available</span>
+          </div>
+          <p class="text-[11px] text-rose-900">
+            Reroute 4,500 battery units to Shenzhen EnerTech via air freight to restore Austin DOI to 14.2 days.
+          </p>
+          <button onclick="executeActionMCP()" id="btn-mcp-reroute" class="px-3 py-2 bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs rounded-lg shadow-sm flex items-center justify-center gap-1">
+            <span>Execute 1-Click PO Reroute via MCP</span> ➔
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="pt-4 border-t border-slate-100 flex gap-2">
+      <input type="text" id="cortex-input" placeholder="Ask Cortex about any plant, material, or contract..." class="flex-1 bg-slate-50 border border-slate-200 text-slate-800 text-xs rounded-xl px-3.5 py-2.5 focus:outline-none" />
+      <button onclick="askCortex()" class="w-10 h-10 bg-blue-600 hover:bg-blue-700 text-white rounded-xl flex items-center justify-center font-bold">➔</button>
+    </div>
+  </div>
+
+  <!-- 7. PLANT ONBOARDING MODAL -->
+  <div id="onboard-modal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+        <div>
+          <h3 class="font-extrabold text-slate-900 text-base">Onboard New Facility / Plant</h3>
+          <p class="text-xs text-slate-500">Universal Digital Twin Node Registration</p>
+        </div>
+        <button onclick="closeOnboardModal()" class="text-slate-400 hover:text-slate-600 font-bold">✕</button>
+      </div>
+
+      <form onsubmit="handleOnboard(event)" class="flex flex-col gap-3.5 text-xs">
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="font-bold text-slate-700 block mb-1">Facility ID *</label>
+            <input type="text" id="ob-id" required placeholder="e.g. WH_BERLIN_02" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 font-mono" />
+          </div>
+          <div>
+            <label class="font-bold text-slate-700 block mb-1">Facility Name *</label>
+            <input type="text" id="ob-name" required placeholder="e.g. Berlin Logistics Hub" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="font-bold text-slate-700 block mb-1">Facility Type</label>
+            <select id="ob-type" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2">
+              <option value="DEPOT">Warehouse Depot</option>
+              <option value="GIGAFACTORY">Gigafactory Assembly</option>
+              <option value="PHARMA_PACKAGING">Pharma Formulation Hub</option>
+            </select>
+          </div>
+          <div>
+            <label class="font-bold text-slate-700 block mb-1">Region</label>
+            <select id="ob-region" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2">
+              <option value="AMER">Americas (AMER)</option>
+              <option value="EMEA">Europe (EMEA)</option>
+              <option value="APAC">Asia-Pacific (APAC)</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="font-bold text-slate-700 block mb-1">Physical Location Address *</label>
+          <input type="text" id="ob-loc" required placeholder="e.g. Grünheide, Brandenburg, Germany" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2" />
+        </div>
+
+        <div class="grid grid-cols-3 gap-3">
+          <div>
+            <label class="font-bold text-slate-700 block mb-1">Capacity</label>
+            <input type="number" id="ob-cap" value="2000" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2" />
+          </div>
+          <div>
+            <label class="font-bold text-slate-700 block mb-1">Daily Burn</label>
+            <input type="number" id="ob-burn" value="500" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2" />
+          </div>
+          <div>
+            <label class="font-bold text-slate-700 block mb-1">Truck Bays</label>
+            <input type="number" id="ob-bays" value="3" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2" />
+          </div>
+        </div>
+
+        <div class="flex justify-end gap-2 pt-3 border-t border-slate-100 mt-2">
+          <button type="button" onclick="closeOnboardModal()" class="px-3.5 py-1.5 border border-slate-200 rounded-lg font-semibold text-slate-600">Cancel</button>
+          <button type="submit" class="px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-bold shadow-md shadow-blue-500/20">Onboard Facility</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 8. CONFIG RULES MODAL -->
+  <div id="rules-modal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+        <div>
+          <h3 class="font-extrabold text-slate-900 text-base">Configurable Rules Engine</h3>
+          <p class="text-xs text-slate-500">Declarative Global & Facility Thresholds</p>
+        </div>
+        <button onclick="closeRulesModal()" class="text-slate-400 hover:text-slate-600 font-bold">✕</button>
+      </div>
+
+      <div class="flex flex-col gap-4 text-xs">
+        <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+          <div class="flex justify-between mb-2">
+            <span class="font-bold text-slate-800">Critical Stockout DOI Threshold</span>
+            <span id="slider-crit-val" class="font-black text-rose-600 bg-rose-50 px-2 py-0.5 rounded border border-rose-200">5.0 Days</span>
+          </div>
+          <input type="range" id="crit-doi-slider" min="1" max="15" step="0.5" value="5.0" oninput="updateRuleSlider(this.value, 'crit')" class="w-full accent-rose-600 cursor-pointer" />
+        </div>
+
+        <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+          <div class="flex justify-between mb-2">
+            <span class="font-bold text-slate-800">Warning Stockout DOI Threshold</span>
+            <span id="slider-warn-val" class="font-black text-amber-600 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">10.0 Days</span>
+          </div>
+          <input type="range" id="warn-doi-slider" min="5" max="30" step="1" value="10.0" oninput="updateRuleSlider(this.value, 'warn')" class="w-full accent-amber-600 cursor-pointer" />
+        </div>
+
+        <div class="flex justify-end gap-2 pt-2 border-t border-slate-100">
+          <button type="button" onclick="closeRulesModal()" class="px-3.5 py-1.5 border border-slate-200 rounded-lg font-semibold text-slate-600">Cancel</button>
+          <button type="button" onclick="applyRules()" class="px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-bold">Apply Rules</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCRIPT ENGINE (Matching Data Model & Interactive States) -->
+  <script>
+    // State Store
+    const state = {
+      facilities: {
+        WH_RIVERSIDE_01: {
+          id: "WH_RIVERSIDE_01",
+          name: "Riverside Hub",
+          loc: "12 Riverside Dr, Newark NJ",
+          badge: "WH-01",
+          stock: 1412,
+          cap: 1800,
+          pct: 78.4,
+          trucks: 1,
+          baysBusy: 2,
+          baysTotal: 2,
+          otif: "96.6%",
+          status: "Operational",
+          forkliftStatus: "FL-01 Loading TRK-2051 at Bay 1",
+          forkliftActive: "1/2 working",
+          skus: [
+            { name: "Cardboard Box (M)", qty: 1906, icon: "📦", status: "In Stock" },
+            { name: "Plastic Container", qty: 297, icon: "🧰", status: "In Stock" },
+            { name: "Safety Helmet", qty: 212, icon: "🪖", status: "Low Stock" },
+            { name: "Packing Tape", qty: 4448, icon: "📦", status: "In Stock" }
+          ],
+          docks: [
+            { bay: 1, truck: "TRK-2051 • WareTrack", status: "Loading", prog: "2/6" },
+            { bay: 2, truck: "No truck assigned", status: "Available", prog: "Ready" },
+            { bay: "Inbound", truck: "TRK-2287 • Bluepeak", status: "En route", prog: "2 min" }
+          ],
+          shipment: {
+            id: "#SHP-78442",
+            carrier: "TRK-2051 • WareTrack",
+            dest: "To: Philadelphia, PA",
+            bay: "WH-01 • Bay 1 - 13 min left",
+            activeStep: 3
+          }
+        },
+        PLANT_02: {
+          id: "PLANT_02",
+          name: "Austin Gigafactory",
+          loc: "Austin, TX, USA",
+          badge: "GIGA-01",
+          stock: 2280,
+          cap: 5000,
+          pct: 45.6,
+          trucks: 2,
+          baysBusy: 3,
+          baysTotal: 4,
+          otif: "78.2%",
+          status: "Critical",
+          forkliftStatus: "FL-03 Unloading Inbound Battery Cells",
+          forkliftActive: "3/4 working",
+          skus: [
+            { name: "High-Density Battery Cells", qty: 2280, icon: "🔋", status: "Critical Stockout" },
+            { name: "Autonomous Radar MCU", qty: 4800, icon: "⚡", status: "In Stock" },
+            { name: "Extruded Aluminum Frame", qty: 6500, icon: "🔩", status: "In Stock" }
+          ],
+          docks: [
+            { bay: 1, truck: "TRK-9011 • Apex Logistics", status: "Loading", prog: "5/6" },
+            { bay: 2, truck: "TRK-8812 • Long Beach Rail", status: "Delayed", prog: "Berth Held" },
+            { bay: 3, truck: "No truck assigned", status: "Available", prog: "Ready" }
+          ],
+          shipment: {
+            id: "#SHP-401",
+            carrier: "Apex Intermodal Freight",
+            dest: "To: Austin Giga 1, TX",
+            bay: "Bay 2 • Port Delay +14 Days",
+            activeStep: 4
+          }
+        },
+        PLANT_01: {
+          id: "PLANT_01",
+          name: "Fremont Assembly Plant",
+          loc: "Fremont, CA, USA",
+          badge: "PLANT-01",
+          stock: 3800,
+          cap: 4500,
+          pct: 84.4,
+          trucks: 1,
+          baysBusy: 1,
+          baysTotal: 3,
+          otif: "98.4%",
+          status: "Operational",
+          forkliftStatus: "FL-02 Standby at Staging Area",
+          forkliftActive: "2/2 working",
+          skus: [
+            { name: "High-Density Battery Cells", qty: 7200, icon: "🔋", status: "In Stock" },
+            { name: "Hot-Rolled Sheet Steel", qty: 9100, icon: "🔩", status: "In Stock" }
+          ],
+          docks: [
+            { bay: 1, truck: "TRK-4401 • Pacific Freight", status: "Loading", prog: "4/6" },
+            { bay: 2, truck: "No truck assigned", status: "Available", prog: "Ready" }
+          ],
+          shipment: {
+            id: "#SHP-502",
+            carrier: "TRK-4401 • Pacific Freight",
+            dest: "To: Fremont Assembly, CA",
+            bay: "Bay 1 • 25 min left",
+            activeStep: 3
+          }
+        }
+      },
+      currentId: "WH_RIVERSIDE_01"
+    };
+
+    function renderUI() {
+      const f = state.facilities[state.currentId];
+      if (!f) return;
+
+      // Top KPIs
+      document.getElementById('kpi-stock-val').textContent = f.stock.toLocaleString();
+      document.getElementById('kpi-stock-sub').textContent = `pallets • ${f.badge}`;
+      document.getElementById('kpi-trucks-val').textContent = f.trucks;
+      document.getElementById('kpi-trucks-sub').textContent = `${f.trucks} inbound • ${f.badge}`;
+      document.getElementById('kpi-otif-val').textContent = f.otif;
+      document.getElementById('kpi-otif-sub').textContent = `last 30 days • ${f.badge}`;
+
+      // Canvas Header
+      document.getElementById('canvas-facility-title').textContent = `${f.name} Digital Twin`;
+      document.getElementById('canvas-facility-sub').textContent = `${f.loc} • Real-time telemetry`;
+      document.getElementById('canvas-building-badge').textContent = f.badge;
+
+      // Depot Right Card
+      document.getElementById('depot-badge').textContent = `DEPOT • ${f.badge}`;
+      document.getElementById('depot-name').textContent = f.name;
+      document.getElementById('depot-location').textContent = f.loc;
+      const statusBadge = document.getElementById('depot-status-badge');
+      statusBadge.textContent = f.status;
+      if (f.status === 'Critical') {
+        statusBadge.className = "px-2.5 py-1 rounded-md text-xs font-bold bg-rose-50 text-rose-700 border border-rose-200";
+      } else {
+        statusBadge.className = "px-2.5 py-1 rounded-md text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200";
+      }
+
+      document.getElementById('depot-stock-num').innerHTML = `${f.stock.toLocaleString()} <span class="text-xs font-medium text-slate-400">/ ${f.cap.toLocaleString()}</span>`;
+      document.getElementById('depot-stock-bar').style.width = `${Math.min(100, f.pct)}%`;
+      document.getElementById('depot-bays-num').innerHTML = `${f.baysBusy} / ${f.baysTotal} <span class="text-xs font-medium text-slate-400">busy</span>`;
+      document.getElementById('depot-bays-bar').style.width = `${(f.baysBusy / f.baysTotal) * 100}%`;
+      document.getElementById('depot-forklift-status').textContent = f.forkliftStatus;
+      document.getElementById('depot-forklift-active').textContent = f.forkliftActive;
+
+      // SKUs List
+      const skuContainer = document.getElementById('sku-list-container');
+      skuContainer.innerHTML = '';
+      f.skus.forEach(s => {
+        const div = document.createElement('div');
+        div.className = "flex items-center justify-between text-xs py-1 hover:bg-slate-50 rounded px-1.5";
+        const badgeColor = s.status === 'Critical Stockout' ? 'bg-rose-100 text-rose-700' : (s.status === 'Low Stock' ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800');
+        div.innerHTML = `
+          <div class="flex items-center gap-2">
+            <span>${s.icon}</span>
+            <span class="font-semibold text-slate-800">${s.name}</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="font-bold text-slate-700">${s.qty.toLocaleString()}</span>
+            <span class="px-2 py-0.5 rounded text-[10px] font-extrabold ${badgeColor}">${s.status}</span>
+          </div>
+        `;
+        skuContainer.appendChild(div);
+      });
+
+      // Docks Container
+      document.getElementById('docks-hub-tag').textContent = f.name;
+      const dockContainer = document.getElementById('dock-bays-container');
+      dockContainer.innerHTML = '';
+      f.docks.forEach(d => {
+        const div = document.createElement('div');
+        div.className = "flex items-center justify-between py-1.5 px-2 hover:bg-slate-50 rounded-lg text-xs";
+        const badgeClass = d.status === 'Loading' ? 'bg-emerald-100 text-emerald-800' : (d.status === 'Delayed' ? 'bg-rose-100 text-rose-800' : (d.status === 'En route' ? 'bg-sky-100 text-sky-800' : 'bg-slate-100 text-slate-600'));
+        div.innerHTML = `
+          <div class="flex items-center gap-2">
+            <span class="font-bold text-slate-900 w-12">Bay ${d.bay}</span>
+            <span class="text-slate-400">•</span>
+            <span class="font-medium text-slate-700">${d.truck}</span>
+          </div>
+          <div class="flex items-center gap-2.5">
+            <span class="px-2 py-0.5 rounded text-[10px] font-extrabold ${badgeClass}">${d.status}</span>
+            <span class="text-slate-500 font-mono text-[11px]">${d.prog}</span>
+          </div>
+        `;
+        dockContainer.appendChild(div);
+      });
+
+      // Shipment Stepper
+      const shp = f.shipment;
+      document.getElementById('shipment-carrier-tag').textContent = shp.carrier;
+      document.getElementById('shipment-id-tag').textContent = shp.id;
+      document.getElementById('shipment-dest-tag').textContent = shp.dest;
+      document.getElementById('shipment-bay-tag').textContent = shp.bay;
+    }
+
+    function changeFacility(id) {
+      state.currentId = id;
+      renderUI();
+    }
+
+    function handlePin(label) {
+      alert(`Spatial Telemetry Node: ${label}\nOperational status: Monitored in real-time.`);
+    }
+
+    // Modal Handlers
+    function openOnboardModal() { document.getElementById('onboard-modal').classList.remove('hidden'); }
+    function closeOnboardModal() { document.getElementById('onboard-modal').classList.add('hidden'); }
+    function openRulesModal() { document.getElementById('rules-modal').classList.remove('hidden'); }
+    function closeRulesModal() { document.getElementById('rules-modal').classList.add('hidden'); }
+    function toggleCortexDrawer() { document.getElementById('cortex-drawer').classList.toggle('hidden'); }
+
+    function handleOnboard(e) {
+      e.preventDefault();
+      const id = document.getElementById('ob-id').value;
+      const name = document.getElementById('ob-name').value;
+      const loc = document.getElementById('ob-loc').value;
+      const cap = parseInt(document.getElementById('ob-cap').value) || 2000;
+
+      state.facilities[id] = {
+        id: id,
+        name: name,
+        loc: loc,
+        badge: id.slice(-5),
+        stock: Math.floor(cap * 0.5),
+        cap: cap,
+        pct: 50.0,
+        trucks: 1,
+        baysBusy: 1,
+        baysTotal: 3,
+        otif: "98.0%",
+        status: "Operational",
+        forkliftStatus: "FL-01 Ready in Staging",
+        forkliftActive: "1/2 working",
+        skus: [
+          { name: "Primary Assembly Part A", qty: 950, icon: "📦", status: "In Stock" },
+          { name: "Packaging Pallet Box", qty: 350, icon: "🧰", status: "In Stock" }
+        ],
+        docks: [
+          { bay: 1, truck: "No truck assigned", status: "Available", prog: "Ready" },
+          { bay: 2, truck: "Regional Freight TRK-41", status: "Loading", prog: "1/4" }
+        ],
+        shipment: {
+          id: `#SHP-${id.slice(-4)}`,
+          carrier: "Regional Freight",
+          dest: `To: ${loc}`,
+          bay: "Bay 2 • 15 min left",
+          activeStep: 3
+        }
+      };
+
+      // Add to select
+      const sel = document.getElementById('facility-select');
+      const opt = document.createElement('option');
+      opt.value = id;
+      opt.textContent = `${name} (50% full • 1/3 docked)`;
+      sel.appendChild(opt);
+      sel.value = id;
+      changeFacility(id);
+      closeOnboardModal();
+      alert(`🎉 Facility '${name}' successfully onboarded into SupplyChainIQ!`);
+    }
+
+    function updateRuleSlider(val, type) {
+      if (type === 'crit') document.getElementById('slider-crit-val').textContent = `${val} Days`;
+      if (type === 'warn') document.getElementById('slider-warn-val').textContent = `${val} Days`;
+    }
+
+    function applyRules() {
+      const crit = parseFloat(document.getElementById('crit-doi-slider').value);
+      const warn = parseFloat(document.getElementById('warn-doi-slider').value);
+      alert(`Rules updated: Critical threshold = ${crit}d, Warning = ${warn}d. Evaluated across all active facilities.`);
+      closeRulesModal();
+    }
+
+    // Cortex Drawer Logic
+    function askCortex(topic) {
+      const resCard = document.getElementById('cortex-result');
+      const narr = document.getElementById('cortex-narrative');
+      const sql = document.getElementById('cortex-sql');
+      const remCard = document.getElementById('cortex-remediation-card');
+      resCard.classList.remove('hidden');
+
+      if (topic === 'austin' || state.currentId === 'PLANT_02') {
+        narr.textContent = "Austin Gigafactory (PLANT_02) High-Density Battery Cells has 3.8 Days of Inventory remaining, breaching the critical 5.0-day safety buffer. Daily burn rate is 600 units with 2,280 units on hand. Primary shipment SHP-401 delayed 14 days due to Port of Long Beach berth strike.";
+        sql.textContent = "SELECT plant_id, plant_name, days_of_inventory, stockout_risk_level\nFROM SUPPLY_CHAIN_DB.CORE.DT_PLANT_STOCKOUT_RISK\nWHERE plant_id = 'PLANT_02' AND part_id = 'PART_BAT_402';";
+        remCard.classList.remove('hidden');
+      } else if (topic === 'penalty') {
+        narr.textContent = "Under Section 8.2 of the Master Service Agreement with Apex Battery Cells Ltd, delayed shipments incur liquidated damages of 5% order penalty plus $10,000 per calendar day beyond a 3-day grace period. Enforceable recovery claim: $140,000.00.";
+        sql.textContent = "SELECT PARSE_JSON(SNOWFLAKE.CORTEX.SEARCH_PREVIEW('SUPPLY_CHAIN_DB.CORE.SUPPLIER_CONTRACTS_SEARCH',\n'{\"query\": \"Apex Battery liquidated damages Section 8\", \"limit\": 1}'))['results'][0]['clause_text']::STRING;";
+        remCard.classList.add('hidden');
+      } else {
+        narr.textContent = `Facility '${state.facilities[state.currentId].name}' is currently healthy with ${state.facilities[state.currentId].stock} pallets in stock (${state.facilities[state.currentId].pct}% capacity). All bays operational.`;
+        sql.textContent = `SELECT * FROM SUPPLY_CHAIN_DB.CORE.DT_FACILITY_LIVE_TELEMETRY WHERE plant_id = '${state.currentId}';`;
+        remCard.classList.add('hidden');
+      }
+    }
+
+    function executeActionMCP() {
+      const btn = document.getElementById('btn-mcp-reroute');
+      btn.textContent = "⏳ Executing Action MCP Tool...";
+      setTimeout(() => {
+        btn.textContent = "✓ Executed!";
+        // Restore Austin
+        state.facilities.PLANT_02.stock += 4500;
+        state.facilities.PLANT_02.status = "Operational";
+        state.facilities.PLANT_02.skus[0].qty += 4500;
+        state.facilities.PLANT_02.skus[0].status = "In Stock";
+        renderUI();
+        alert("🎉 Emergency Purchase Order PO-9042 dispatched to Shenzhen EnerTech via MCP! Austin Battery DOI restored to 14.2 Days (HEALTHY).");
+        toggleCortexDrawer();
+      }, 1000);
+    }
+
+    // Initialize UI on load
+    window.addEventListener('DOMContentLoaded', () => {
+      renderUI();
+      // Live clock simulation
+      setInterval(() => {
+        const now = new Date();
+        const hrs = String(now.getHours()).padStart(2, '0');
+        const mins = String(now.getMinutes()).padStart(2, '0');
+        document.getElementById('live-clock').textContent = `Live ${hrs}:${mins}`;
+      }, 1000);
+    });
+  </script>
+</body>
+</html>
