@@ -140,8 +140,8 @@ export default function DigitalTwinCanvas({ facility, docks, onPinClick }) {
           <circle cx="20" cy="85" r="9" fill="#1e293b" />
           <circle cx="150" cy="40" r="9" fill="#1e293b" />
           <circle cx="175" cy="30" r="9" fill="#1e293b" />
-          {/* WareTrack Brand on Truck */}
-          <text x="80" y="15" fill="#1e40af" fontSize="11" fontWeight="bold" transform="rotate(-25, 80, 15)">WareTrack</text>
+          {/* Snowflake Brand on Truck */}
+          <text x="80" y="15" fill="#0284c7" fontSize="11" fontWeight="bold" transform="rotate(-25, 80, 15)">Snowflake</text>
         </g>
 
         {/* Truck 2: Inbound Bluepeak Truck */}

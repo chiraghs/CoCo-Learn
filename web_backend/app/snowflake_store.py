@@ -92,9 +92,9 @@ INVENTORY_DB: Dict[str, List[Dict[str, Any]]] = {
 
 DOCKS_DB: Dict[str, List[Dict[str, Any]]] = {
     "WH_RIVERSIDE_01": [
-        {"dock_id": "DOCK_01", "bay_number": 1, "status": "Loading", "assigned_truck_id": "TRK-2051", "assigned_carrier": "WareTrack", "progress": "2/6", "eta_minutes": 13},
+        {"dock_id": "DOCK_01", "bay_number": 1, "status": "Loading", "assigned_truck_id": "SHUTTLE-2051", "assigned_carrier": "Snowflake Autonomous Freight", "progress": "2/6", "eta_minutes": 13},
         {"dock_id": "DOCK_02", "bay_number": 2, "status": "Available", "assigned_truck_id": None, "assigned_carrier": None, "progress": None, "eta_minutes": None},
-        {"dock_id": "DOCK_INBOUND", "bay_number": 3, "status": "En route", "assigned_truck_id": "TRK-2287", "assigned_carrier": "Bluepeak", "progress": "Approaching", "eta_minutes": 2}
+        {"dock_id": "DOCK_INBOUND", "bay_number": 3, "status": "En route", "assigned_truck_id": "SHUTTLE-2287", "assigned_carrier": "Apex Battery", "progress": "Approaching", "eta_minutes": 2}
     ],
     "PLANT_02": [
         {"dock_id": "DOCK_AUSTIN_01", "bay_number": 1, "status": "Unloading", "assigned_truck_id": "TRK-9011", "assigned_carrier": "Apex Logistics", "progress": "5/6", "eta_minutes": 8},
@@ -110,7 +110,7 @@ DOCKS_DB: Dict[str, List[Dict[str, Any]]] = {
 SHIPMENT_STEPPER_DB: Dict[str, Dict[str, Any]] = {
     "WH_RIVERSIDE_01": {
         "shipment_id": "#SHP-78442",
-        "carrier_name": "WareTrack TRK-2051",
+        "carrier_name": "Snowflake Autonomous Freight SHUTTLE-2051",
         "truck_id": "TRK-2051",
         "destination": "Philadelphia, PA",
         "status": "Loading 2/6",

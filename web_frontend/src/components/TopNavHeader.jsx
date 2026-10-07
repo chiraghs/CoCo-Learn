@@ -13,8 +13,8 @@ export default function TopNavHeader({ facilities, activeFacilityId, onSelectFac
             📦
           </div>
           <div className="flex flex-col">
-            <span className="font-extrabold text-slate-900 text-lg tracking-tight leading-none">WareTrack</span>
-            <span className="text-[10px] font-bold text-blue-600 uppercase tracking-wider">SupplyChainIQ • Aegis</span>
+            <span className="font-extrabold text-slate-900 text-lg tracking-tight leading-none">Snowflake Cortex Twin™</span>
+            <span className="text-[10px] font-bold text-sky-600 uppercase tracking-wider">SupplyChainIQ • Team Aegis</span>
           </div>
         </div>
 
