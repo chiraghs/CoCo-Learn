@@ -416,7 +416,7 @@
             <div>
               <div class="text-xs font-black sf-text-title font-display flex items-center gap-2" id="canvas-facility-title">
                 <span>RIVERSIDE_HUB_01</span>
-                <span class="text-[9px] px-1.5 py-0.2 rounded bg-snowflake/20 text-snowflake font-mono-code">SNOWFLAKE IOT TWIN</span>
+                <span class="text-[9px] px-1.5 py-0.2 rounded bg-snowflake/20 text-snowflake font-mono-code font-bold">SNOWFLAKE IOT TWIN</span>
               </div>
               <div class="text-[11px] sf-text-sub font-mono-code" id="canvas-facility-sub">
                 LAT: 40.7357° N, LON: 74.1724° W • Streams Active
@@ -498,8 +498,8 @@
                 <rect x="180" y="110" width="20" height="12" fill="#FFFFFF" rx="2" />
 
                 <!-- Zone Label Tag -->
-                <text x="75" y="-30" fill="#0284C7" font-family="'Outfit', sans-serif" font-weight="900" font-size="11" letter-spacing="1">ZONE A: CRYO ASRS HIGH-BAY</text>
-                <text x="75" y="-16" fill="#475569" font-family="'JetBrains Mono', monospace" font-size="9" font-weight="bold">TEMP: -18.4°C • PALLETS: 1,412</text>
+                <text x="75" y="-30" fill="#0284C7" font-family="'Outfit', sans-serif" font-weight="900" font-size="11" letter-spacing="1">ZONE A: CRYO ASRS HIGH-BAY 🔍</text>
+                <text x="75" y="-16" fill="#475569" font-family="'JetBrains Mono', monospace" font-size="9" font-weight="bold">CLICK TO REVEAL SNOWFLAKE TABLE</text>
               </g>
 
               <!-- ZONE 2: BATTERY & EV POWERTRAIN CLEAN-ROOM CELL -->
@@ -519,18 +519,18 @@
                 <rect x="175" y="45" width="24" height="12" fill="url(#batteryGrad)" rx="2" />
                 <rect x="145" y="85" width="24" height="12" fill="url(#batteryGrad)" rx="2" />
 
-                <text x="35" y="-25" fill="#059669" font-family="'Outfit', sans-serif" font-weight="900" font-size="11" letter-spacing="1">ZONE B: BATTERY CLEANROOM</text>
-                <text x="35" y="-12" fill="#475569" font-family="'JetBrains Mono', monospace" font-size="9" font-weight="bold">DOI BUFFER: 14.2d • UPH: 420</text>
+                <text x="35" y="-25" fill="#059669" font-family="'Outfit', sans-serif" font-weight="900" font-size="11" letter-spacing="1">ZONE B: BATTERY CLEANROOM 🔍</text>
+                <text x="35" y="-12" fill="#475569" font-family="'JetBrains Mono', monospace" font-size="9" font-weight="bold">CLICK TO REVEAL SNOWFLAKE TABLE</text>
               </g>
 
               <!-- ZONE 3: SNOWPIPE STREAMING RFID PORTAL -->
-              <g id="zone-gateway" transform="translate(80, 360)">
+              <g id="zone-gateway" transform="translate(80, 360)" class="cursor-pointer" onclick="inspectZone('GATEWAY')">
                 <polygon points="30,0 70,-20 70,80 30,100" fill="#0284C7" stroke="#29B5E8" stroke-width="1.5" />
                 <polygon points="70,-20 110,0 110,100 70,80" fill="#0369A1" stroke="#29B5E8" stroke-width="1.5" />
                 <polygon points="30,0 70,-20 110,0 70,20" fill="#29B5E8" opacity="0.9" />
                 <polygon points="30,10 110,10 100,90 40,90" fill="#29B5E8" opacity="0.25" />
                 <line x1="30" y1="45" x2="110" y2="45" stroke="#00E5FF" stroke-width="2.5" filter="url(#neonGlow)" />
-                <text x="-10" y="125" fill="#0284C7" font-family="'JetBrains Mono', monospace" font-weight="bold" font-size="10">RFID SNOWPIPE GATE</text>
+                <text x="-10" y="125" fill="#0284C7" font-family="'JetBrains Mono', monospace" font-weight="bold" font-size="10">RFID SNOWPIPE GATE 🔍</text>
               </g>
 
               <!-- ZONE 4: AUTONOMOUS DOCKS D-01 & D-02 -->
@@ -541,7 +541,7 @@
                 <polygon points="70,70 160,20 160,60 70,110" fill="#0C4A6E" stroke="#7DD3FC" stroke-width="1.5" />
                 
                 <polygon points="25,35 65,12 85,25 45,47" fill="#29B5E8" opacity="0.8" />
-                <text x="35" y="95" fill="#FFFFFF" font-family="'Outfit', sans-serif" font-weight="900" font-size="12">BAY D-01</text>
+                <text x="35" y="95" fill="#FFFFFF" font-family="'Outfit', sans-serif" font-weight="900" font-size="12">BAY D-01 🔍</text>
                 <text x="35" y="108" fill="#10B981" font-family="'JetBrains Mono', monospace" font-size="9" font-weight="bold">ACTIVE • 2/6 LOAD</text>
               </g>
 
@@ -551,20 +551,20 @@
                 <polygon points="0,30 70,70 70,110 0,70" fill="#081A30" stroke="#7DD3FC" stroke-width="1.5" />
                 <polygon points="70,70 160,20 160,60 70,110" fill="#0B203B" stroke="#7DD3FC" stroke-width="1.5" />
                 
-                <text x="35" y="95" fill="#FFFFFF" font-family="'Outfit', sans-serif" font-weight="900" font-size="12">BAY D-02</text>
+                <text x="35" y="95" fill="#FFFFFF" font-family="'Outfit', sans-serif" font-weight="900" font-size="12">BAY D-02 🔍</text>
                 <text x="35" y="108" fill="#94A3B8" font-family="'JetBrains Mono', monospace" font-size="9" font-weight="bold">STANDBY • READY</text>
               </g>
 
               <!-- AUTONOMOUS MOBILE ROBOTS (AMRs) -->
-              <g id="amr-01" transform="translate(360, 360)">
+              <g id="amr-01" transform="translate(360, 360)" class="cursor-pointer" onclick="inspectZone('AMR_01')">
                 <ellipse cx="0" cy="0" rx="20" ry="10" fill="#FFFFFF" stroke="#00E5FF" stroke-width="2" />
                 <ellipse cx="0" cy="-4" rx="16" ry="8" fill="#29B5E8" opacity="0.9" />
                 <rect x="-8" y="-12" width="16" height="8" fill="#10B981" rx="1" />
                 <polygon points="0,0 40,-15 40,15" fill="#00E5FF" opacity="0.2" />
-                <text x="-16" y="16" fill="#0284C7" font-family="'JetBrains Mono', monospace" font-weight="bold" font-size="8">AMR-01</text>
+                <text x="-16" y="16" fill="#0284C7" font-family="'JetBrains Mono', monospace" font-weight="bold" font-size="8">AMR-01 🔍</text>
               </g>
 
-              <g id="amr-02" transform="translate(510, 260)">
+              <g id="amr-02" transform="translate(510, 260)" class="cursor-pointer" onclick="inspectZone('AMR_01')">
                 <ellipse cx="0" cy="0" rx="20" ry="10" fill="#FFFFFF" stroke="#00E5FF" stroke-width="2" />
                 <ellipse cx="0" cy="-4" rx="16" ry="8" fill="#29B5E8" opacity="0.9" />
                 <rect x="-10" y="-14" width="20" height="10" fill="#059669" rx="2" stroke="#10B981" stroke-width="1" />
@@ -576,7 +576,7 @@
               <path id="pipeline-stream-2" d="M 450,470 L 620,380 L 800,280" fill="none" stroke="#00E5FF" stroke-width="2.5" class="flow-stream-fast" opacity="0.85" />
 
               <!-- ELECTRIC AUTONOMOUS SHUTTLE AT DOCK 01 -->
-              <g id="electric-truck-dock" transform="translate(280, 460)">
+              <g id="electric-truck-dock" transform="translate(280, 460)" class="cursor-pointer" onclick="inspectZone('BAY_01')">
                 <!-- Cab -->
                 <polygon points="40,20 120,-20 120,40 40,80" fill="#0284C7" stroke="#29B5E8" stroke-width="1.5" />
                 <polygon points="120,-20 160,0 160,60 120,40" fill="#0369A1" stroke="#29B5E8" stroke-width="1.5" />
@@ -598,25 +598,25 @@
               </g>
 
               <!-- INTERACTIVE HOLOGRAPHIC TELEMETRY PINS -->
-              <g transform="translate(360, 240)" class="cursor-pointer" onclick="handlePin('CRYO_ASRS_ZONE_A')">
+              <g transform="translate(360, 240)" class="cursor-pointer" onclick="inspectZone('ASRS_TOWER')">
                 <circle cx="0" cy="0" r="18" fill="#29B5E8" opacity="0.35" class="animate-ping" />
                 <circle cx="0" cy="0" r="12" fill="#FFFFFF" stroke="#0284C7" stroke-width="2.5" />
                 <circle cx="0" cy="0" r="5" fill="#00E5FF" />
               </g>
 
-              <g transform="translate(680, 210)" class="cursor-pointer" onclick="handlePin('BATTERY_CLEANROOM_ZONE_B')">
+              <g transform="translate(680, 210)" class="cursor-pointer" onclick="inspectZone('CLEAN_ROOM')">
                 <circle cx="0" cy="0" r="18" fill="#10B981" opacity="0.35" class="animate-ping" />
                 <circle cx="0" cy="0" r="12" fill="#FFFFFF" stroke="#10B981" stroke-width="2.5" />
                 <circle cx="0" cy="0" r="5" fill="#34D399" />
               </g>
 
-              <g transform="translate(490, 430)" class="cursor-pointer" onclick="handlePin('DOCK_BAY_01_RFID')">
+              <g transform="translate(490, 430)" class="cursor-pointer" onclick="inspectZone('BAY_01')">
                 <circle cx="0" cy="0" r="18" fill="#29B5E8" opacity="0.35" class="animate-ping" />
                 <circle cx="0" cy="0" r="12" fill="#FFFFFF" stroke="#0284C7" stroke-width="2.5" />
                 <circle cx="0" cy="0" r="5" fill="#29B5E8" />
               </g>
 
-              <g transform="translate(130, 420)" class="cursor-pointer" onclick="handlePin('SNOWPIPE_STREAMING_GATEWAY')">
+              <g transform="translate(130, 420)" class="cursor-pointer" onclick="inspectZone('GATEWAY')">
                 <circle cx="0" cy="0" r="16" fill="#8B5CF6" opacity="0.35" class="animate-ping" />
                 <circle cx="0" cy="0" r="11" fill="#FFFFFF" stroke="#8B5CF6" stroke-width="2" />
                 <circle cx="0" cy="0" r="4.5" fill="#C084FC" />
@@ -631,8 +631,8 @@
               <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> Cleanroom Ready</span>
               <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-purple-500"></span> RFID Snowpipe Arch</span>
             </div>
-            <div class="sf-text-title font-bold text-[11px]">
-              CLICK PINS FOR TELEMETRY SNAPSHOT
+            <div class="sf-text-title font-bold text-[11px] flex items-center gap-1.5 text-snowflake">
+              <span>👉 CLICK ANY 3D ZONE OR PIN TO REVEAL SNOWFLAKE TABLES</span>
             </div>
           </div>
 
@@ -814,7 +814,150 @@
     <span class="tracking-wide">Ask Snowflake Cortex AI Copilot</span>
   </button>
 
-  <!-- 6. CORTEX AI DRAWER (Deterministic SQL & 3-Way Reconciliation Ledger) -->
+  <!-- 6. SPATIAL ENTITY INSPECTOR DRAWER (Reveals Underlying Snowflake Table & Cortex Q&A) -->
+  <div id="entity-inspector-drawer" class="drawer-box fixed inset-y-0 right-0 z-50 w-full max-w-xl shadow-2xl p-6 flex flex-col justify-between hidden overflow-y-auto">
+    <div class="flex flex-col gap-4">
+      <!-- Inspector Header -->
+      <div class="flex items-start justify-between pb-4 border-b border-snowflake/20">
+        <div class="flex items-center gap-3">
+          <div id="insp-icon" class="w-12 h-12 rounded-xl bg-snowflake/15 border border-snowflake/30 text-snowflake flex items-center justify-center font-bold text-2xl shadow-md">
+            🧊
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h3 id="insp-title" class="font-black sf-text-title text-base leading-tight font-display">Zone A: Cryo ASRS High-Bay</h3>
+              <span id="insp-cat-badge" class="px-2 py-0.5 rounded text-[9px] font-bold uppercase bg-snowflake/15 text-snowflake border border-snowflake/30 font-mono-code">STORAGE</span>
+            </div>
+            <p id="insp-sub" class="text-[11px] sf-text-sub font-mono-code mt-0.5">SPATIAL_ID: ZONE_ASRS_TOWER • REVEALED SNOWFLAKE ONTOLOGY</p>
+          </div>
+        </div>
+        <button onclick="closeEntityInspector()" class="sf-text-sub hover:sf-text-title font-bold text-base p-1">✕</button>
+      </div>
+
+      <!-- Inspector Tab Navigation -->
+      <div class="flex items-center gap-2 border-b border-snowflake/15 pb-2 text-xs font-mono-code">
+        <button onclick="switchInspTab('telemetry')" id="insp-tab-telemetry" class="px-3 py-1.5 rounded-lg font-bold bg-snowflake text-polar-night transition-all">
+          📊 Physical Telemetry
+        </button>
+        <button onclick="switchInspTab('snowflake')" id="insp-tab-snowflake" class="px-3 py-1.5 rounded-lg font-semibold sf-text-sub hover:text-snowflake transition-all">
+          ❄️ Snowflake Layer
+        </button>
+        <button onclick="switchInspTab('cortex')" id="insp-tab-cortex" class="px-3 py-1.5 rounded-lg font-semibold sf-text-sub hover:text-snowflake transition-all">
+          ✨ Cortex Q&A
+        </button>
+      </div>
+
+      <!-- TAB 1: PHYSICAL TELEMETRY -->
+      <div id="insp-view-telemetry" class="flex flex-col gap-4">
+        <div class="grid grid-cols-2 gap-3" id="insp-telemetry-grid">
+          <!-- Populated dynamically via JS -->
+        </div>
+
+        <div class="sf-inner-box rounded-xl p-3.5 flex flex-col gap-2">
+          <div class="text-[10px] font-bold text-snowflake uppercase tracking-wider font-mono-code flex items-center justify-between">
+            <span>Spatial Entity Status</span>
+            <span class="text-emerald-500 font-bold">100% In SLA</span>
+          </div>
+          <p id="insp-telemetry-desc" class="text-xs sf-text-title leading-relaxed">
+            Cryogenic storage vault housing Lithium Module Battery packs at -18.4°C. Monitored in real-time via Snowflake Dynamic Table with 1-min SLA.
+          </p>
+        </div>
+      </div>
+
+      <!-- TAB 2: REVEALED UNDERLYING SNOWFLAKE DATA CLOUD LAYER -->
+      <div id="insp-view-snowflake" class="flex flex-col gap-4 hidden">
+        <!-- Table Spec Card -->
+        <div class="sf-inner-box rounded-xl p-3.5 flex flex-col gap-2 font-mono-code text-xs">
+          <div class="flex items-center justify-between">
+            <span class="text-slate-400 text-[10px] uppercase font-bold">Underlying Object</span>
+            <span id="insp-table-type" class="px-2 py-0.5 rounded text-[9px] font-extrabold uppercase bg-sky-500/15 text-sky-500 border border-sky-500/30">DYNAMIC TABLE</span>
+          </div>
+          <div id="insp-table-name" class="font-bold text-snowflake text-xs">SUPPLY_CHAIN_DB.CORE.DT_ZONE_LIVE_TELEMETRY</div>
+          
+          <div class="grid grid-cols-2 gap-2 pt-2 border-t border-snowflake/15 text-[11px]">
+            <div>
+              <span class="sf-text-sub block text-[10px]">Target Freshness Lag</span>
+              <span id="insp-target-lag" class="font-bold sf-text-title">1 MINUTE</span>
+            </div>
+            <div>
+              <span class="sf-text-sub block text-[10px]">Actual Freshness Lag</span>
+              <span id="insp-actual-lag" class="font-bold text-emerald-500">38s (Clean)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Declarative DDL Definition -->
+        <div class="bg-slate-900 rounded-xl p-3.5 border border-snowflake/30 font-mono-code text-[11px] text-white">
+          <div class="flex items-center justify-between mb-1.5">
+            <span class="text-[10px] font-bold text-sky-400 uppercase tracking-wide">Snowflake DDL Materialization</span>
+            <button onclick="copyInspDDL()" class="text-[10px] text-slate-400 hover:text-white px-2 py-0.5 rounded bg-slate-800 border border-slate-700">Copy DDL</button>
+          </div>
+          <pre id="insp-ddl-code" class="overflow-x-auto text-sky-200 text-[10px] leading-tight whitespace-pre-wrap max-h-48"></pre>
+        </div>
+
+        <!-- Sample Materialized Row Preview (Time Travel) -->
+        <div class="sf-inner-box rounded-xl p-3 font-mono-code text-xs">
+          <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wide mb-1 flex items-center justify-between">
+            <span>Materialized Row (Time Travel: 60s Offset)</span>
+            <span class="text-emerald-500 text-[10px]">SHA-256 Validated</span>
+          </div>
+          <pre id="insp-sample-row" class="overflow-x-auto text-slate-700 dark:text-slate-200 text-[10px] leading-tight whitespace-pre-wrap max-h-36 bg-black/10 rounded p-2"></pre>
+        </div>
+
+        <!-- Dynamic Rule Config Button -->
+        <div class="flex justify-end gap-2 pt-1 font-display">
+          <button onclick="openRulesModal()" class="px-3.5 py-1.5 rounded-lg sf-inner-box border border-snowflake/30 text-snowflake font-bold text-xs hover:border-snowflake">
+            ⚙️ Tweak Dynamic Rules
+          </button>
+        </div>
+      </div>
+
+      <!-- TAB 3: CONTEXTUAL CORTEX ANALYST Q&A -->
+      <div id="insp-view-cortex" class="flex flex-col gap-4 hidden">
+        <!-- Suggested Questions for this Component -->
+        <div class="flex flex-col gap-1.5 font-mono-code">
+          <span class="text-[10px] font-bold sf-text-sub uppercase tracking-wider">Grounded Component Queries:</span>
+          <div id="insp-cortex-prompts" class="flex flex-col gap-1.5">
+            <!-- Populated via JS -->
+          </div>
+        </div>
+
+        <!-- Result Box -->
+        <div id="insp-cortex-result" class="flex flex-col gap-3 hidden">
+          <div class="sf-inner-box rounded-xl p-3.5">
+            <div class="text-[10px] font-black text-snowflake uppercase tracking-wide mb-1 flex items-center gap-1 font-mono-code">
+              <span>✓ Conversational Synthesis (Zero-Hallucination)</span>
+            </div>
+            <p id="insp-cortex-narrative" class="text-xs sf-text-title leading-relaxed font-medium"></p>
+          </div>
+
+          <div class="bg-slate-900 rounded-xl p-3 border border-snowflake/30 font-mono-code text-[11px] text-white">
+            <div class="text-[10px] font-bold text-sky-400 uppercase tracking-wide mb-1">Generated Deterministic SQL</div>
+            <pre id="insp-cortex-sql" class="overflow-x-auto text-sky-200 text-[10px] leading-tight whitespace-pre-wrap"></pre>
+          </div>
+
+          <div id="insp-cortex-action-container" class="hidden">
+            <!-- Action MCP trigger if critical -->
+          </div>
+        </div>
+
+        <!-- Custom Query Input -->
+        <div class="flex gap-2 font-mono-code pt-2 border-t border-snowflake/15">
+          <input type="text" id="insp-cortex-input" placeholder="Ask Cortex Analyst about this component..." class="flex-1 input-box text-xs rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-snowflake" />
+          <button onclick="executeInspCustomQuery()" class="w-10 h-10 bg-snowflake hover:bg-snowflake-500 text-polar-night rounded-xl flex items-center justify-center font-black">➔</button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Inspector Footer -->
+    <div class="pt-4 border-t border-snowflake/20 flex items-center justify-between text-[11px] font-mono-code sf-text-sub">
+      <span>Catalog: Snowflake Managed</span>
+      <span class="text-snowflake font-bold">Time Travel: 7 Days Active</span>
+    </div>
+  </div>
+
+  <!-- 7. MAIN CORTEX COPILOT DRAWER (General AI Copilot) -->
   <div id="cortex-drawer" class="drawer-box fixed inset-y-0 right-0 z-50 w-full max-w-lg shadow-2xl p-6 flex flex-col justify-between hidden overflow-y-auto">
     <div>
       <div class="flex items-center justify-between pb-4 border-b border-snowflake/20 mb-4">
@@ -851,7 +994,7 @@
           <p id="cortex-narrative" class="text-xs sf-text-title leading-relaxed font-medium"></p>
         </div>
 
-        <!-- 2. Deterministic SQL Block (High-contrast code block in both themes) -->
+        <!-- 2. Deterministic SQL Block -->
         <div class="bg-slate-900 rounded-xl p-3 border border-snowflake/30 font-mono-code text-[11px] text-white">
           <div class="text-[10px] font-bold text-sky-400 uppercase tracking-wide mb-1">2. Deterministic Cortex SQL Output</div>
           <pre id="cortex-sql" class="overflow-x-auto text-sky-200 text-[10.5px] leading-tight whitespace-pre-wrap"></pre>
@@ -879,7 +1022,7 @@
     </div>
   </div>
 
-  <!-- 7. GENERIC PLANT ONBOARDING MODAL -->
+  <!-- 8. GENERIC PLANT ONBOARDING MODAL -->
   <div id="onboard-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 hidden">
     <div class="modal-box rounded-2xl max-w-lg w-full p-6 shadow-2xl">
       <div class="flex items-center justify-between pb-3 border-b border-snowflake/20 mb-4">
@@ -949,7 +1092,7 @@
     </div>
   </div>
 
-  <!-- 8. CONFIG RULES ENGINE MODAL -->
+  <!-- 9. CONFIG RULES ENGINE MODAL -->
   <div id="rules-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 hidden">
     <div class="modal-box rounded-2xl max-w-lg w-full p-6 shadow-2xl">
       <div class="flex items-center justify-between pb-3 border-b border-snowflake/20 mb-4">
@@ -985,11 +1128,296 @@
     </div>
   </div>
 
-  <!-- SCRIPT ENGINE (Snowflake State, Theme Switcher & Controllers) -->
+  <!-- SCRIPT ENGINE (Snowflake Ontology, Inspector & Controllers) -->
   <script>
-    // State Store
+    // 1. SUPPLY CHAIN SPATIAL ONTOLOGY REGISTRY
+    const SPATIAL_ONTOLOGY = {
+      ASRS_TOWER: {
+        id: "ZONE_ASRS_TOWER",
+        title: "Zone A: Cryo ASRS High-Bay Automated Storage",
+        category: "AUTOMATED_STORAGE",
+        icon: "🧊",
+        status: "Nominal",
+        telemetry: [
+          { label: "Ambient Temp", value: "-18.4°C", sub: "Target: -20°C ± 2°C", status: "Compliant" },
+          { label: "Rack Occupancy", value: "1,412 / 1,800", sub: "78.4% Capacity", status: "Optimal" },
+          { label: "Stacker Crane OEE", value: "98.2%", sub: "Crane CR-01 Active", status: "Active" },
+          { label: "Cold Chain SLA", value: "100%", sub: "0 Temp Breaches", status: "Compliant" }
+        ],
+        desc: "Cryogenic high-density storage vault housing Lithium Module Battery packs at -18.4°C. Monitored in real-time via Snowflake Dynamic Table with 1-min SLA.",
+        snowflake: {
+          table: "SUPPLY_CHAIN_DB.CORE.DT_ZONE_LIVE_TELEMETRY",
+          type: "DYNAMIC TABLE",
+          targetLag: "1 MINUTE",
+          actualLag: "38s (Clean)",
+          ddl: `CREATE OR REPLACE DYNAMIC TABLE SUPPLY_CHAIN_DB.CORE.DT_ZONE_LIVE_TELEMETRY
+  TARGET_LAG = '1 MINUTE'
+  WAREHOUSE = CORTEX_ANALYST_WH_M
+AS
+SELECT 
+    z.zone_id,
+    z.plant_id,
+    z.zone_type,
+    s.temperature_celsius,
+    s.humidity_pct,
+    COUNT(p.pallet_id) AS occupied_pallets,
+    z.max_capacity,
+    ROUND((COUNT(p.pallet_id) / NULLIF(z.max_capacity, 0)) * 100, 1) AS occupancy_pct,
+    CASE WHEN s.temperature_celsius > -16.0 THEN 'BREACH' ELSE 'COMPLIANT' END AS thermal_compliance,
+    MAX(s.recorded_at) AS last_telemetry_timestamp
+FROM SUPPLY_CHAIN_DB.CORE.FACILITY_ZONES z
+LEFT JOIN SUPPLY_CHAIN_DB.RAW.STG_IOT_ZONE_SENSORS s ON z.zone_id = s.zone_id
+LEFT JOIN SUPPLY_CHAIN_DB.CORE.INVENTORY_LEDGER p ON z.zone_id = p.zone_id
+WHERE z.zone_id = 'ZONE_ASRS_TOWER'
+GROUP BY ALL;`,
+          sampleRow: {
+            ZONE_ID: "ZONE_ASRS_TOWER",
+            PLANT_ID: "WH_RIVERSIDE_01",
+            ZONE_TYPE: "CRYO_ASRS_HIGH_BAY",
+            TEMPERATURE_CELSIUS: -18.4,
+            OCCUPIED_PALLETS: 1412,
+            MAX_CAPACITY: 1800,
+            OCCUPANCY_PCT: 78.4,
+            THERMAL_COMPLIANCE: "COMPLIANT",
+            LAST_TELEMETRY_TIMESTAMP: "2026-10-08 02:40:12 UTC"
+          }
+        },
+        cortexQuestions: [
+          { q: "What is the capacity utilization and temperature in Zone A?", topic: "asrs_cap" },
+          { q: "Are there any thermal variance spikes detected in Zone A?", topic: "asrs_temp" }
+        ]
+      },
+      CLEAN_ROOM: {
+        id: "ZONE_CLEAN_ROOM",
+        title: "Zone B: EV Battery Cell & Pack Assembly Cleanroom",
+        category: "CLEANROOM_MANUFACTURING",
+        icon: "⚡",
+        status: "Active",
+        telemetry: [
+          { label: "Assembly Throughput", value: "420 UPH", sub: "Target: 400 UPH", status: "Exceeding" },
+          { label: "Battery Buffer DOI", value: "14.2 Days", sub: "Safe threshold > 5.0d", status: "Target Met" },
+          { label: "Robotic Arms", value: "4 / 4 Active", sub: "KUKA Robotics L2", status: "Active" },
+          { label: "Line Halt Risk", value: "0.0%", sub: "$250k/hr downtime averted", status: "Protected" }
+        ],
+        desc: "Class 10,000 cleanroom executing EV battery module and power inverter assembly. Monitored for line halt risk and stockout buffers.",
+        snowflake: {
+          table: "SUPPLY_CHAIN_DB.CORE.DT_PLANT_STOCKOUT_RISK",
+          type: "DYNAMIC TABLE",
+          targetLag: "1 MINUTE",
+          actualLag: "42s",
+          ddl: `CREATE OR REPLACE DYNAMIC TABLE SUPPLY_CHAIN_DB.CORE.DT_PLANT_STOCKOUT_RISK
+  TARGET_LAG = '1 MINUTE'
+  WAREHOUSE = CORTEX_ANALYST_WH_M
+AS
+SELECT 
+    p.plant_id,
+    p.part_id,
+    p.part_desc,
+    inv.on_hand_qty,
+    p.daily_burn_rate,
+    ROUND(inv.on_hand_qty / NULLIF(p.daily_burn_rate, 0), 1) AS days_of_inventory,
+    CASE 
+        WHEN (inv.on_hand_qty / NULLIF(p.daily_burn_rate, 0)) < 5.0 THEN 'CRITICAL'
+        WHEN (inv.on_hand_qty / NULLIF(p.daily_burn_rate, 0)) < 10.0 THEN 'WARNING'
+        ELSE 'HEALTHY'
+    END AS stockout_risk_level,
+    (250000.00 * CASE WHEN (inv.on_hand_qty / NULLIF(p.daily_burn_rate, 0)) < 5.0 THEN 1 ELSE 0 END) AS financial_halt_exposure_per_hr
+FROM SUPPLY_CHAIN_DB.CORE.PLANT_PARTS p
+JOIN SUPPLY_CHAIN_DB.CORE.INVENTORY_SNAPSHOT inv ON p.part_id = inv.part_id AND p.plant_id = inv.plant_id;`,
+          sampleRow: {
+            PLANT_ID: "PLANT_02",
+            PART_ID: "PART_BAT_402",
+            PART_DESC: "High-Density Battery Cells (4680)",
+            ON_HAND_QTY: 2280,
+            DAILY_BURN_RATE: 600,
+            DAYS_OF_INVENTORY: 3.8,
+            STOCKOUT_RISK_LEVEL: "CRITICAL",
+            FINANCIAL_HALT_EXPOSURE_PER_HR: 250000.00
+          }
+        },
+        cortexQuestions: [
+          { q: "Why is Austin battery DOI at 3.8 days?", topic: "austin" },
+          { q: "Show bill of materials components at risk of line stoppage", topic: "bom_risk" }
+        ]
+      },
+      BAY_01: {
+        id: "DOCK_BAY_01",
+        title: "Dock Bay D-01: Inbound Autonomous Electric Freight",
+        category: "LOGISTICS_RECEIVING",
+        icon: "🚢",
+        status: "Active Loading",
+        telemetry: [
+          { label: "Assigned Carrier", value: "SHUTTLE-2051", sub: "Electric Autonomous", status: "Active" },
+          { label: "Turnaround Progress", value: "2 / 6 Pallets", sub: "ETA: 13 mins remaining", status: "On Track" },
+          { label: "Leveler Hydraulics", value: "Engaged", sub: "Pressure: 210 bar", status: "Locked" },
+          { label: "Detention Risk", value: "0.0%", sub: "SLA: < 45 min dwell", status: "Compliant" }
+        ],
+        desc: "High-throughput smart dock door with automated hydraulic dock plate and optical RFID scanner. Synchronized to Snowflake Iceberg catalog.",
+        snowflake: {
+          table: "SUPPLY_CHAIN_DB.CORE.FACILITY_DOCKS",
+          type: "ICEBERG TABLE",
+          targetLag: "REALTIME (ACID)",
+          actualLag: "0s",
+          ddl: `CREATE OR REPLACE ICEBERG TABLE SUPPLY_CHAIN_DB.CORE.FACILITY_DOCKS (
+    dock_id VARCHAR(50),
+    plant_id VARCHAR(50),
+    bay_number INT,
+    status VARCHAR(50),
+    assigned_truck_id VARCHAR(50),
+    assigned_carrier VARCHAR(100),
+    loading_progress VARCHAR(20),
+    eta_minutes INT,
+    detention_risk_pct DECIMAL(5,2),
+    last_updated TIMESTAMP_NTZ
+) EXTERNAL_VOLUME = 's3_iceberg_vol'
+CATALOG = 'SNOWFLAKE';`,
+          sampleRow: {
+            DOCK_ID: "DOCK_01",
+            PLANT_ID: "WH_RIVERSIDE_01",
+            BAY_NUMBER: 1,
+            STATUS: "LOADING",
+            ASSIGNED_TRUCK_ID: "SHUTTLE-2051",
+            ASSIGNED_CARRIER: "Snowflake Autonomous Freight",
+            LOADING_PROGRESS: "2/6",
+            ETA_MINUTES: 13,
+            DETENTION_RISK_PCT: 0.0,
+            LAST_UPDATED: "2026-10-08 02:41:00 UTC"
+          }
+        },
+        cortexQuestions: [
+          { q: "Show 3-way reconciliation for shipment loading at Bay D-01", topic: "bay1_rec" },
+          { q: "What is the average dock turn time for Bay D-01?", topic: "bay1_turntime" }
+        ]
+      },
+      BAY_02: {
+        id: "DOCK_BAY_02",
+        title: "Dock Bay D-02: Staging & Cross-Dock Apron",
+        category: "LOGISTICS_CROSS_DOCK",
+        icon: "🚢",
+        status: "Standby",
+        telemetry: [
+          { label: "Bay Status", value: "Standby Ready", sub: "Scheduled: 10:15 UTC", status: "Available" },
+          { label: "Assigned Carrier", value: "SHUTTLE-8812", sub: "Apex Battery (En route)", status: "Scheduled" },
+          { label: "Cross-Dock Yield", value: "99.4%", sub: "Direct-to-Line Transfer", status: "Optimal" },
+          { label: "Door Seal Sensor", value: "Closed / Verified", sub: "Sensor ID: DS-02", status: "Secure" }
+        ],
+        desc: "Cross-dock bay designed for direct transloading between regional shuttles and long-haul transport without intermediate shelving.",
+        snowflake: {
+          table: "SUPPLY_CHAIN_DB.CORE.FACILITY_DOCKS",
+          type: "ICEBERG TABLE",
+          targetLag: "REALTIME",
+          actualLag: "0s",
+          ddl: `SELECT * FROM SUPPLY_CHAIN_DB.CORE.FACILITY_DOCKS WHERE bay_number = 2;`,
+          sampleRow: {
+            DOCK_ID: "DOCK_02",
+            PLANT_ID: "WH_RIVERSIDE_01",
+            BAY_NUMBER: 2,
+            STATUS: "STANDBY",
+            ASSIGNED_TRUCK_ID: "SHUTTLE-8812",
+            ASSIGNED_CARRIER: "Apex Battery Freight",
+            LOADING_PROGRESS: "READY",
+            ETA_MINUTES: 35,
+            DETENTION_RISK_PCT: 0.0,
+            LAST_UPDATED: "2026-10-08 02:35:10 UTC"
+          }
+        },
+        cortexQuestions: [
+          { q: "What is the schedule of inbound trucks arriving at Bay D-02?", topic: "bay2_sched" },
+          { q: "What are the Section 8 liquidated damages for Apex Battery?", topic: "penalty" }
+        ]
+      },
+      GATEWAY: {
+        id: "GATE_RFID_PORTAL",
+        title: "Zone C: Snowpipe Streaming RFID & Computer Vision Portal",
+        category: "EDGE_INGESTION_PORTAL",
+        icon: "🛰️",
+        status: "Streaming",
+        telemetry: [
+          { label: "Ingestion Throughput", value: "24,850 events/s", sub: "Snowpipe Streaming V2", status: "Active" },
+          { label: "RFID Scan Yield", value: "100.0%", sub: "0 Missed Pallets", status: "Optimal" },
+          { label: "Lidar Gate Alignment", value: "Calibrated", sub: "3D Volumetric Scan", status: "Active" },
+          { label: "Edge-to-Cloud Latency", value: "14 ms", sub: "AWS us-east-1 Direct", status: "Ultra-low" }
+        ],
+        desc: "Ingestion archway equipped with Zebra FX9600 RFID readers and optical volumetric cameras streaming directly into Snowflake via Snowpipe Streaming API.",
+        snowflake: {
+          table: "SUPPLY_CHAIN_DB.RAW.STG_IOT_RFID_SNOWPIPE",
+          type: "STREAMING PIPE",
+          targetLag: "SUB-SECOND",
+          actualLag: "0.8s",
+          ddl: `CREATE OR REPLACE PIPE SUPPLY_CHAIN_DB.RAW.PIPE_RFID_INGESTION
+  AUTO_INGEST = TRUE
+AS
+COPY INTO SUPPLY_CHAIN_DB.RAW.STG_IOT_RFID_SNOWPIPE
+FROM @SUPPLY_CHAIN_DB.RAW.STAGE_IOT_SENSORS
+FILE_FORMAT = (TYPE = 'PARQUET');`,
+          sampleRow: {
+            EPC_TAG_ID: "urn:epc:id:sgtin:0614141.100734.2001",
+            GATE_PORTAL_ID: "GATE_INBOUND_01",
+            PALLET_SSCC: "00012345678901234567",
+            READ_TIME_UTC: "2026-10-08 02:42:01.402",
+            SIGNAL_RSSI: -58.2,
+            INGESTION_LATENCY_MS: 14.5
+          }
+        },
+        cortexQuestions: [
+          { q: "What is the current Snowpipe streaming throughput across all gate portals?", topic: "gate_throughput" },
+          { q: "Were any unscanned or damaged RFID tags detected in the last hour?", topic: "gate_errors" }
+        ]
+      },
+      AMR_01: {
+        id: "AMR_UNIT_01",
+        title: "Autonomous Mobile Robot AMR-01",
+        category: "AUTONOMOUS_FLEET",
+        icon: "🤖",
+        status: "Active",
+        telemetry: [
+          { label: "Battery Level", value: "94%", sub: "Lithium LiFePO4", status: "Charged" },
+          { label: "Current Mission", value: "Servicing Dock Bay 01", sub: "Task: PO-9412 Pallet 2", status: "In Transit" },
+          { label: "Lidar Obstacle Status", value: "Clear Path", sub: "Safety Zone 360°", status: "Optimal" },
+          { label: "Speed", value: "1.8 m/s", sub: "Corridor C-4", status: "Nominal" }
+        ],
+        desc: "Autonomous guided mobile robot equipped with Sick Safety Lidar and MQTT telemetry broker feeding real-time Snowflake fleet tracking.",
+        snowflake: {
+          table: "SUPPLY_CHAIN_DB.CORE.AMR_FLEET_TELEMETRY",
+          type: "DYNAMIC TABLE",
+          targetLag: "1 MINUTE",
+          actualLag: "22s",
+          ddl: `CREATE OR REPLACE DYNAMIC TABLE SUPPLY_CHAIN_DB.CORE.AMR_FLEET_TELEMETRY
+  TARGET_LAG = '1 MINUTE'
+  WAREHOUSE = CORTEX_ANALYST_WH_M
+AS
+SELECT 
+    robot_id,
+    plant_id,
+    battery_pct,
+    current_x_coord,
+    current_y_coord,
+    assigned_mission_id,
+    mission_status,
+    speed_mps,
+    last_ping_utc
+FROM SUPPLY_CHAIN_DB.RAW.MQTT_AMR_FLEET_STREAM;`,
+          sampleRow: {
+            ROBOT_ID: "AMR-01",
+            PLANT_ID: "WH_RIVERSIDE_01",
+            BATTERY_PCT: 94.0,
+            MISSION_ID: "MSN_PUTAWAY_881",
+            STATUS: "ACTIVE_TRANSIT",
+            SPEED_MPS: 1.8,
+            LAST_PING_UTC: "2026-10-08 02:43:00 UTC"
+          }
+        },
+        cortexQuestions: [
+          { q: "Which AMRs have battery below 25% or require charging?", topic: "amr_battery" },
+          { q: "What is the average task completion cycle time for the AMR fleet?", topic: "amr_cycle" }
+        ]
+      }
+    };
+
+    // Global State Store
     const state = {
-      theme: 'light', // DEFAULT IS LIGHT AS REQUESTED
+      theme: 'light', // DEFAULT IS LIGHT
+      currentInspNode: 'ASRS_TOWER',
       facilities: {
         WH_RIVERSIDE_01: {
           id: "WH_RIVERSIDE_01",
@@ -1106,7 +1534,6 @@
       const toggleIcon = document.getElementById('theme-toggle-icon');
       const toggleLabel = document.getElementById('theme-toggle-label');
 
-      // Update SVG Gradients & Accents
       const stop1 = document.getElementById('grid-stop-1');
       const stop2 = document.getElementById('grid-stop-2');
       const stop3 = document.getElementById('grid-stop-3');
@@ -1122,7 +1549,6 @@
         toggleIcon.textContent = '☀️';
         toggleLabel.textContent = 'Light Theme';
 
-        // SVG Light Aesthetics
         if (stop1) stop1.setAttribute('stop-color', '#E0F2FE');
         if (stop2) stop2.setAttribute('stop-color', '#BAE6FD');
         if (stop3) stop3.setAttribute('stop-color', '#E2E8F0');
@@ -1137,7 +1563,6 @@
         toggleIcon.textContent = '🌙';
         toggleLabel.textContent = 'Dark Theme';
 
-        // SVG Dark Aesthetics
         if (stop1) stop1.setAttribute('stop-color', '#0a1b30');
         if (stop2) stop2.setAttribute('stop-color', '#0f2644');
         if (stop3) stop3.setAttribute('stop-color', '#071324');
@@ -1156,11 +1581,131 @@
       applyTheme(nextTheme);
     }
 
+    // 2. SPATIAL ENTITY INSPECTOR CONTROLLERS
+    function inspectZone(nodeKey) {
+      const node = SPATIAL_ONTOLOGY[nodeKey] || SPATIAL_ONTOLOGY.ASRS_TOWER;
+      state.currentInspNode = nodeKey;
+
+      // Update Header
+      document.getElementById('insp-icon').textContent = node.icon;
+      document.getElementById('insp-title').textContent = node.title;
+      document.getElementById('insp-cat-badge').textContent = node.category;
+      document.getElementById('insp-sub').textContent = `SPATIAL_ID: ${node.id} • REVEALED SNOWFLAKE ONTOLOGY`;
+      document.getElementById('insp-telemetry-desc').textContent = node.desc;
+
+      // Render Telemetry Cards
+      const tGrid = document.getElementById('insp-telemetry-grid');
+      tGrid.innerHTML = '';
+      node.telemetry.forEach(t => {
+        const div = document.createElement('div');
+        div.className = "sf-inner-box rounded-xl p-3 flex flex-col justify-between";
+        div.innerHTML = `
+          <div class="text-[10px] font-bold sf-text-sub uppercase tracking-wider font-mono-code mb-1">${t.label}</div>
+          <div class="text-lg font-black sf-text-title font-display">${t.value}</div>
+          <div class="text-[10px] sf-text-sub mt-1 flex items-center justify-between">
+            <span>${t.sub}</span>
+            <span class="text-emerald-500 font-bold font-mono-code">${t.status}</span>
+          </div>
+        `;
+        tGrid.appendChild(div);
+      });
+
+      // Render Snowflake Data Layer
+      document.getElementById('insp-table-type').textContent = node.snowflake.type;
+      document.getElementById('insp-table-name').textContent = node.snowflake.table;
+      document.getElementById('insp-target-lag').textContent = node.snowflake.targetLag;
+      document.getElementById('insp-actual-lag').textContent = node.snowflake.actualLag;
+      document.getElementById('insp-ddl-code').textContent = node.snowflake.ddl;
+      document.getElementById('insp-sample-row').textContent = JSON.stringify(node.snowflake.sampleRow, null, 2);
+
+      // Render Cortex Questions
+      const cPrompts = document.getElementById('insp-cortex-prompts');
+      cPrompts.innerHTML = '';
+      node.cortexQuestions.forEach(cq => {
+        const btn = document.createElement('button');
+        btn.className = "text-left p-2.5 sf-inner-box hover:border-snowflake hover:text-snowflake rounded-lg text-xs font-medium sf-text-title transition-all";
+        btn.textContent = `💬 "${cq.q}"`;
+        btn.onclick = () => executeInspCortexQuery(cq.topic, cq.q);
+        cPrompts.appendChild(btn);
+      });
+
+      // Reset Cortex results
+      document.getElementById('insp-cortex-result').classList.add('hidden');
+      document.getElementById('insp-cortex-action-container').classList.add('hidden');
+
+      // Open Drawer & Set Default Tab
+      switchInspTab('telemetry');
+      document.getElementById('entity-inspector-drawer').classList.remove('hidden');
+    }
+
+    function closeEntityInspector() {
+      document.getElementById('entity-inspector-drawer').classList.add('hidden');
+    }
+
+    function switchInspTab(tab) {
+      const tabs = ['telemetry', 'snowflake', 'cortex'];
+      tabs.forEach(t => {
+        const btn = document.getElementById(`insp-tab-${t}`);
+        const view = document.getElementById(`insp-view-${t}`);
+        if (t === tab) {
+          btn.className = "px-3 py-1.5 rounded-lg font-bold bg-snowflake text-polar-night transition-all";
+          view.classList.remove('hidden');
+        } else {
+          btn.className = "px-3 py-1.5 rounded-lg font-semibold sf-text-sub hover:text-snowflake transition-all";
+          view.classList.add('hidden');
+        }
+      });
+    }
+
+    function copyInspDDL() {
+      const ddl = document.getElementById('insp-ddl-code').textContent;
+      navigator.clipboard.writeText(ddl).then(() => {
+        alert("📋 Snowflake DDL copied to clipboard!");
+      });
+    }
+
+    function executeInspCortexQuery(topic, questionText) {
+      const resBox = document.getElementById('insp-cortex-result');
+      const narr = document.getElementById('insp-cortex-narrative');
+      const sql = document.getElementById('insp-cortex-sql');
+      const actContainer = document.getElementById('insp-cortex-action-container');
+      resBox.classList.remove('hidden');
+
+      if (topic === 'austin' || state.currentInspNode === 'CLEAN_ROOM') {
+        narr.textContent = "Austin Gigafactory EV Battery Cell DOI is at 3.8 days (critical buffer < 5.0d). Daily burn: 600 cells/day. Incoming primary shipment SHP-401 from Apex is blocked due to Port of Long Beach berth strike. Immediate risk of $250k/hr assembly halt.";
+        sql.textContent = "-- Cortex Analyst Deterministic SQL\nSELECT plant_id, part_id, days_of_inventory, stockout_risk_level\nFROM SUPPLY_CHAIN_DB.CORE.DT_PLANT_STOCKOUT_RISK\nWHERE plant_id = 'PLANT_02' AND part_id = 'PART_BAT_402';";
+        actContainer.innerHTML = `
+          <div class="bg-rose-500/10 border border-rose-500/30 rounded-xl p-3 flex flex-col gap-2">
+            <span class="text-rose-600 font-bold text-xs">⚠️ Line Halt Action MCP Ready</span>
+            <p class="text-[11px] text-rose-700">Reroute 4,500 battery units via air freight from Shenzhen EnerTech.</p>
+            <button onclick="executeActionMCP()" class="px-3 py-1.5 bg-rose-600 text-white font-bold text-xs rounded-lg hover:bg-rose-700">Execute 1-Click PO Reroute</button>
+          </div>
+        `;
+        actContainer.classList.remove('hidden');
+      } else if (topic === 'penalty') {
+        narr.textContent = "Section 8.2 of Master Agreement MSA-APEX-2024 stipulates liquidated damages of $10,000/day beyond a 3-day grace period. Cortex Search extracted valid enforceable claim of $140,000.00.";
+        sql.textContent = "-- Cortex Search Contract Extraction\nSELECT PARSE_JSON(SNOWFLAKE.CORTEX.SEARCH_PREVIEW('SUPPLY_CHAIN_DB.CORE.SUPPLIER_CONTRACTS_SEARCH',\n'{\"query\": \"Apex Battery Section 8 liquidated damages\", \"limit\": 1}'))['results'][0]['clause_text']::STRING;";
+        actContainer.classList.add('hidden');
+      } else {
+        narr.textContent = `Zone '${state.currentInspNode}' is operating within 100% nominal SLA. Refresh latency is 38s via Dynamic Tables. No thermal or throughput exceptions detected in the past 24 hours.`;
+        sql.textContent = `-- Telemetry Verification Query\nSELECT * FROM SUPPLY_CHAIN_DB.CORE.DT_ZONE_LIVE_TELEMETRY WHERE zone_id = '${SPATIAL_ONTOLOGY[state.currentInspNode]?.id || 'ZONE_ASRS_TOWER'}';`;
+        actContainer.classList.add('hidden');
+      }
+    }
+
+    function executeInspCustomQuery() {
+      const input = document.getElementById('insp-cortex-input');
+      const val = input.value.trim();
+      if (!val) return;
+      executeInspCortexQuery('custom', val);
+      input.value = '';
+    }
+
+    // 3. UI RENDERING & CONTROLLERS
     function renderUI() {
       const f = state.facilities[state.currentId];
       if (!f) return;
 
-      // 1. Top Ribbon Metrics
       document.getElementById('kpi-doi-val').textContent = f.doi;
       const doiBadge = document.getElementById('kpi-doi-badge');
       doiBadge.textContent = f.doiStatus;
@@ -1176,11 +1721,9 @@
       document.getElementById('kpi-capacity-sub').textContent = `${f.pct}% of ${f.cap.toLocaleString()} Cap`;
       document.getElementById('kpi-bays-badge').textContent = `${f.baysBusy}/${f.baysTotal} Docks Active`;
 
-      // 2. 3D Canvas HUD
       document.getElementById('canvas-facility-title').innerHTML = `<span>${f.name.toUpperCase()}</span> <span class="text-[9px] px-1.5 py-0.2 rounded bg-snowflake/20 text-snowflake font-mono-code font-bold">SNOWFLAKE IOT TWIN</span>`;
       document.getElementById('canvas-facility-sub').textContent = `${f.loc} • Dynamic Tables Synced`;
 
-      // 3. Right Rail Inspector
       document.getElementById('depot-badge').textContent = f.badge;
       document.getElementById('depot-name').textContent = f.name;
       document.getElementById('depot-location').textContent = f.loc;
@@ -1228,7 +1771,8 @@
       dockContainer.innerHTML = '';
       f.docks.forEach(d => {
         const div = document.createElement('div');
-        div.className = "flex items-center justify-between py-2 px-2.5 rounded-lg sf-inner-box text-xs font-mono-code";
+        div.className = "flex items-center justify-between py-2 px-2.5 rounded-lg sf-inner-box text-xs font-mono-code cursor-pointer hover:border-snowflake";
+        div.onclick = () => inspectZone(d.bay === 'D-01' ? 'BAY_01' : 'BAY_02');
         const badgeClass = d.status === 'Loading' 
           ? 'bg-emerald-500/20 text-emerald-600 border border-emerald-500/30 font-bold' 
           : (d.status === 'Delayed' ? 'bg-rose-500/20 text-rose-600 border border-rose-500/30 font-bold' : 'bg-slate-500/20 sf-text-sub border border-slate-300 font-medium');
@@ -1246,7 +1790,6 @@
         dockContainer.appendChild(div);
       });
 
-      // Reconciled Stepper
       const shp = f.shipment;
       document.getElementById('shipment-carrier-tag').textContent = shp.carrier;
       document.getElementById('shipment-id-tag').textContent = shp.id;
@@ -1281,19 +1824,7 @@
       document.getElementById('svg-viewport-container').style.transform = `scale(${state.zoom})`;
     }
 
-    function handlePin(label) {
-      alert(`❄️ Snowflake Telemetry Node: [${label}]\n` +
-            `• Stream Status: Snowpipe Ingestion Healthy (24.8k events/sec)\n` +
-            `• Dynamic Table Lag: 38s (Within 60s Target SLA)\n` +
-            `• Verified Ledger Anchor: SHA-256 Validated`);
-    }
-
-    function inspectZone(zone) {
-      alert(`🏭 Inspected Cyber-Physical Zone: [${zone}]\n` +
-            `Directly materialized from Snowflake Dynamic Table: DT_FACILITY_LIVE_TELEMETRY`);
-    }
-
-    // Modal Controllers
+    // Modal & General Drawer Controls
     function openOnboardModal() { document.getElementById('onboard-modal').classList.remove('hidden'); }
     function closeOnboardModal() { document.getElementById('onboard-modal').classList.add('hidden'); }
     function openRulesModal() { document.getElementById('rules-modal').classList.remove('hidden'); }
@@ -1364,7 +1895,7 @@
       closeRulesModal();
     }
 
-    // Cortex Autonomous AI Copilot
+    // General Cortex Copilot
     function askCortex(topic) {
       const resCard = document.getElementById('cortex-result');
       const narr = document.getElementById('cortex-narrative');
@@ -1389,10 +1920,9 @@
 
     function executeActionMCP() {
       const btn = document.getElementById('btn-mcp-reroute');
-      btn.textContent = "⏳ Triggering Snowflake Action MCP Server...";
+      if (btn) btn.textContent = "⏳ Triggering Snowflake Action MCP Server...";
       setTimeout(() => {
-        btn.textContent = "✓ Executed & Committed!";
-        // Restore Austin
+        if (btn) btn.textContent = "✓ Executed & Committed!";
         state.facilities.PLANT_02.stock += 4500;
         state.facilities.PLANT_02.doi = 14.2;
         state.facilities.PLANT_02.doiStatus = "Target Met";
@@ -1401,7 +1931,8 @@
         state.facilities.PLANT_02.skus[0].status = "In Stock";
         renderUI();
         alert("🎉 Emergency Purchase Order PO-9042 successfully committed via Action MCP Server!\nDispatched to Shenzhen EnerTech via air freight.\nAustin Battery DOI restored from 3.8 ➔ 14.2 Days (HEALTHY). $250k/hr line halt avoided!");
-        toggleCortexDrawer();
+        closeEntityInspector();
+        document.getElementById('cortex-drawer').classList.add('hidden');
       }, 1000);
     }
 
