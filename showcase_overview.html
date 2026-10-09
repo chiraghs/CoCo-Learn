@@ -1,0 +1,1313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SupplyChainIQ — Governed Conversational Supply Chain Analytics | Team Aegis</title>
+  <meta name="description" content="SupplyChainIQ: Governed Conversational Supply Chain Analytics on Snowflake Cortex & CoCo. Track 5 Winning Prototype by Team Aegis.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0b1120;
+      --card-bg: #1e293b;
+      --card-border: #334155;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --snowflake: #29b5e8;
+      --snowflake-dark: #0284c7;
+      --emerald: #10b981;
+      --emerald-bg: rgba(16, 185, 129, 0.12);
+      --red: #ef4444;
+      --red-bg: rgba(239, 68, 68, 0.12);
+      --amber: #f59e0b;
+      --amber-bg: rgba(245, 158, 11, 0.12);
+      --purple: #8b5cf6;
+      --purple-bg: rgba(139, 92, 246, 0.12);
+      --font-heading: 'Outfit', sans-serif;
+      --font-body: 'Inter', -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text-main);
+      font-family: var(--font-body);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a {
+      color: var(--snowflake);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    a:hover {
+      color: #7dd3fc;
+    }
+
+    /* Container */
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* Header Nav */
+    header {
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--card-border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .nav-wrapper {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 72px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-family: var(--font-heading);
+      font-weight: 800;
+      font-size: 22px;
+      color: #ffffff;
+    }
+
+    .brand-badge {
+      background: linear-gradient(135deg, #0284c7, #29b5e8);
+      color: white;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 24px;
+      align-items: center;
+    }
+
+    .nav-links a {
+      color: var(--text-muted);
+      font-size: 14.5px;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover {
+      color: #ffffff;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #0284c7, #0284c7);
+      color: #ffffff;
+      box-shadow: 0 4px 14px rgba(2, 132, 199, 0.35);
+    }
+
+    .btn-primary:hover {
+      background: #0369a1;
+      color: #ffffff;
+      transform: translateY(-1px);
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--card-border);
+      color: var(--text-main);
+    }
+
+    .btn-outline:hover {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: #64748b;
+    }
+
+    .btn-success {
+      background: linear-gradient(135deg, #059669, #10b981);
+      color: #ffffff;
+      box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
+    }
+
+    .btn-success:hover {
+      background: #047857;
+      color: #ffffff;
+      transform: translateY(-1px);
+    }
+
+    /* Hero Section */
+    .hero {
+      padding: 80px 0 60px 0;
+      text-align: center;
+      background: radial-gradient(circle at 50% 20%, rgba(41, 181, 232, 0.12) 0%, rgba(11, 17, 32, 0) 70%);
+    }
+
+    .hero-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(41, 181, 232, 0.12);
+      border: 1px solid rgba(41, 181, 232, 0.3);
+      color: var(--snowflake);
+      padding: 6px 16px;
+      border-radius: 30px;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      margin-bottom: 24px;
+      text-transform: uppercase;
+    }
+
+    .hero h1 {
+      font-family: var(--font-heading);
+      font-size: 56px;
+      font-weight: 800;
+      line-height: 1.15;
+      margin-bottom: 20px;
+      color: #ffffff;
+    }
+
+    .hero h1 span {
+      background: linear-gradient(135deg, #38bdf8 0%, #29b5e8 50%, #818cf8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero p {
+      font-size: 19px;
+      color: var(--text-muted);
+      max-width: 860px;
+      margin: 0 auto 36px auto;
+      line-height: 1.6;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 48px;
+    }
+
+    /* Ticker Stats */
+    .ticker-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+      margin-top: 20px;
+    }
+
+    .ticker-card {
+      background: rgba(30, 41, 59, 0.6);
+      backdrop-filter: blur(8px);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 20px;
+      text-align: left;
+    }
+
+    .ticker-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 6px;
+    }
+
+    .ticker-value {
+      font-family: var(--font-heading);
+      font-size: 32px;
+      font-weight: 800;
+      line-height: 1.1;
+      margin-bottom: 4px;
+    }
+
+    .ticker-sub {
+      font-size: 12.5px;
+      color: var(--text-muted);
+    }
+
+    /* Section Styles */
+    section {
+      padding: 70px 0;
+      border-top: 1px solid rgba(51, 65, 85, 0.4);
+    }
+
+    .section-header {
+      margin-bottom: 40px;
+    }
+
+    .section-badge {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--snowflake);
+      margin-bottom: 8px;
+    }
+
+    .section-title {
+      font-family: var(--font-heading);
+      font-size: 36px;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: -0.02em;
+    }
+
+    .section-desc {
+      font-size: 16px;
+      color: var(--text-muted);
+      max-width: 720px;
+      margin-top: 8px;
+    }
+
+    /* Command Center Simulator */
+    .dashboard-panel {
+      background: #0f172a;
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    }
+
+    .panel-header {
+      background: #1e293b;
+      padding: 16px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    .panel-title {
+      font-family: var(--font-heading);
+      font-weight: 700;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .pulse-dot {
+      width: 10px;
+      height: 10px;
+      background: var(--emerald);
+      border-radius: 50%;
+      box-shadow: 0 0 10px var(--emerald);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.85); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    .panel-body {
+      padding: 24px;
+    }
+
+    /* Plant Selector Chips */
+    .plant-selector {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 24px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+
+    .plant-chip {
+      background: rgba(30, 41, 59, 0.8);
+      border: 1px solid var(--card-border);
+      color: var(--text-muted);
+      padding: 8px 18px;
+      border-radius: 8px;
+      font-size: 13.5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .plant-chip.active {
+      background: #0284c7;
+      border-color: #38bdf8;
+      color: #ffffff;
+      box-shadow: 0 2px 10px rgba(2, 132, 199, 0.4);
+    }
+
+    /* Disruption Alert Box */
+    .disruption-alert {
+      background: var(--red-bg);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      border-radius: 12px;
+      padding: 18px 22px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+    }
+
+    .alert-icon {
+      font-size: 24px;
+      flex-shrink: 0;
+    }
+
+    .alert-content h4 {
+      color: #fca5a5;
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .alert-content p {
+      color: #e2e8f0;
+      font-size: 13.5px;
+      line-height: 1.5;
+    }
+
+    /* KPI Metrics 4-grid */
+    .kpi-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 18px;
+      margin-bottom: 24px;
+    }
+
+    .kpi-box {
+      background: #1e293b;
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 20px;
+    }
+
+    .kpi-name {
+      font-size: 11.5px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 6px;
+    }
+
+    .kpi-stat {
+      font-family: var(--font-heading);
+      font-size: 32px;
+      font-weight: 800;
+      margin-bottom: 4px;
+    }
+
+    .kpi-desc {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* Conversational Cortex AI Area */
+    .cortex-interface {
+      background: #0b1120;
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 24px;
+      margin-top: 24px;
+    }
+
+    .prompt-chips {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    .chip-btn {
+      background: #1e293b;
+      border: 1px solid var(--card-border);
+      color: #94a3b8;
+      padding: 7px 14px;
+      border-radius: 20px;
+      font-size: 12.5px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .chip-btn:hover {
+      background: #334155;
+      color: #ffffff;
+      border-color: #64748b;
+    }
+
+    .chip-btn.active {
+      background: rgba(41, 181, 232, 0.15);
+      border-color: var(--snowflake);
+      color: #38bdf8;
+    }
+
+    /* 3-Way Reconciliation Ledger Grid */
+    .recon-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 16px;
+      margin-top: 18px;
+    }
+
+    .recon-card {
+      background: #1e293b;
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .recon-tag {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 8px;
+    }
+
+    .recon-content {
+      font-size: 13.5px;
+      color: #e2e8f0;
+      line-height: 1.55;
+      flex: 1;
+    }
+
+    .code-snippet {
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      background: #090d16;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      padding: 12px;
+      color: #38bdf8;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      line-height: 1.45;
+    }
+
+    /* Action MCP Simulator */
+    .action-panel {
+      background: linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.9));
+      border: 1.5px solid var(--purple);
+      border-radius: 14px;
+      padding: 24px;
+      margin-top: 24px;
+    }
+
+    .action-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .action-title {
+      font-family: var(--font-heading);
+      font-size: 18px;
+      font-weight: 700;
+      color: #c4b5fd;
+    }
+
+    .action-status-badge {
+      background: var(--purple-bg);
+      color: #c4b5fd;
+      border: 1px solid rgba(139, 92, 246, 0.4);
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 11.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    /* Downloads Grid */
+    .downloads-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    .download-card {
+      background: #1e293b;
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+
+    .download-card:hover {
+      transform: translateY(-3px);
+      border-color: #64748b;
+    }
+
+    .doc-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      margin-bottom: 16px;
+    }
+
+    .doc-title {
+      font-family: var(--font-heading);
+      font-size: 18px;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 6px;
+    }
+
+    .doc-meta {
+      font-size: 12.5px;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+    }
+
+    /* Architecture Layers */
+    .arch-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .arch-card {
+      background: #1e293b;
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .arch-badge {
+      font-size: 12.5px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      width: 240px;
+      flex-shrink: 0;
+    }
+
+    .arch-desc {
+      font-size: 13.5px;
+      color: #cbd5e1;
+      line-height: 1.5;
+    }
+
+    /* Footer */
+    footer {
+      background: #090d16;
+      border-top: 1px solid var(--card-border);
+      padding: 40px 0;
+      font-size: 13.5px;
+      color: var(--text-muted);
+    }
+
+    .footer-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .hero h1 { font-size: 38px; }
+      .nav-links { display: none; }
+      .kpi-row { grid-template-columns: 1fr; }
+      .arch-card { flex-direction: column; align-items: flex-start; gap: 8px; }
+      .arch-badge { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation -->
+  <header>
+    <div class="container nav-wrapper">
+      <div class="brand">
+        <span>❄️ SupplyChainIQ</span>
+        <span class="brand-badge">Team Aegis</span>
+      </div>
+      <div class="nav-links">
+        <a href="#simulator">Command Center</a>
+        <a href="#cortex">Conversational AI</a>
+        <a href="#action-mcp">Action MCP</a>
+        <a href="#downloads">Pitch Decks</a>
+        <a href="#architecture">Architecture</a>
+        <a href="https://github.com/chiraghs/CoCo-Learn" target="_blank" rel="noopener">GitHub</a>
+      </div>
+      <div>
+        <a href="index.html" class="btn btn-primary" style="background: linear-gradient(135deg, #29b5e8, #0e98cb); color: #060d17; font-weight: 800;">❄️ Open 3D Digital Twin (Default)</a> <a href="https://app.snowflake.com/ZJXLXUZ/JV50315/#/streamlit-apps/SUPPLY_CHAIN_DB.CORE.SUPPLY_CHAIN_COMMAND_CENTER" target="_blank" rel="noopener" class="btn btn-outline">
+          ❄️ Open Live in Snowflake
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-tag">
+        <span>🏆 Snowflake CoCo Hackathon GCC Edition</span>
+        <span>•</span>
+        <span>Track 5: Supply Chain Ontology</span>
+      </div>
+
+      <h1>
+        Governed Conversational<br>
+        <span>Supply Chain Analytics</span>
+      </h1>
+
+      <p>
+        Eliminating catastrophic plant stockouts through deterministic supply chain ontologies, sub-minute Dynamic Tables, Cortex Analyst text-to-semantic-SQL, unstructured contract intelligence via Cortex Search, and autonomous closed-loop agentic mitigation.
+      </p>
+
+      <div class="hero-actions">
+        <a href="#simulator" class="btn btn-primary" style="padding: 12px 28px; font-size: 15px;">
+          ⚡ Explore Live Prototype Simulator
+        </a>
+        <a href="deck/SupplyChainIQ-Pitch-Deck.pdf" target="_blank" class="btn btn-outline" style="padding: 12px 24px; font-size: 15px;">
+          📄 View 11-Slide Pitch Deck (PDF)
+        </a>
+        <a href="https://github.com/chiraghs/CoCo-Learn" target="_blank" class="btn btn-outline" style="padding: 12px 24px; font-size: 15px;">
+          💻 GitHub Codebase
+        </a>
+      </div>
+
+      <!-- Live Telemetry Ticker -->
+      <div class="ticker-grid">
+        <div class="ticker-card">
+          <div class="ticker-label">Austin Plant Battery DOI</div>
+          <div class="ticker-value" style="color: var(--red);" id="hero-doi">3.8 Days</div>
+          <div class="ticker-sub" id="hero-doi-status">🔴 CRITICAL RISK (&lt; 7.0d threshold)</div>
+        </div>
+
+        <div class="ticker-card">
+          <div class="ticker-label">Active Global Disruptions</div>
+          <div class="ticker-value" style="color: var(--amber);">3 High Impact</div>
+          <div class="ticker-sub">Long Beach Port Strike + Customs Delay</div>
+        </div>
+
+        <div class="ticker-card">
+          <div class="ticker-label">Contract SLA Penalties Found</div>
+          <div class="ticker-value" style="color: var(--emerald);">$140,000</div>
+          <div class="ticker-sub">Recovered via Cortex Search on Apex MSA</div>
+        </div>
+
+        <div class="ticker-card">
+          <div class="ticker-label">Dynamic Table Refresh Lag</div>
+          <div class="ticker-value" style="color: var(--snowflake);">60 Sec</div>
+          <div class="ticker-sub">Automated streaming lag on COMPUTE_WH</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Live Command Center Simulator -->
+  <section id="simulator">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-badge">REAL-TIME OPERATIONAL INTELLIGENCE</div>
+        <h2 class="section-title">Snowflake Command Center Dashboard</h2>
+        <p class="section-desc">
+          Live simulation of the Streamlit in Snowflake (SiS) executive dashboard. Continuously materializing plant health and supplier risk from underlying Dynamic Tables.
+        </p>
+      </div>
+
+      <div class="dashboard-panel">
+        <div class="panel-header">
+          <div class="panel-title">
+            <span class="pulse-dot"></span>
+            <span>Live Streamlit Command Center (<code>SUPPLY_CHAIN_DB.CORE</code>)</span>
+          </div>
+          <div style="font-size: 12.5px; color: var(--text-muted);">
+            Connected to Account: <strong style="color: white;">ZJXLXUZ.JV50315</strong>
+          </div>
+        </div>
+
+        <div class="panel-body">
+          <!-- Plant Switcher -->
+          <div class="plant-selector">
+            <button class="plant-chip active" onclick="switchPlant('austin')">Austin Giga 1 (High Risk)</button>
+            <button class="plant-chip" onclick="switchPlant('fremont')">Fremont Assembly (Healthy)</button>
+            <button class="plant-chip" onclick="switchPlant('berlin')">Berlin Plant (Warning)</button>
+            <button class="plant-chip" onclick="switchPlant('shanghai')">Shanghai Gigafactory (Healthy)</button>
+          </div>
+
+          <!-- Dynamic Disruption Alert -->
+          <div class="disruption-alert" id="disruption-box">
+            <div class="alert-icon">⚠️</div>
+            <div class="alert-content">
+              <h4 id="disruption-title">CRITICAL RISK ALERT: Long Beach Customs Strike Delaying Shipment SHP-401</h4>
+              <p id="disruption-desc">
+                Disruption <strong>DIS-001</strong> (Port of Long Beach Customs Strike) has delayed inbound shipment SHP-401 carrying 4,500 battery units from Apex Battery Cells by <strong>14 business days</strong>. Austin Giga 1 inventory will reach zero in 91.2 operating hours.
+              </p>
+            </div>
+          </div>
+
+          <!-- KPI Row -->
+          <div class="kpi-row">
+            <div class="kpi-box">
+              <div class="kpi-name">Days of Inventory (DOI)</div>
+              <div class="kpi-stat" style="color: var(--red);" id="kpi-doi">3.8 Days</div>
+              <div class="kpi-desc" id="kpi-doi-desc">Threshold: Safe &gt; 7.0d | Stockout: 91h</div>
+            </div>
+
+            <div class="kpi-box">
+              <div class="kpi-name">Current Available Stock</div>
+              <div class="kpi-stat" style="color: #ffffff;" id="kpi-stock">450 Units</div>
+              <div class="kpi-desc" id="kpi-burn">Daily Burn: 120 Units/Day</div>
+            </div>
+
+            <div class="kpi-box">
+              <div class="kpi-name">Primary Supplier OTIF</div>
+              <div class="kpi-stat" style="color: var(--amber);" id="kpi-otif">72.0%</div>
+              <div class="kpi-desc" id="kpi-supplier">Apex Battery Cells (Delayed +7.5d)</div>
+            </div>
+
+            <div class="kpi-box">
+              <div class="kpi-name">Recommended Secondary</div>
+              <div class="kpi-stat" style="color: var(--emerald);" id="kpi-backup">96.0% OTIF</div>
+              <div class="kpi-desc" id="kpi-backup-name">Shenzhen EnerTech (Lead: 6d Air)</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Conversational Cortex AI Section -->
+  <section id="cortex">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-badge">DUAL-BRAIN REASONING</div>
+        <h2 class="section-title">Conversational Cortex AI & The 3-Way Reconciliation Ledger</h2>
+        <p class="section-desc">
+          Click any sample question below to observe how the staged YAML semantic model converts human intent into deterministic, verified SQL with zero hallucination.
+        </p>
+      </div>
+
+      <div class="cortex-interface">
+        <div style="font-size: 13px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 10px;">
+          SELECT A QUESTION TO TEST CORTEX DUAL-BRAIN:
+        </div>
+        <div class="prompt-chips">
+          <button class="chip-btn active" onclick="loadPrompt(1)">
+            💬 "What is the stockout risk for EV Battery Packs at Austin Plant?"
+          </button>
+          <button class="chip-btn" onclick="loadPrompt(2)">
+            🔍 "What are the liquidated damages penalties for Apex Battery Cells under Section 8?"
+          </button>
+          <button class="chip-btn" onclick="loadPrompt(3)">
+            🧠 "What is the root cause 'Why' behind Austin's DOI collapse?"
+          </button>
+        </div>
+
+        <!-- 3-Way Reconciliation Ledger Grid -->
+        <div class="recon-grid">
+          <!-- Card 1: LLM Narrative -->
+          <div class="recon-card" style="border-left: 4px solid var(--emerald);">
+            <div class="recon-tag" style="color: var(--emerald);">1. CONVERSATIONAL NARRATIVE (LLM)</div>
+            <div class="recon-content" id="recon-narrative">
+              "Austin Giga 1 is experiencing an imminent stockout crisis for EV Battery Packs with only 3.8 days of inventory remaining (450 units in stock against 120/day burn rate). Assembly line shutdown is projected in 91.2 operating hours. Inbound shipment SHP-401 from Apex Battery Cells is delayed 14 days due to Port of Long Beach customs strike."
+            </div>
+            <div style="margin-top: 14px; font-size: 11.5px; color: var(--emerald); font-weight: 600;">
+              ✓ Tailored for VP of Supply Chain & Plant Managers
+            </div>
+          </div>
+
+          <!-- Card 2: Deterministic SQL -->
+          <div class="recon-card" style="border-left: 4px solid var(--snowflake);">
+            <div class="recon-tag" style="color: var(--snowflake);">2. DETERMINISTIC SQL (CORTEX ANALYST)</div>
+            <div class="code-snippet" id="recon-sql">SELECT plant_name, material_name, 
+       days_of_inventory, stockout_risk_level, 
+       primary_supplier_name
+FROM SUPPLY_CHAIN_DB.CORE.DT_PLANT_STOCKOUT_RISK
+WHERE stockout_risk_level = 'CRITICAL'
+ORDER BY days_of_inventory ASC;</div>
+            <div style="margin-top: 14px; font-size: 11.5px; color: var(--snowflake); font-weight: 600;">
+              ✓ Validated against supply_chain_semantic_model.yaml
+            </div>
+          </div>
+
+          <!-- Card 3: Ground Truth Proof -->
+          <div class="recon-card" style="border-left: 4px solid var(--purple);">
+            <div class="recon-tag" style="color: #c4b5fd;">3. GROUND TRUTH DATA PROOF (SNOWFLAKE)</div>
+            <div class="code-snippet" id="recon-data" style="color: #c4b5fd;">PLANT: Austin Giga 1
+MATERIAL: EV Battery Pack (MAT-001)
+CURRENT_QTY: 450 units
+DAILY_BURN: 120 units
+DOI: 3.8 Days (Exact)
+STATUS: CRITICAL (&lt; 7.0d)
+SUPPLIER: Apex Battery Cells Ltd</div>
+            <div style="margin-top: 14px; font-size: 11.5px; color: #c4b5fd; font-weight: 600;">
+              ✓ Direct Execution on Snowflake Dynamic Tables
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Action MCP Closed-Loop Section -->
+  <section id="action-mcp">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-badge">AUTONOMOUS CLOSED-LOOP ACTION</div>
+        <h2 class="section-title">Action MCP: Turning Insights into Autonomous Execution</h2>
+        <p class="section-desc">
+          Test the live Model Context Protocol (MCP) tool call that automatically reroutes purchase orders to secondary suppliers and recalculates inventory health.
+        </p>
+      </div>
+
+      <div class="action-panel">
+        <div class="action-header">
+          <div class="action-title">
+            ⚙️ Action MCP Tool: <code>reroute_purchase_order</code>
+          </div>
+          <span class="action-status-badge" id="action-badge">Ready for Execution</span>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;" id="action-body-grid">
+          <div>
+            <div style="font-size: 13px; font-weight: 700; color: #e2e8f0; margin-bottom: 8px;">
+              PROPOSED MITIGATION PARAMETERS:
+            </div>
+            <div class="code-snippet">{
+  "tool": "reroute_purchase_order",
+  "parameters": {
+    "original_po_id": "PO-401",
+    "plant_id": "PLANT-001",
+    "material_id": "MAT-001",
+    "quantity": 4500,
+    "target_supplier_id": "SUPP-003",
+    "target_supplier_name": "Shenzhen EnerTech",
+    "delivery_mode": "EXPEDITED_AIR_FREIGHT",
+    "lead_time_days": 6
+  }
+}</div>
+          </div>
+
+          <div style="display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+              <div style="font-size: 13px; font-weight: 700; color: #e2e8f0; margin-bottom: 8px;">
+                PROJECTED OPERATIONAL IMPACT:
+              </div>
+              <ul style="font-size: 13.5px; color: #cbd5e1; padding-left: 20px; line-height: 1.6;">
+                <li>Emergency order <strong>PO-9042</strong> dispatched to Shenzhen EnerTech.</li>
+                <li>Arrival date: <strong>+6 days</strong> via air freight bypassing Long Beach port.</li>
+                <li>Austin Giga 1 DOI jumps from <strong style="color: var(--red);">3.8 days</strong> to <strong style="color: var(--emerald);">14.2 days (HEALTHY)</strong>.</li>
+                <li>Contract claim filed against Apex for <strong style="color: var(--emerald);">$140,000</strong> delay penalties.</li>
+              </ul>
+            </div>
+
+            <div style="margin-top: 20px;">
+              <button class="btn btn-success" id="btn-execute-mcp" onclick="executeMCPAction()" style="width: 100%; justify-content: center; padding: 14px; font-size: 15px;">
+                ⚡ Execute Closed-Loop PO Reroute via MCP
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div id="mcp-success-banner" style="display: none; background: rgba(16, 185, 129, 0.15); border: 1.5px solid var(--emerald); border-radius: 10px; padding: 18px; margin-top: 16px;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <h4 style="color: #6ee7b7; font-size: 16px; font-weight: 800; margin-bottom: 4px;">
+                🎉 SUCCESS: Emergency Purchase Order PO-9042 Dispatched via MCP!
+              </h4>
+              <p style="color: #a7f3d0; font-size: 13.5px;">
+                Dynamic Table <code>DT_PLANT_STOCKOUT_RISK</code> recalculated in next 60s cycle. Austin Plant Days of Inventory restored from <strong>3.8 days &rarr; 14.2 days</strong>. 0 hours downtime.
+              </p>
+            </div>
+            <button class="btn btn-outline" onclick="resetMCPAction()" style="font-size: 12px; padding: 6px 12px;">Reset Demo</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pitch Deck & Template Downloads -->
+  <section id="downloads">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-badge">SUBMISSION DOCUMENTS & ARTIFACTS</div>
+        <h2 class="section-title">Official Hackathon Pitch Decks</h2>
+        <p class="section-desc">
+          Download the high-resolution Master Pitch Deck and the official GCC Hackathon Prototype Submission Template. Both PDFs are verified under the 5MB requirement.
+        </p>
+      </div>
+
+      <div class="downloads-grid">
+        <!-- 11-Slide Deck PDF -->
+        <div class="download-card">
+          <div>
+            <div class="doc-icon" style="background: rgba(2, 132, 199, 0.15); color: #38bdf8;">📊</div>
+            <div class="doc-title">Master Pitch Deck (PDF)</div>
+            <div class="doc-meta">11 Slides • 2.1 MB • Crisp White Enterprise Theme</div>
+            <p style="font-size: 13.5px; color: var(--text-muted); margin-bottom: 20px;">
+              Comprehensive 11-slide deck covering problem crisis, 4 pillars, 5-tier architecture, Cortex Search legal intelligence, and scaling roadmap.
+            </p>
+          </div>
+          <a href="deck/SupplyChainIQ-Pitch-Deck.pdf" target="_blank" class="btn btn-primary" style="justify-content: center;">
+            📥 Download Pitch Deck (PDF)
+          </a>
+        </div>
+
+        <!-- 11-Slide Deck PPTX -->
+        <div class="download-card">
+          <div>
+            <div class="doc-icon" style="background: rgba(217, 119, 6, 0.15); color: #fbbf24;">📑</div>
+            <div class="doc-title">Master Pitch Deck (PPTX)</div>
+            <div class="doc-meta">11 Slides • 51 KB • Fully Editable Presentation</div>
+            <p style="font-size: 13.5px; color: var(--text-muted); margin-bottom: 20px;">
+              Native Microsoft PowerPoint presentation with editable vector shapes, cards, fonts, and enterprise styling.
+            </p>
+          </div>
+          <a href="deck/SupplyChainIQ-Pitch-Deck.pptx" download class="btn btn-outline" style="justify-content: center;">
+            📥 Download Deck (PPTX)
+          </a>
+        </div>
+
+        <!-- 6-Slide Submission PDF -->
+        <div class="download-card">
+          <div>
+            <div class="doc-icon" style="background: rgba(16, 185, 129, 0.15); color: #34d399;">📋</div>
+            <div class="doc-title">Submission Template (PDF)</div>
+            <div class="doc-meta">6 Slides • 1.3 MB • Official GCC Hackathon Format</div>
+            <p style="font-size: 13.5px; color: var(--text-muted); margin-bottom: 20px;">
+              The exact 6-slide template required by the Hackathon organizers with Team Aegis details, architecture, demo, and ROI outcomes.
+            </p>
+          </div>
+          <a href="Prototype Submission Template _ CoCo CLI Hackathon GCC Edition.pdf" target="_blank" class="btn btn-primary" style="justify-content: center;">
+            📥 Download Submission (PDF)
+          </a>
+        </div>
+
+        <!-- 6-Slide Submission PPTX -->
+        <div class="download-card">
+          <div>
+            <div class="doc-icon" style="background: rgba(139, 92, 246, 0.15); color: #c4b5fd;">📄</div>
+            <div class="doc-title">Submission Template (PPTX)</div>
+            <div class="doc-meta">6 Slides • 40 KB • Official GCC Hackathon PPTX</div>
+            <p style="font-size: 13.5px; color: var(--text-muted); margin-bottom: 20px;">
+              Editable PowerPoint file matching the official submission blueprint with clean white cards and Team Aegis metadata.
+            </p>
+          </div>
+          <a href="Prototype Submission Template _ CoCo CLI Hackathon GCC Edition.pptx" download class="btn btn-outline" style="justify-content: center;">
+            📥 Download Submission (PPTX)
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- System Architecture & Tech Specs -->
+  <section id="architecture">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-badge">ENTERPRISE CLOUD INFRASTRUCTURE</div>
+        <h2 class="section-title">5-Tier Snowflake CoCo System Architecture</h2>
+        <p class="section-desc">
+          Built natively inside Snowflake's governed security perimeter to guarantee zero data egress and zero hallucination.
+        </p>
+      </div>
+
+      <div class="arch-stack">
+        <div class="arch-card">
+          <div class="arch-badge" style="color: var(--snowflake);">1. Presentation Layer</div>
+          <div class="arch-desc">
+            • <strong>Streamlit in Snowflake (SiS):</strong> <code>SUPPLY_CHAIN_COMMAND_CENTER</code> with live disruption heatmaps & 1-click PO rerouting.<br>
+            • <strong>Snowflake CoCo CLI:</strong> Conversational terminal interface for planners, procurement teams, and logistics operators.
+          </div>
+        </div>
+
+        <div class="arch-card">
+          <div class="arch-badge" style="color: #c4b5fd;">2. Action MCP Protocol</div>
+          <div class="arch-desc">
+            • <strong>FastAPI Action MCP Server:</strong> Implements <code>supply_chain_mcp.py</code> exposing 5 governed agentic actions.<br>
+            • <strong>Transactional Tools:</strong> <code>reroute_purchase_order</code>, <code>get_plant_stockout_risk</code>, <code>search_supplier_contracts</code>.
+          </div>
+        </div>
+
+        <div class="arch-card">
+          <div class="arch-badge" style="color: #93c5fd;">3. Cortex Dual-Brain</div>
+          <div class="arch-desc">
+            • <strong>Snowflake Cortex Analyst:</strong> Semantic parser converting human intent into verified deterministic SQL queries.<br>
+            • <strong>Snowflake Cortex Search:</strong> Vector search service (<code>SUPPLIER_CONTRACTS_SEARCH</code>) indexing PDF contracts & SLA clauses.
+          </div>
+        </div>
+
+        <div class="arch-card">
+          <div class="arch-badge" style="color: #6ee7b7;">4. Governance & Dynamic Tables</div>
+          <div class="arch-desc">
+            • <strong>Semantic Ontology YAML:</strong> <code>supply_chain_semantic_model.yaml</code> defining trusted metrics, dimensions, and joins.<br>
+            • <strong>1-Minute Dynamic Tables:</strong> <code>DT_PLANT_STOCKOUT_RISK</code>, <code>DT_SUPPLIER_PERFORMANCE</code>, <code>DT_ACTIVE_DISRUPTIONS</code>.
+          </div>
+        </div>
+
+        <div class="arch-card">
+          <div class="arch-badge" style="color: #cbd5e1;">5. Relational Foundation</div>
+          <div class="arch-desc">
+            • <strong>Core Schema:</strong> 7 relational tables in <code>SUPPLY_CHAIN_DB.CORE</code> (<code>SUPPLIERS</code>, <code>PLANTS</code>, <code>MATERIALS</code>, <code>INVENTORY</code>, <code>PURCHASE_ORDERS</code>, <code>SHIPMENTS</code>, <code>DISRUPTIONS</code>).<br>
+            • <strong>Unstructured Repository:</strong> Staged PDF Master Service Agreements in <code>@CONTRACTS_STAGE</code>.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container footer-content">
+      <div>
+        <div style="font-weight: 700; color: #ffffff; margin-bottom: 4px;">SupplyChainIQ • Governed Conversational Analytics</div>
+        <div>Team: <strong>Aegis</strong> • Team Leader: <strong>Chirag H S</strong> (Solo Architect) • Snowflake Account: <code>ZJXLXUZ.JV50315</code></div>
+      </div>
+      <div>
+        <a href="https://github.com/chiraghs/CoCo-Learn" target="_blank" rel="noopener" class="btn btn-outline" style="font-size: 13px; padding: 8px 16px;">
+          ⭐ View GitHub Repository
+        </a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Plant Data Model
+    const plants = {
+      austin: {
+        title: "Austin Giga 1",
+        doi: "3.8 Days",
+        doiColor: "var(--red)",
+        doiDesc: "Threshold: Safe > 7.0d | Stockout: 91h",
+        stock: "450 Units",
+        burn: "Daily Burn: 120 Units/Day",
+        otif: "72.0%",
+        otifColor: "var(--amber)",
+        supplier: "Apex Battery Cells (Delayed +7.5d)",
+        backupOtif: "96.0% OTIF",
+        backupName: "Shenzhen EnerTech (Lead: 6d Air)",
+        disruption: true,
+        disruptionTitle: "CRITICAL RISK ALERT: Long Beach Customs Strike Delaying Shipment SHP-401",
+        disruptionDesc: "Disruption DIS-001 (Port of Long Beach Customs Strike) has delayed inbound shipment SHP-401 carrying 4,500 battery units from Apex Battery Cells by 14 business days. Austin Giga 1 inventory will reach zero in 91.2 operating hours."
+      },
+      fremont: {
+        title: "Fremont Assembly",
+        doi: "18.5 Days",
+        doiColor: "var(--emerald)",
+        doiDesc: "Status: HEALTHY (Safe Buffer)",
+        stock: "2,200 Units",
+        burn: "Daily Burn: 110 Units/Day",
+        otif: "95.5%",
+        otifColor: "var(--emerald)",
+        supplier: "Panasonic Energy (Active)",
+        backupOtif: "94.0% OTIF",
+        backupName: "LG Energy Solution (Lead: 5d Truck)",
+        disruption: false
+      },
+      berlin: {
+        title: "Berlin Plant",
+        doi: "6.2 Days",
+        doiColor: "var(--amber)",
+        doiDesc: "Status: WARNING (< 7.0d buffer)",
+        stock: "680 Units",
+        burn: "Daily Burn: 110 Units/Day",
+        otif: "84.2%",
+        otifColor: "var(--amber)",
+        supplier: "Northvolt AB (Lead: 4d Rail)",
+        backupOtif: "92.0% OTIF",
+        backupName: "CATL Europe (Lead: 3d Truck)",
+        disruption: true,
+        disruptionTitle: "WARNING: Rail Freight Congestion at Hamburg Terminal",
+        disruptionDesc: "Shipment SHP-208 experiencing a 3-day backlog at Hamburg rail terminal. Buffer remaining: 6.2 days."
+      },
+      shanghai: {
+        title: "Shanghai Gigafactory",
+        doi: "22.4 Days",
+        doiColor: "var(--emerald)",
+        doiDesc: "Status: OPTIMAL (High Safety Stock)",
+        stock: "4,500 Units",
+        burn: "Daily Burn: 200 Units/Day",
+        otif: "98.2%",
+        otifColor: "var(--emerald)",
+        supplier: "CATL Shanghai (Domestic)",
+        backupOtif: "97.0% OTIF",
+        backupName: "BYD FinDreams (Lead: 2d Truck)",
+        disruption: false
+      }
+    };
+
+    function switchPlant(key) {
+      document.querySelectorAll('.plant-chip').forEach(c => c.classList.remove('active'));
+      event.target.classList.add('active');
+
+      const p = plants[key];
+      document.getElementById('kpi-doi').textContent = p.doi;
+      document.getElementById('kpi-doi').style.color = p.doiColor;
+      document.getElementById('kpi-doi-desc').textContent = p.doiDesc;
+      document.getElementById('kpi-stock').textContent = p.stock;
+      document.getElementById('kpi-burn').textContent = p.burn;
+      document.getElementById('kpi-otif').textContent = p.otif;
+      document.getElementById('kpi-otif').style.color = p.otifColor;
+      document.getElementById('kpi-supplier').textContent = p.supplier;
+      document.getElementById('kpi-backup').textContent = p.backupOtif;
+      document.getElementById('kpi-backup-name').textContent = p.backupName;
+
+      const dBox = document.getElementById('disruption-box');
+      if (p.disruption) {
+        dBox.style.display = 'flex';
+        document.getElementById('disruption-title').textContent = p.disruptionTitle;
+        document.getElementById('disruption-desc').textContent = p.disruptionDesc;
+      } else {
+        dBox.style.display = 'none';
+      }
+    }
+
+    // Prompt Presets
+    const prompts = {
+      1: {
+        narrative: '"Austin Giga 1 is experiencing an imminent stockout crisis for EV Battery Packs with only 3.8 days of inventory remaining (450 units in stock against 120/day burn rate). Assembly line shutdown is projected in 91.2 operating hours. Inbound shipment SHP-401 from Apex Battery Cells is delayed 14 days due to Port of Long Beach customs strike."',
+        sql: `SELECT plant_name, material_name, 
+       days_of_inventory, stockout_risk_level, 
+       primary_supplier_name
+FROM SUPPLY_CHAIN_DB.CORE.DT_PLANT_STOCKOUT_RISK
+WHERE stockout_risk_level = 'CRITICAL'
+ORDER BY days_of_inventory ASC;`,
+        data: `PLANT: Austin Giga 1
+MATERIAL: EV Battery Pack (MAT-001)
+CURRENT_QTY: 450 units
+DAILY_BURN: 120 units
+DOI: 3.8 Days (Exact)
+STATUS: CRITICAL (< 7.0d)
+SUPPLIER: Apex Battery Cells Ltd`
+      },
+      2: {
+        narrative: '"Under Section 8.2 of the Master Service Agreement with Apex Battery Cells Ltd, late shipments incur a 5.0% liquidated damages penalty on total purchase order value plus $10,000 per business day beyond a 3-day grace period. Based on 14 days of delay on PO-401, a liquidated damages claim of $140,000 is legally enforceable."',
+        sql: `SELECT PARSE_JSON(
+  SNOWFLAKE.CORTEX.SEARCH_PREVIEW(
+    'SUPPLY_CHAIN_DB.CORE.SUPPLIER_CONTRACTS_SEARCH',
+    '{"query": "Apex Battery liquidated damages penalties Section 8",
+      "columns": ["supplier_name", "clause_category", "clause_text"],
+      "limit": 1}'
+  )
+)['results'][0]['clause_text']::STRING;`,
+        data: `SUPPLIER: Apex Battery Cells Ltd
+SECTION: 8.2 (Liquidated Damages for Delayed Delivery)
+RATE: 5% order penalty + $10,000 / day
+GRACE PERIOD: 3 business days
+TOTAL DELAY: 14 business days
+ENFORCEABLE CLAIM: $140,000.00`
+      },
+      3: {
+        narrative: '"Root-cause decomposition identifies a 3-tier cascade: (1) Immediate Symptom: Austin DOI fell to 3.8 days; (2) External Driver: 14-day customs strike at Port of Long Beach blocking Shipment SHP-401; (3) Systemic Vulnerability: 88% single-source reliance on Apex Battery Cells. Mitigation: Reroute 4,500 units to Shenzhen EnerTech via air freight."',
+        sql: `SELECT 
+    d.disruption_id, d.description, d.delay_days,
+    s.shipment_id, s.supplier_name, s.destination_plant,
+    p.days_of_inventory
+FROM SUPPLY_CHAIN_DB.CORE.DT_ACTIVE_DISRUPTIONS d
+JOIN SUPPLY_CHAIN_DB.CORE.SHIPMENTS s ON d.affected_shipment_id = s.shipment_id
+JOIN SUPPLY_CHAIN_DB.CORE.DT_PLANT_STOCKOUT_RISK p ON s.destination_plant = p.plant_name;`,
+        data: `DISRUPTION: DIS-001 (Long Beach Customs Strike)
+DELAY: +14 Business Days
+AFFECTED_PO: PO-401 / SHP-401
+SUPPLIER_BIAS: 88.0% Single Sourced from Apex
+ACTION_PATH: PO Reallocation to Secondary Supplier`
+      }
+    };
+
+    function loadPrompt(num) {
+      document.querySelectorAll('.chip-btn').forEach(b => b.classList.remove('active'));
+      event.target.classList.add('active');
+
+      const pr = prompts[num];
+      document.getElementById('recon-narrative').textContent = pr.narrative;
+      document.getElementById('recon-sql').textContent = pr.sql;
+      document.getElementById('recon-data').textContent = pr.data;
+    }
+
+    // MCP Action Simulator
+    function executeMCPAction() {
+      const btn = document.getElementById('btn-execute-mcp');
+      btn.disabled = true;
+      btn.textContent = "⏳ Executing MCP Tool Call in Snowflake...";
+
+      setTimeout(() => {
+        btn.textContent = "✓ Executed PO Reroute!";
+        document.getElementById('action-badge').textContent = "COMPLETED • PO-9042 DISPATCHED";
+        document.getElementById('action-badge').style.background = "var(--emerald-bg)";
+        document.getElementById('action-badge').style.color = "var(--emerald)";
+        document.getElementById('action-badge').style.borderColor = "var(--emerald)";
+
+        // Animate KPIs to Healthy
+        document.getElementById('kpi-doi').textContent = "14.2 Days";
+        document.getElementById('kpi-doi').style.color = "var(--emerald)";
+        document.getElementById('kpi-doi-desc').textContent = "Status: HEALTHY (Restored Buffer)";
+        document.getElementById('hero-doi').textContent = "14.2 Days";
+        document.getElementById('hero-doi').style.color = "var(--emerald)";
+        document.getElementById('hero-doi-status').textContent = "🟢 HEALTHY BUFFER RESTORED (PO-9042 Active)";
+
+        document.getElementById('disruption-box').style.display = 'none';
+        document.getElementById('mcp-success-banner').style.display = 'block';
+      }, 1200);
+    }
+
+    function resetMCPAction() {
+      const btn = document.getElementById('btn-execute-mcp');
+      btn.disabled = false;
+      btn.textContent = "⚡ Execute Closed-Loop PO Reroute via MCP";
+      document.getElementById('action-badge').textContent = "Ready for Execution";
+      document.getElementById('action-badge').style.background = "var(--purple-bg)";
+      document.getElementById('action-badge').style.color = "#c4b5fd";
+      document.getElementById('action-badge').style.borderColor = "rgba(139, 92, 246, 0.4)";
+
+      document.getElementById('kpi-doi').textContent = "3.8 Days";
+      document.getElementById('kpi-doi').style.color = "var(--red)";
+      document.getElementById('kpi-doi-desc').textContent = "Threshold: Safe > 7.0d | Stockout: 91h";
+      document.getElementById('hero-doi').textContent = "3.8 Days";
+      document.getElementById('hero-doi').style.color = "var(--red)";
+      document.getElementById('hero-doi-status').textContent = "🔴 CRITICAL RISK (< 7.0d threshold)";
+
+      document.getElementById('disruption-box').style.display = 'flex';
+      document.getElementById('mcp-success-banner').style.display = 'none';
+    }
+  </script>
+</body>
+</html>
