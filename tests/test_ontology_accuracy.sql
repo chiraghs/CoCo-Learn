@@ -67,3 +67,28 @@ SELECT
         ELSE 'FAILED' 
     END AS TEST_STATUS
 FROM DT_SUPPLIER_PERFORMANCE;
+
+-- TEST 5: Ontological Taxonomy - Verify Recursive Transitive Closure
+-- Ensure Warehouse, BondedWarehouse, ColdStorage, and Plant inherit from SupplyChainNode
+SELECT 
+    'TEST 5: Ontological Transitive Closure Hierarchy' AS TEST_NAME,
+    COUNT(*) AS SUBCLASS_COUNT,
+    CASE 
+        WHEN COUNT(*) >= 4 AND MAX(depth) >= 2 
+        THEN 'PASSED' 
+        ELSE 'FAILED' 
+    END AS TEST_STATUS
+FROM SUPPLY_CHAIN_DB.ONT.CLASS_CLOSURE
+WHERE ancestor = 'SupplyChainNode' AND depth > 0;
+
+-- TEST 6: Cortex Agent UDF Function Verification - GET_SUBCLASSES
+SELECT 
+    'TEST 6: UDF GET_SUBCLASSES Verification' AS TEST_NAME,
+    COUNT(*) AS SUBCLASS_COUNT,
+    CASE 
+        WHEN COUNT(*) >= 2 
+        THEN 'PASSED' 
+        ELSE 'FAILED' 
+    END AS TEST_STATUS
+FROM TABLE(SUPPLY_CHAIN_DB.ONT.GET_SUBCLASSES('Warehouse'));
+

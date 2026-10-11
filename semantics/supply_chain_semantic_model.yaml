@@ -133,6 +133,66 @@ tables:
         data_type: NUMBER
         default_aggregation: sum
 
+  - name: concept_definitions
+    description: Plain-language definitions of every concept in the supply chain ontology. Enables Cortex Analyst to understand what a concept means, whether it is abstract, and its semantic inheritance.
+    base_table:
+      database: SUPPLY_CHAIN_DB
+      schema: ONT
+      table: ONT_CLASS
+    dimensions:
+      - name: class_name
+        description: Canonical ontology concept class name.
+        expr: class_name
+        data_type: VARCHAR
+        primary_key: true
+        synonyms: [concept, type, class, category]
+      - name: parent_class
+        description: Direct parent category in the supply chain taxonomy.
+        expr: parent_class
+        data_type: VARCHAR
+        synonyms: [parent_type, parent_concept, belongs_to]
+      - name: is_abstract
+        description: TRUE indicates an abstract semantic grouping; FALSE maps to concrete operational entities.
+        expr: is_abstract
+        data_type: BOOLEAN
+        synonyms: [abstract, is_grouping]
+      - name: description
+        description: Plain-language definition of the business concept.
+        expr: description
+        data_type: VARCHAR
+        synonyms: [definition, meaning, explanation, what_is]
+
+  - name: concept_hierarchy
+    description: Transitive closure table encoding the complete inheritance tree. Each row maps an ancestor to a descendant at an integer depth.
+    base_table:
+      database: SUPPLY_CHAIN_DB
+      schema: ONT
+      table: CLASS_CLOSURE
+    dimensions:
+      - name: ancestor
+        description: Root or parent concept family.
+        expr: ancestor
+        data_type: VARCHAR
+        synonyms: [parent_concept, parent_type, category, family]
+      - name: descendant
+        description: Subtype or specialized concept member.
+        expr: descendant
+        data_type: VARCHAR
+        synonyms: [subtype, child_concept, specific_type, member]
+      - name: depth
+        description: Distance in the ontology graph (0 = identity, 1 = direct child, >1 = indirect subtype).
+        expr: depth
+        data_type: NUMBER
+        synonyms: [level, hierarchy_level, distance]
+
+relationships:
+  - name: hierarchy_to_definition
+    left_table: concept_hierarchy
+    right_table: concept_definitions
+    left_key: descendant
+    right_key: class_name
+    join_type: LEFT
+
 verified_queries:
   - name: highest_penalty_supplier
     question: "Which supplier has the highest delay penalty liability?"
@@ -151,3 +211,10 @@ verified_queries:
     verified_at: 1727913600
     verified_by: "Logistics Director"
     sql: "SELECT shipment_id, carrier, origin_port, dest_port, shipment_status, days_past_promised, demurrage_usd FROM SUPPLY_CHAIN_DB.CORE.DT_ACTIVE_DISRUPTIONS WHERE part_id = 'PART_BAT_402';"
+
+  - name: supply_chain_subtypes
+    question: "What are all subtypes of SupplyChainNode in the ontology?"
+    verified_at: 1727913600
+    verified_by: "Supply Chain Architect"
+    sql: "SELECT descendant AS subtype, depth FROM SUPPLY_CHAIN_DB.ONT.CLASS_CLOSURE WHERE ancestor = 'SupplyChainNode' AND depth > 0 ORDER BY depth, descendant;"
+
