@@ -431,9 +431,9 @@ html_content = f"""<!DOCTYPE html>
           <span>⚡ Simulate Supply Shock</span>
         </button>
 
-        <!-- Ask Cortex Copilot Button -->
+        <!-- Ask CoCo Button -->
         <button onclick="openCopilotModal()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-purple-500/15 border border-purple-500/30 text-purple-600 hover:bg-purple-500/25 transition-all shadow-sm">
-          <span>🤖 Ask Copilot</span>
+          <span>🤖 Ask CoCo</span>
         </button>
 
         <!-- Threshold Rules -->
@@ -1495,7 +1495,7 @@ html_content = f"""<!DOCTYPE html>
       <div class="flex items-center justify-between pb-3 border-b border-snowflake/20">
         <div class="flex items-center gap-2.5">
           <span class="text-xl">🤖</span>
-          <h3 class="font-outfit font-black text-base sf-text-title">Snowflake Cortex AI Copilot</h3>
+          <h3 class="font-outfit font-black text-base sf-text-title">Ask CoCo — Snowflake Cortex Agent</h3>
         </div>
         <button onclick="closeCopilotModal()" class="text-slate-400 hover:text-slate-800 dark:hover:text-white font-bold">✕</button>
       </div>
