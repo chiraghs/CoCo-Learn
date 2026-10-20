@@ -1,0 +1,1892 @@
+import re
+
+with open('index.html.bak', 'r') as f:
+    orig = f.read()
+
+# Extract 3D SVG
+svg_start = orig.find('<svg id="snowflake-digital-twin-svg"')
+svg_end = orig.find('</svg>', svg_start) + 6
+digital_twin_svg = orig[svg_start:svg_end]
+
+# Extract SPATIAL_ONTOLOGY
+ont_start = orig.find('const SPATIAL_ONTOLOGY = {')
+bracket_count = 0
+found_first = False
+for i, c in enumerate(orig[ont_start:]):
+    if c == '{':
+        bracket_count += 1
+        found_first = True
+    elif c == '}':
+        bracket_count -= 1
+        if found_first and bracket_count == 0:
+            ont_end = ont_start + i + 1
+            break
+spatial_ontology_js = orig[ont_start:ont_end]
+
+
+onboard_start = orig.find('<div id="onboard-modal"')
+rules_start = orig.find('<div id="rules-modal"')
+onboard_end = orig.rfind('</div>', onboard_start, rules_start) + 6
+onboard_modal_html = orig[onboard_start:onboard_end]
+
+script_start = orig.find('<script', rules_start)
+rules_end = orig.rfind('</div>', rules_start, script_start) + 6
+rules_modal_html = orig[rules_start:rules_end]
+html_content = f"""<!DOCTYPE html>
+<html lang="en" class="theme-light" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Snowflake Cortex Facility Digital Twin — SupplyChainIQ | Team Aegis</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Google Fonts: Outfit (Snowflake Display), Inter, JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {{
+      darkMode: ['selector', '[data-theme="dark"]'],
+      theme: {{
+        extend: {{
+          colors: {{
+            snowflake: {{
+              DEFAULT: '#29B5E8',
+              50: '#F0FAFE',
+              100: '#DDF4FC',
+              200: '#B5E7F9',
+              300: '#7CD4F5',
+              400: '#29B5E8',
+              500: '#0E98CB',
+              600: '#087AA6',
+              700: '#075F83',
+              800: '#074863',
+              900: '#093B52',
+            }},
+            polar: {{
+              night: '#060D17',
+              midnight: '#0A1728',
+              card: '#0E223D',
+              border: '#1B3A5B',
+              hover: '#132C4D'
+            }}
+          }},
+          fontFamily: {{
+            display: ['Outfit', 'sans-serif'],
+            body: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          }}
+        }}
+      }}
+    }};
+  </script>
+  
+  <style>
+    /* BASE FONTS & TRANSITIONS */
+    body {{
+      font-family: 'Inter', -apple-system, sans-serif;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }}
+    .font-outfit {{ font-family: 'Outfit', sans-serif; }}
+    .font-mono-code {{ font-family: 'JetBrains Mono', monospace; }}
+
+    /* =========================================
+       1. LIGHT THEME (DEFAULT SNOWFLAKE AESTHETIC)
+       ========================================= */
+    :root, html.theme-light, html[data-theme="light"] {{
+      color-scheme: light;
+      --color-canvas: #F8FAFC;
+      --color-deep: #F1F5F9;
+      --color-shell: #FFFFFF;
+      --color-surface: #FFFFFF;
+      --color-surface-2: #F1F5F9;
+      --color-surface-3: #E2E8F0;
+      --color-line: #E2E8F0;
+      --color-line-strong: #CBD5E1;
+      --color-ink: #0F172A;
+      --color-ink-2: #334155;
+      --color-muted: #64748B;
+      --color-accent: #0E98CB;
+      --color-accent-strong: #087AA6;
+      --color-accent-soft: #F0FAFE;
+      --color-accent-ink: #0369A1;
+      --color-healthy: #10B981;
+      --color-warning: #F59E0B;
+      --color-critical: #EF4444;
+      --color-offline: #64748B;
+      --color-healthy-ink: #059669;
+      --color-warning-ink: #D97706;
+      --color-critical-ink: #DC2626;
+      --sf-border: rgba(41, 181, 232, 0.25);
+      --sf-glow: rgba(41, 181, 232, 0.12);
+    }}
+
+    html.theme-light body, html[data-theme="light"] body {{
+      background-color: #F8FAFC;
+      background-image: 
+        radial-gradient(circle at 12% 15%, rgba(41, 181, 232, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 88% 85%, rgba(14, 152, 203, 0.06) 0%, transparent 45%),
+        linear-gradient(180deg, #F0F9FF 0%, #F8FAFC 100%);
+      color: #0F172A;
+    }}
+
+    html.theme-light .sf-sidebar, html[data-theme="light"] .sf-sidebar {{
+      background: #FFFFFF;
+      border-right: 1px solid rgba(41, 181, 232, 0.20);
+      box-shadow: 2px 0 8px 0 rgba(0, 0, 0, 0.03);
+    }}
+
+    html.theme-light .sf-header, html[data-theme="light"] .sf-header {{
+      background: rgba(255, 255, 255, 0.95);
+      border-bottom: 1px solid rgba(41, 181, 232, 0.22);
+      box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.04);
+    }}
+
+    html.theme-light .sf-card, html[data-theme="light"] .sf-card {{
+      background: #FFFFFF;
+      border: 1px solid rgba(41, 181, 232, 0.22);
+      box-shadow: 0 4px 16px -2px rgba(41, 181, 232, 0.08), 0 1px 3px 0 rgba(0, 0, 0, 0.03);
+      color: #0F172A;
+    }}
+
+    html.theme-light .sf-card-glow, html[data-theme="light"] .sf-card-glow {{
+      box-shadow: 0 8px 24px rgba(41, 181, 232, 0.12), 0 2px 6px rgba(0, 0, 0, 0.03);
+    }}
+
+    html.theme-light .sf-inner-box, html[data-theme="light"] .sf-inner-box {{
+      background: #F8FAFC;
+      border: 1px solid #E2E8F0;
+      color: #0F172A;
+    }}
+
+    html.theme-light .viewport-box, html[data-theme="light"] .viewport-box {{
+      background: linear-gradient(180deg, #EBF7FD 0%, #F0F9FF 50%, #E2F2FC 100%);
+      border-color: rgba(41, 181, 232, 0.35);
+    }}
+
+    html.theme-light .drawer-box, html[data-theme="light"] .drawer-box {{
+      background: rgba(255, 255, 255, 0.98);
+      border-left: 1px solid rgba(41, 181, 232, 0.3);
+      color: #0F172A;
+    }}
+
+    /* =========================================
+       2. DARK THEME (POLAR MIDNIGHT CLOUD)
+       ========================================= */
+    html.theme-dark, html[data-theme="dark"] {{
+      color-scheme: dark;
+      --color-canvas: #060D17;
+      --color-deep: #0A1728;
+      --color-shell: #0E223D;
+      --color-surface: #0E223D;
+      --color-surface-2: #122C4E;
+      --color-surface-3: #1A3C64;
+      --color-line: rgba(41, 181, 232, 0.22);
+      --color-line-strong: rgba(41, 181, 232, 0.38);
+      --color-ink: #FFFFFF;
+      --color-ink-2: #CBD5E1;
+      --color-muted: #94A3B8;
+      --color-accent: #29B5E8;
+      --color-accent-strong: #0E98CB;
+      --color-accent-soft: rgba(41, 181, 232, 0.15);
+      --color-accent-ink: #7CD4F5;
+      --color-healthy: #10B981;
+      --color-warning: #F59E0B;
+      --color-critical: #EF4444;
+      --color-offline: #64748B;
+      --color-healthy-ink: #34D399;
+      --color-warning-ink: #FBBF24;
+      --color-critical-ink: #F87171;
+    }}
+
+    html.theme-dark body, html[data-theme="dark"] body {{
+      background-color: #060D17;
+      background-image: 
+        radial-gradient(circle at 15% 15%, rgba(41, 181, 232, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 85% 85%, rgba(14, 152, 203, 0.06) 0%, transparent 45%),
+        radial-gradient(circle at 50% 50%, rgba(11, 23, 40, 0.6) 0%, #060D17 100%);
+      color: #E2E8F0;
+    }}
+
+    html.theme-dark .sf-sidebar, html[data-theme="dark"] .sf-sidebar {{
+      background: rgba(10, 23, 40, 0.95);
+      border-right: 1px solid rgba(41, 181, 232, 0.20);
+      box-shadow: 2px 0 12px 0 rgba(0, 0, 0, 0.4);
+    }}
+
+    html.theme-dark .sf-header, html[data-theme="dark"] .sf-header {{
+      background: rgba(10, 23, 40, 0.90);
+      border-bottom: 1px solid rgba(41, 181, 232, 0.20);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }}
+
+    html.theme-dark .sf-card, html[data-theme="dark"] .sf-card {{
+      background: rgba(14, 34, 61, 0.75);
+      border: 1px solid rgba(41, 181, 232, 0.22);
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.45);
+      color: #E2E8F0;
+    }}
+
+    html.theme-dark .sf-inner-box, html[data-theme="dark"] .sf-inner-box {{
+      background: rgba(10, 23, 40, 0.85);
+      border: 1px solid rgba(41, 181, 232, 0.20);
+      color: #E2E8F0;
+    }}
+
+    html.theme-dark .viewport-box, html[data-theme="dark"] .viewport-box {{
+      background: #0A1728;
+      border-color: rgba(41, 181, 232, 0.30);
+    }}
+
+    html.theme-dark .drawer-box, html[data-theme="dark"] .drawer-box {{
+      background: rgba(10, 23, 40, 0.96);
+      border-left: 1px solid rgba(41, 181, 232, 0.3);
+      color: #E2E8F0;
+    }}
+
+    /* CYBER STREAM & TOPOLOGY ANIMATIONS */
+    @keyframes dashMove {{
+      to {{ stroke-dashoffset: -40; }}
+    }}
+    .flow-stream, .edge-flow {{
+      stroke-dasharray: 6, 6;
+      animation: dashMove 1.5s linear infinite;
+    }}
+    .flow-stream-fast, .edge-flow-hot {{
+      stroke-dasharray: 4, 4;
+      animation: dashMove 0.8s linear infinite;
+    }}
+
+    /* GRID BACKGROUND FOR TOPOLOGY */
+    .grid-bg {{
+      background-size: 24px 24px;
+      background-image: 
+        linear-gradient(to right, rgba(41, 181, 232, 0.08) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(41, 181, 232, 0.08) 1px, transparent 1px);
+    }}
+
+    /* SCROLLBARS */
+    ::-webkit-scrollbar {{ width: 6px; height: 6px; }}
+    ::-webkit-scrollbar-track {{ background: rgba(10, 23, 40, 0.05); }}
+    ::-webkit-scrollbar-thumb {{ background: rgba(41, 181, 232, 0.35); border-radius: 4px; }}
+    ::-webkit-scrollbar-thumb:hover {{ background: rgba(41, 181, 232, 0.65); }}
+  </style>
+</head>
+<body class="min-h-screen flex selection:bg-snowflake selection:text-polar-night">
+
+  <!-- ========================================================================= -->
+  <!-- 1. PERSISTENT NAVIGATION SIDEBAR (Inspired by Agent-SupplyChain)          -->
+  <!-- ========================================================================= -->
+  <aside id="app-sidebar" class="sf-sidebar fixed inset-y-0 left-0 z-50 w-64 flex flex-col transition-all duration-300">
+    
+    <!-- Sidebar Brand -->
+    <div class="h-16 flex items-center gap-3 px-5 border-b border-snowflake/20">
+      <div class="w-9 h-9 rounded-xl bg-snowflake/15 border border-snowflake/35 flex items-center justify-center p-1.5 shadow-sm text-snowflake">
+        <svg class="w-full h-full" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="12" y1="2" x2="12" y2="22"></line>
+          <line x1="2" y1="12" x2="22" y2="12"></line>
+          <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line>
+          <line x1="19.07" y1="4.93" x2="4.93" y2="19.07"></line>
+          <polyline points="10 4 12 2 14 4"></polyline>
+          <polyline points="10 20 12 22 14 20"></polyline>
+          <polyline points="4 10 2 12 4 14"></polyline>
+          <polyline points="20 10 22 12 20 14"></polyline>
+        </svg>
+      </div>
+      <div class="flex flex-col">
+        <span class="font-outfit font-black text-sm tracking-tight leading-tight flex items-center gap-1.5">
+          <span>Snowflake Cortex</span>
+          <span class="text-[9px] px-1 py-0.2 rounded font-mono-code font-bold bg-snowflake/15 text-snowflake">TWIN</span>
+        </span>
+        <span class="text-[10.5px] text-slate-500 font-medium">SupplyChainIQ • Team Aegis</span>
+      </div>
+    </div>
+
+    <!-- Navigation Menu Items -->
+    <nav class="flex-1 overflow-y-auto px-3 py-4 space-y-5">
+      
+      <!-- GROUP 1: OPERATE -->
+      <div>
+        <p class="px-3 pb-2 text-[10.5px] font-bold tracking-wider text-slate-400 uppercase font-mono-code">Operate</p>
+        <ul class="space-y-1 text-xs font-semibold">
+          <li>
+            <button onclick="navigatePage('twin')" id="nav-btn-twin" class="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg bg-snowflake/15 text-snowflake border border-snowflake/30 font-bold transition-all shadow-sm">
+              <svg class="w-4 h-4 text-snowflake" fill="none" viewBox="0 0 24 24" stroke="currentColor"><circle cx="18" cy="5" r="3" stroke-width="2"/><circle cx="6" cy="12" r="3" stroke-width="2"/><circle cx="18" cy="19" r="3" stroke-width="2"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49" stroke-width="2"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49" stroke-width="2"/></svg>
+              <span class="flex-1 text-left">Connected Twin</span>
+              <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            </button>
+          </li>
+          <li>
+            <button onclick="navigatePage('dashboard')" id="nav-btn-dashboard" class="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-snowflake/10 hover:text-snowflake transition-all">
+              <svg class="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+              <span class="flex-1 text-left">Command Center</span>
+              <span class="px-1.5 py-0.2 rounded text-[10px] font-bold bg-amber-500/20 text-amber-600">1 Alert</span>
+            </button>
+          </li>
+        </ul>
+      </div>
+
+      <!-- GROUP 2: INTELLIGENCE -->
+      <div>
+        <p class="px-3 pb-2 text-[10.5px] font-bold tracking-wider text-slate-400 uppercase font-mono-code">Intelligence</p>
+        <ul class="space-y-1 text-xs font-semibold">
+          <li>
+            <button onclick="navigatePage('agents')" id="nav-btn-agents" class="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-snowflake/10 hover:text-snowflake transition-all">
+              <svg class="w-4 h-4 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><rect x="3" y="4" width="18" height="18" rx="2" stroke-width="2"/><line x1="9" y1="9" x2="15" y2="9" stroke-width="2"/><line x1="9" y1="13" x2="15" y2="13" stroke-width="2"/><line x1="9" y1="17" x2="13" y2="17" stroke-width="2"/></svg>
+              <span class="flex-1 text-left">Cortex AI Operations</span>
+              <span class="w-1.5 h-1.5 rounded-full bg-purple-500"></span>
+            </button>
+          </li>
+          <li>
+            <button onclick="navigatePage('simulator')" id="nav-btn-simulator" class="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-snowflake/10 hover:text-snowflake transition-all">
+              <svg class="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" /></svg>
+              <span class="flex-1 text-left">What-If Simulator</span>
+            </button>
+          </li>
+        </ul>
+      </div>
+
+      <!-- GROUP 3: GOVERNANCE & ADMIN -->
+      <div>
+        <p class="px-3 pb-2 text-[10.5px] font-bold tracking-wider text-slate-400 uppercase font-mono-code">Governance</p>
+        <ul class="space-y-1 text-xs font-semibold">
+          <li>
+            <button onclick="navigatePage('approvals')" id="nav-btn-approvals" class="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-snowflake/10 hover:text-snowflake transition-all">
+              <svg class="w-4 h-4 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" /></svg>
+              <span class="flex-1 text-left">Decision Approvals</span>
+              <span class="px-1.5 py-0.2 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-600">2 Pending</span>
+            </button>
+          </li>
+          <li>
+            <button onclick="navigatePage('audit')" id="nav-btn-audit" class="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-snowflake/10 hover:text-snowflake transition-all">
+              <svg class="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+              <span class="flex-1 text-left">Horizon Audit Trail</span>
+            </button>
+          </li>
+          <li>
+            <button onclick="navigatePage('integrations')" id="nav-btn-integrations" class="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-snowflake/10 hover:text-snowflake transition-all">
+              <svg class="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+              <span class="flex-1 text-left">Integrations &amp; MCP</span>
+            </button>
+          </li>
+        </ul>
+      </div>
+
+    </nav>
+
+    <!-- Sidebar Bottom Status Footer -->
+    <div class="p-3 border-t border-snowflake/20 font-mono-code text-[11px] space-y-1.5 sf-inner-box m-2 rounded-xl">
+      <div class="flex items-center justify-between text-slate-500">
+        <span>SNOWFLAKE ROLE:</span>
+        <span class="text-snowflake font-bold">ACCOUNTADMIN</span>
+      </div>
+      <div class="flex items-center justify-between text-slate-500">
+        <span>TARGET LAG:</span>
+        <span class="text-emerald-500 font-bold">1 MINUTE (38s)</span>
+      </div>
+      <div class="flex items-center justify-between text-slate-500">
+        <span>ONTOLOGY:</span>
+        <span class="text-snowflake font-bold">SUPPLY_CHAIN_DB.ONT</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ========================================================================= -->
+  <!-- 2. MAIN APP SHELL & TOPBAR                                                -->
+  <!-- ========================================================================= -->
+  <div class="lg:pl-64 flex-1 flex flex-col min-h-screen">
+    
+    <!-- STICKY TOPBAR -->
+    <header class="sf-header px-5 py-3 sticky top-0 z-40 backdrop-blur-xl flex items-center justify-between gap-4">
+      
+      <!-- Facility Title & Selector -->
+      <div class="flex items-center gap-3">
+        <div class="relative">
+          <select id="facility-select" onchange="changeFacility(this.value)" class="sf-inner-box border border-snowflake/30 text-xs font-bold rounded-lg pl-3 pr-8 py-1.5 cursor-pointer hover:border-snowflake focus:outline-none appearance-none font-display">
+            <option value="WH_RIVERSIDE_01">❄️ Riverside Smart Hub (Newark, NJ • 78% Cap)</option>
+            <option value="PLANT_02">⚡ Austin Gigafactory 1 (Austin, TX • Critical DOI 3.8d)</option>
+            <option value="PLANT_01">🚗 Fremont Assembly Plant (Fremont, CA • 84% Cap)</option>
+            <option value="PLANT_03">🏭 Berlin Gigafactory 4 (Brandenburg, DE • 92% Cap)</option>
+          </select>
+          <div class="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-snowflake text-xs">▼</div>
+        </div>
+
+        <!-- Simulation Clock -->
+        <div class="hidden sm:flex items-center gap-2 sf-inner-box px-3 py-1 rounded-lg border border-snowflake/25 text-xs font-mono-code">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+          <span id="top-sim-clock" class="font-bold">Mon, Oct 19 • 13:45 UTC</span>
+          <button onclick="advancePlantTime(1)" class="px-1.5 py-0.5 rounded bg-snowflake/15 text-snowflake text-[10px] font-bold hover:bg-snowflake/25" title="Fast forward 1 hour">+1h</button>
+          <button onclick="advancePlantTime(6)" class="px-1.5 py-0.5 rounded bg-snowflake/15 text-snowflake text-[10px] font-bold hover:bg-snowflake/25" title="Fast forward 6 hours">+6h</button>
+        </div>
+      </div>
+
+      <!-- Header Action Buttons -->
+      <div class="flex items-center gap-2">
+        
+        <!-- Crisis Demo Trigger -->
+        <button onclick="triggerCrisisDemo()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-amber-500/15 border border-amber-500/30 text-amber-600 hover:bg-amber-500/25 transition-all shadow-sm" title="Trigger Supply Chain Crisis Demo">
+          <span>⚡ Simulate Supply Shock</span>
+        </button>
+
+        <!-- Ask Cortex Copilot Button -->
+        <button onclick="openCopilotModal()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-purple-500/15 border border-purple-500/30 text-purple-600 hover:bg-purple-500/25 transition-all shadow-sm">
+          <span>🤖 Ask Copilot</span>
+        </button>
+
+        <!-- Threshold Rules -->
+        <button onclick="openRulesModal()" class="hidden md:flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold sf-inner-box hover:border-snowflake transition-all">
+          <span>⚙️ Rules</span>
+        </button>
+
+        <!-- Onboard Facility -->
+        <button onclick="openOnboardModal()" class="hidden md:flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold sf-inner-box hover:border-snowflake transition-all">
+          <span>➕ Onboard</span>
+        </button>
+
+        <!-- Submission Decks Link -->
+        <a href="showcase_overview.html" class="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold sf-inner-box hover:border-snowflake transition-all" title="View Submission Slides & Overview">
+          <span>📊 Decks</span>
+        </a>
+
+        <!-- Theme Toggle (Light / Dark) -->
+        <button onclick="toggleTheme()" id="theme-toggle-btn" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold border border-snowflake/30 bg-snowflake/10 hover:bg-snowflake/20 text-snowflake transition-all shadow-sm" title="Toggle Theme">
+          <span id="theme-toggle-icon">☀️</span>
+          <span id="theme-toggle-label" class="hidden sm:inline">Light</span>
+        </button>
+
+      </div>
+
+    </header>
+
+    <!-- ======================================================================= -->
+    <!-- 3. MAIN WORKSPACE CONTENT CONTAINER (SWITCHABLE VIEWS)                  -->
+    <!-- ======================================================================= -->
+    <main class="flex-1 p-5 flex flex-col gap-5 max-w-[1750px] w-full mx-auto">
+
+      <!-- ===================================================================== -->
+      <!-- VIEW 1: DIGITAL TWIN STUDIO (Topology + 3D Floor Plan)                -->
+      <!-- ===================================================================== -->
+      <section id="view-twin" class="flex-1 flex flex-col gap-4">
+        
+        <!-- Twin Control Bar & Sub-Tabs -->
+        <div class="flex flex-wrap items-center justify-between gap-3 sf-card p-3 rounded-xl">
+          <div class="flex items-center gap-2">
+            <!-- Mode Switcher Pill -->
+            <div class="inline-flex rounded-lg border border-snowflake/25 sf-inner-box p-0.5">
+              <button onclick="setTwinView('topology')" id="tab-twin-topology" class="flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-bold bg-snowflake text-polar-night shadow-sm transition-all">
+                <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                <span>Topology Graph</span>
+              </button>
+              <button onclick="setTwinView('floor')" id="tab-twin-floor" class="flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-semibold text-slate-500 hover:text-snowflake transition-all">
+                <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>
+                <span>3D Floor Plan</span>
+              </button>
+            </div>
+
+            <!-- Zoom & Controls -->
+            <div class="flex items-center gap-1 sf-inner-box rounded-lg p-0.5 border border-snowflake/20">
+              <button onclick="zoomTwin(1.1)" class="w-7 h-7 rounded hover:bg-snowflake/20 text-snowflake font-bold text-xs flex items-center justify-center" title="Zoom In">➕</button>
+              <button onclick="zoomTwin(0.9)" class="w-7 h-7 rounded hover:bg-snowflake/20 text-snowflake font-bold text-xs flex items-center justify-center" title="Zoom Out">➖</button>
+              <button onclick="resetCanvasTransform()" class="px-2 h-7 rounded text-[11px] font-mono-code text-slate-500 hover:text-snowflake flex items-center justify-center" title="Reset Zoom">Reset</button>
+            </div>
+          </div>
+
+          <!-- Status Counts Legend -->
+          <div class="flex items-center gap-4 text-xs font-mono-code">
+            <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> Healthy <strong class="text-slate-800 dark:text-white">12</strong></span>
+            <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span> Warning <strong class="text-slate-800 dark:text-white">2</strong></span>
+            <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse"></span> Critical <strong class="text-red-500">1 (Austin Battery)</strong></span>
+          </div>
+        </div>
+
+        <!-- CANVAS VIEWPORT (Supports Dual Topology + 3D Floor Plan) -->
+        <div id="twin-canvas-viewport" class="viewport-box relative w-full h-[600px] rounded-2xl overflow-hidden border sf-card-glow transition-all duration-300">
+          
+          <!-- ================================================================= -->
+          <!-- STAGE 1: TOPOLOGY CONNECTED-GRAPH (Interactive ReactFlow-like)    -->
+          <!-- ================================================================= -->
+          <div id="stage-topology" class="absolute inset-0 h-full w-full overflow-auto grid-bg p-6">
+            
+            <!-- SVG CONNECTING DATA EDGES -->
+            <svg class="absolute inset-0 pointer-events-none w-[1400px] h-[580px] z-0">
+              <defs>
+                <marker id="arrow-blue" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                  <path d="M 0 0 L 10 5 L 0 10 z" fill="#29B5E8" />
+                </marker>
+                <marker id="arrow-red" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                  <path d="M 0 0 L 10 5 L 0 10 z" fill="#EF4444" />
+                </marker>
+              </defs>
+
+              <!-- Lines from Suppliers to Docks/Inbound -->
+              <!-- Apex Battery (x:200, y:80) to Maritime Freight (x:380, y:80) -->
+              <path d="M 200 80 L 360 80" fill="none" stroke="#EF4444" stroke-width="2.5" class="edge-flow-hot" marker-end="url(#arrow-red)" />
+              <!-- Maritime Freight (x:490, y:80) to Bay 01 (x:650, y:120) -->
+              <path d="M 490 80 C 560 80, 580 120, 650 120" fill="none" stroke="#EF4444" stroke-width="2.5" class="edge-flow-hot" marker-end="url(#arrow-red)" />
+              <!-- Quantum Chips (x:200, y:230) to RFID Gate (x:380, y:230) -->
+              <path d="M 200 230 L 360 230" fill="none" stroke="#29B5E8" stroke-width="2" class="edge-flow" marker-end="url(#arrow-blue)" />
+              <!-- RFID Gate (x:490, y:230) to Bay 02 (x:650, y:270) -->
+              <path d="M 490 230 C 560 230, 580 270, 650 270" fill="none" stroke="#29B5E8" stroke-width="2" class="edge-flow" marker-end="url(#arrow-blue)" />
+              <!-- Bay 01 to ASRS Vault (x:900, y:120) -->
+              <path d="M 770 120 L 880 120" fill="none" stroke="#29B5E8" stroke-width="2" class="edge-flow" marker-end="url(#arrow-blue)" />
+              <!-- Bay 02 to ASRS Vault (x:900, y:150) -->
+              <path d="M 770 270 C 830 270, 840 160, 880 160" fill="none" stroke="#29B5E8" stroke-width="2" class="edge-flow" marker-end="url(#arrow-blue)" />
+              <!-- ASRS Vault to Cleanroom (x:1120, y:140) -->
+              <path d="M 1010 140 L 1100 140" fill="none" stroke="#EF4444" stroke-width="2.5" class="edge-flow-hot" marker-end="url(#arrow-red)" />
+              <!-- Cleanroom to Outbound Shuttles (x:1120, y:300) -->
+              <path d="M 1170 210 L 1170 280" fill="none" stroke="#10B981" stroke-width="2" class="edge-flow" marker-end="url(#arrow-blue)" />
+            </svg>
+
+            <!-- 5 COLUMNS OF TOPOLOGY NODES -->
+            <div class="relative z-10 flex gap-10 min-w-[1300px]">
+              
+              <!-- COLUMN 1: TIER-1 SUPPLIERS -->
+              <div class="w-52 flex flex-col gap-3">
+                <div class="flex items-center justify-between text-xs font-mono-code text-slate-400 font-bold uppercase pb-1 border-b border-snowflake/20">
+                  <span>1. Origin Suppliers</span>
+                  <span>IS-A NODE</span>
+                </div>
+
+                <!-- Node: Apex Battery Cells (Critical Delay) -->
+                <div onclick="inspectZone('CLEAN_ROOM')" class="sf-card p-3 rounded-xl border border-red-500/50 hover:border-red-500 cursor-pointer shadow-md transition-all group">
+                  <div class="flex items-start justify-between">
+                    <span class="text-xs font-bold text-red-500 font-mono-code">SUP_001</span>
+                    <span class="px-1.5 py-0.2 rounded text-[9px] font-bold bg-red-500/20 text-red-500 uppercase">DELAYED 4d</span>
+                  </div>
+                  <h4 class="font-outfit font-black text-xs sf-text-title mt-1">Apex Battery Cells</h4>
+                  <p class="text-[11px] text-slate-500 font-mono-code">Part: BAT-402 • Tier 1</p>
+                  <div class="mt-2 pt-2 border-t border-red-500/20 flex justify-between text-[10px] font-mono-code">
+                    <span class="text-red-500 font-bold">Liquidated Damages:</span>
+                    <span class="text-red-500 font-black">$140,000</span>
+                  </div>
+                </div>
+
+                <!-- Node: Quantum Semiconductor -->
+                <div onclick="inspectZone('GATEWAY')" class="sf-card p-3 rounded-xl hover:border-snowflake cursor-pointer shadow-sm transition-all">
+                  <div class="flex items-start justify-between">
+                    <span class="text-xs font-bold text-snowflake font-mono-code">SUP_002</span>
+                    <span class="px-1.5 py-0.2 rounded text-[9px] font-bold bg-emerald-500/20 text-emerald-600">ON-TIME</span>
+                  </div>
+                  <h4 class="font-outfit font-black text-xs sf-text-title mt-1">Quantum Semiconductor</h4>
+                  <p class="text-[11px] text-slate-500 font-mono-code">Part: MCU-7 • Microcontrollers</p>
+                  <div class="mt-2 pt-2 border-t border-snowflake/15 flex justify-between text-[10px] font-mono-code">
+                    <span class="text-slate-500">Lead Time:</span>
+                    <span class="text-emerald-600 font-bold">14 Days (OTIF 96%)</span>
+                  </div>
+                </div>
+
+                <!-- Node: Nippon Cathode -->
+                <div onclick="inspectZone('ASRS_TOWER')" class="sf-card p-3 rounded-xl hover:border-snowflake cursor-pointer shadow-sm transition-all">
+                  <div class="flex items-start justify-between">
+                    <span class="text-xs font-bold text-snowflake font-mono-code">SUP_003</span>
+                    <span class="px-1.5 py-0.2 rounded text-[9px] font-bold bg-emerald-500/20 text-emerald-600">ON-TIME</span>
+                  </div>
+                  <h4 class="font-outfit font-black text-xs sf-text-title mt-1">Nippon Cathode Chem</h4>
+                  <p class="text-[11px] text-slate-500 font-mono-code">Part: CHEM-E2 • Electrolyte</p>
+                  <div class="mt-2 pt-2 border-t border-snowflake/15 flex justify-between text-[10px] font-mono-code">
+                    <span class="text-slate-500">Stock Buffer:</span>
+                    <span class="text-emerald-600 font-bold">45 Days</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- COLUMN 2: INBOUND FREIGHT & GATEWAY -->
+              <div class="w-56 flex flex-col gap-3">
+                <div class="flex items-center justify-between text-xs font-mono-code text-slate-400 font-bold uppercase pb-1 border-b border-snowflake/20">
+                  <span>2. Inbound Logistics</span>
+                  <span>SHIPMENTS</span>
+                </div>
+
+                <!-- Inbound Consignment SHP-78442 -->
+                <div onclick="inspectZone('BAY_01')" class="sf-card p-3 rounded-xl border border-red-500/50 hover:border-red-500 cursor-pointer shadow-md transition-all">
+                  <div class="flex items-start justify-between">
+                    <span class="text-xs font-bold text-red-500 font-mono-code">#SHP-78442</span>
+                    <span class="px-1.5 py-0.2 rounded text-[9px] font-bold bg-red-500/20 text-red-500">DEMURRAGE</span>
+                  </div>
+                  <h4 class="font-outfit font-black text-xs sf-text-title mt-1">Port of Long Beach Transit</h4>
+                  <p class="text-[11px] text-slate-500 font-mono-code">Maritime Ocean Carrier • 2,280u</p>
+                  <div class="mt-2 pt-2 border-t border-red-500/20 flex justify-between text-[10px] font-mono-code">
+                    <span class="text-red-500">Demurrage Fee:</span>
+                    <span class="text-red-500 font-bold">$24,500</span>
+                  </div>
+                </div>
+
+                <!-- Snowpipe RFID Portal -->
+                <div onclick="inspectZone('GATEWAY')" class="sf-card p-3 rounded-xl hover:border-snowflake cursor-pointer shadow-sm transition-all">
+                  <div class="flex items-start justify-between">
+                    <span class="text-xs font-bold text-purple-500 font-mono-code">GATE_RFID_01</span>
+                    <span class="px-1.5 py-0.2 rounded text-[9px] font-bold bg-purple-500/20 text-purple-600">STREAMING</span>
+                  </div>
+                  <h4 class="font-outfit font-black text-xs sf-text-title mt-1">Snowpipe Edge Arch</h4>
+                  <p class="text-[11px] text-slate-500 font-mono-code">Zebra FX9600 • 24.8k evt/s</p>
+                  <div class="mt-2 pt-2 border-t border-snowflake/15 flex justify-between text-[10px] font-mono-code">
+                    <span class="text-slate-500">Ingestion Latency:</span>
+                    <span class="text-snowflake font-bold">14 ms (Realtime)</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- COLUMN 3: SMART DOCK BAYS -->
+              <div class="w-56 flex flex-col gap-3">
+                <div class="flex items-center justify-between text-xs font-mono-code text-slate-400 font-bold uppercase pb-1 border-b border-snowflake/20">
+                  <span>3. Facility Docks</span>
+                  <span>CAPACITY</span>
+                </div>
+
+                <!-- Dock Bay D-01 -->
+                <div onclick="inspectZone('BAY_01')" class="sf-card p-3 rounded-xl border border-snowflake hover:border-snowflake cursor-pointer shadow-md transition-all">
+                  <div class="flex items-start justify-between">
+                    <span class="text-xs font-bold text-snowflake font-mono-code">DOCK_BAY_01</span>
+                    <span class="px-1.5 py-0.2 rounded text-[9px] font-bold bg-emerald-500/20 text-emerald-600">LOADING 2/6</span>
+                  </div>
+                  <h4 class="font-outfit font-black text-xs sf-text-title mt-1">Bay D-01: Inbound Electric</h4>
+                  <p class="text-[11px] text-slate-500 font-mono-code">Carrier: SHUTTLE-2051 • 210 bar</p>
+                  <div class="mt-2 pt-2 border-t border-snowflake/15 flex justify-between text-[10px] font-mono-code">
+                    <span class="text-slate-500">Turnaround Remaining:</span>
+                    <span class="text-emerald-600 font-bold">13 mins</span>
+                  </div>
+                </div>
+
+                <!-- Dock Bay D-02 -->
+                <div onclick="inspectZone('BAY_02')" class="sf-card p-3 rounded-xl hover:border-snowflake cursor-pointer shadow-sm transition-all">
+                  <div class="flex items-start justify-between">
+                    <span class="text-xs font-bold text-slate-500 font-mono-code">DOCK_BAY_02</span>
+                    <span class="px-1.5 py-0.2 rounded text-[9px] font-bold bg-slate-500/20 text-slate-600">STANDBY</span>
+                  </div>
+                  <h4 class="font-outfit font-black text-xs sf-text-title mt-1">Bay D-02: Cross-Dock Apron</h4>
+                  <p class="text-[11px] text-slate-500 font-mono-code">Scheduled: Apex Shuttle-8812</p>
+                  <div class="mt-2 pt-2 border-t border-snowflake/15 flex justify-between text-[10px] font-mono-code">
+                    <span class="text-slate-500">Status:</span>
+                    <span class="text-slate-500 font-bold">Standby Ready</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- COLUMN 4: CRYO STORAGE & AGVS -->
+              <div class="w-56 flex flex-col gap-3">
+                <div class="flex items-center justify-between text-xs font-mono-code text-slate-400 font-bold uppercase pb-1 border-b border-snowflake/20">
+                  <span>4. Storage &amp; Fleet</span>
+                  <span>INVENTORY</span>
+                </div>
+
+                <!-- ASRS Vault -->
+                <div onclick="inspectZone('ASRS_TOWER')" class="sf-card p-3 rounded-xl hover:border-snowflake cursor-pointer shadow-md transition-all">
+                  <div class="flex items-start justify-between">
+                    <span class="text-xs font-bold text-snowflake font-mono-code">ZONE_ASRS</span>
+                    <span class="px-1.5 py-0.2 rounded text-[9px] font-bold bg-snowflake/20 text-snowflake">78.4% OCC</span>
+                  </div>
+                  <h4 class="font-outfit font-black text-xs sf-text-title mt-1">Cryo ASRS High-Bay</h4>
+                  <p class="text-[11px] text-slate-500 font-mono-code">Temp: -18.4°C • Crane CR-01</p>
+                  <div class="mt-2 pt-2 border-t border-snowflake/15 flex justify-between text-[10px] font-mono-code">
+                    <span class="text-slate-500">Occupied Cells:</span>
+                    <span class="text-snowflake font-bold">1,412 / 1,800</span>
+                  </div>
+                </div>
+
+                <!-- AMR-01 Robot -->
+                <div onclick="inspectZone('AMR_01')" class="sf-card p-3 rounded-xl hover:border-snowflake cursor-pointer shadow-sm transition-all">
+                  <div class="flex items-start justify-between">
+                    <span class="text-xs font-bold text-emerald-500 font-mono-code">AMR_01</span>
+                    <span class="px-1.5 py-0.2 rounded text-[9px] font-bold bg-emerald-500/20 text-emerald-600">MISSION ACTIVE</span>
+                  </div>
+                  <h4 class="font-outfit font-black text-xs sf-text-title mt-1">Autonomous Mobile Robot</h4>
+                  <p class="text-[11px] text-slate-500 font-mono-code">Servicing Dock Bay 01 • Bat 94%</p>
+                  <div class="mt-2 pt-2 border-t border-snowflake/15 flex justify-between text-[10px] font-mono-code">
+                    <span class="text-slate-500">Task:</span>
+                    <span class="text-snowflake font-bold">Pallet 2 Relocation</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- COLUMN 5: ASSEMBLY & OUTBOUND FLEET -->
+              <div class="w-60 flex flex-col gap-3">
+                <div class="flex items-center justify-between text-xs font-mono-code text-slate-400 font-bold uppercase pb-1 border-b border-snowflake/20">
+                  <span>5. Production &amp; Outbound</span>
+                  <span>FULFILLMENT</span>
+                </div>
+
+                <!-- Cleanroom Assembly (Critical Stockout Alert) -->
+                <div onclick="inspectZone('CLEAN_ROOM')" class="sf-card p-3.5 rounded-xl border-2 border-red-500 bg-red-500/5 hover:border-red-600 cursor-pointer shadow-lg transition-all">
+                  <div class="flex items-start justify-between">
+                    <span class="text-xs font-bold text-red-500 font-mono-code">CLEAN_ROOM</span>
+                    <span class="px-2 py-0.5 rounded text-[9px] font-black bg-red-500 text-white animate-pulse">DOI: 3.8 DAYS</span>
+                  </div>
+                  <h4 class="font-outfit font-black text-xs text-red-600 dark:text-red-400 mt-1">Austin Battery Assembly</h4>
+                  <p class="text-[11px] text-slate-500 font-mono-code">4680 Cells • Burn: 600/day</p>
+                  <div class="mt-2 pt-2 border-t border-red-500/30 flex justify-between text-[11px] font-mono-code">
+                    <span class="text-red-600 font-bold">Line Halt Risk:</span>
+                    <span class="text-red-600 font-black">$250k/hr</span>
+                  </div>
+                </div>
+
+                <!-- Outbound Delivery Shuttle -->
+                <div onclick="inspectZone('BAY_02')" class="sf-card p-3 rounded-xl hover:border-snowflake cursor-pointer shadow-sm transition-all">
+                  <div class="flex items-start justify-between">
+                    <span class="text-xs font-bold text-emerald-500 font-mono-code">FLEET_OUT_04</span>
+                    <span class="px-1.5 py-0.2 rounded text-[9px] font-bold bg-emerald-500/20 text-emerald-600">SCHEDULED</span>
+                  </div>
+                  <h4 class="font-outfit font-black text-xs sf-text-title mt-1">Inter-Plant Regional Shuttle</h4>
+                  <p class="text-[11px] text-slate-500 font-mono-code">Destination: Gigafactory Texas</p>
+                  <div class="mt-2 pt-2 border-t border-snowflake/15 flex justify-between text-[10px] font-mono-code">
+                    <span class="text-slate-500">Departure:</span>
+                    <span class="text-emerald-600 font-bold">14:15 UTC (On Track)</span>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- ================================================================= -->
+          <!-- STAGE 2: 3D ISOMETRIC FLOOR PLAN CANVAS (Our 3D SVG Twin)         -->
+          <!-- ================================================================= -->
+          <div id="stage-floor" class="hidden absolute inset-0 h-full w-full flex items-center justify-center p-4">
+            <div id="svg-viewport-container" class="w-full h-full flex items-center justify-center transition-transform duration-300">
+              {digital_twin_svg}
+            </div>
+          </div>
+
+        </div>
+
+        <!-- 3-WAY RECONCILED SUPPLY CHAIN PIPELINE STEPPER -->
+        <div class="sf-card rounded-2xl p-4 flex flex-col md:flex-row items-center justify-between gap-6">
+          <div class="flex-1 w-full">
+            <div class="flex items-center justify-between gap-2 mb-2">
+              <div class="flex items-center gap-2">
+                <span class="text-snowflake text-base font-bold">❄️</span>
+                <span class="text-xs font-black sf-text-title font-display uppercase tracking-wide">Snowflake Governed 3-Way Reconciled Ledger</span>
+              </div>
+              <span class="text-xs font-mono-code text-snowflake font-bold" id="shipment-carrier-tag">PO-9412 ⟷ ASN-8812 ⟷ RFID GATE</span>
+            </div>
+
+            <!-- Stepper Progress -->
+            <div class="flex items-center justify-between relative mt-2" id="shipment-stepper-steps">
+              <div class="absolute left-6 right-6 top-3.5 h-0.5 bg-snowflake/20 -z-0"></div>
+
+              <!-- Step 1 -->
+              <div class="flex flex-col items-center text-center relative z-10">
+                <div class="w-7 h-7 rounded-full bg-snowflake text-polar-night flex items-center justify-center text-xs font-black shadow-md shadow-snowflake/20">✓</div>
+                <span class="text-[11px] font-bold mt-1 sf-text-title">ERP Purchase Order</span>
+                <span class="text-[10px] text-slate-500 font-mono-code">06:49 UTC</span>
+              </div>
+              <!-- Step 2 -->
+              <div class="flex flex-col items-center text-center relative z-10">
+                <div class="w-7 h-7 rounded-full bg-snowflake text-polar-night flex items-center justify-center text-xs font-black shadow-md shadow-snowflake/20">✓</div>
+                <span class="text-[11px] font-bold mt-1 sf-text-title">Carrier ASN Shipped</span>
+                <span class="text-[10px] text-slate-500 font-mono-code">08:20 UTC</span>
+              </div>
+              <!-- Step 3 (Active) -->
+              <div class="flex flex-col items-center text-center relative z-10">
+                <div class="w-7 h-7 rounded-full bg-white text-snowflake border-2 border-snowflake ring-4 ring-snowflake/20 flex items-center justify-center text-xs font-black animate-pulse">3</div>
+                <span class="text-[11px] font-bold mt-1 sf-text-title">Dock Bay Scan 2/6</span>
+                <span class="text-[10px] text-emerald-600 font-mono-code font-bold">ETA 13 mins</span>
+              </div>
+              <!-- Step 4 -->
+              <div class="flex flex-col items-center text-center relative z-10">
+                <div class="w-7 h-7 rounded-full sf-inner-box text-slate-400 flex items-center justify-center text-xs font-bold">4</div>
+                <span class="text-[11px] font-medium mt-1 text-slate-500">Dynamic Table Ingest</span>
+                <span class="text-[10px] text-slate-500 font-mono-code">1-Min Lag</span>
+              </div>
+              <!-- Step 5 -->
+              <div class="flex flex-col items-center text-center relative z-10">
+                <div class="w-7 h-7 rounded-full sf-inner-box text-slate-400 flex items-center justify-center text-xs font-bold">5</div>
+                <span class="text-[11px] font-medium mt-1 text-slate-500">Cleanroom Line Feed</span>
+                <span class="text-[10px] text-slate-500 font-mono-code">DOI 14.2d Target</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Active Consignment Badge -->
+          <div class="sf-inner-box rounded-xl p-3 min-w-[240px] flex items-center justify-between gap-3 shadow-inner">
+            <div class="w-9 h-9 rounded-lg bg-snowflake/15 border border-snowflake/30 text-snowflake flex items-center justify-center font-bold text-lg">
+              📦
+            </div>
+            <div>
+              <div class="text-xs font-black sf-text-title font-mono-code" id="shipment-id-tag">#SHP-78442</div>
+              <div class="text-[10px] text-slate-500 font-mono-code" id="shipment-eta-tag">CARRIER: APEX AUTONOMOUS FREIGHT</div>
+            </div>
+            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/20 text-amber-600 uppercase" id="shipment-status-badge">INSPECTED</span>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ===================================================================== -->
+      <!-- VIEW 2: FACTORY COMMAND CENTER (/dashboard)                           -->
+      <!-- ===================================================================== -->
+      <section id="view-dashboard" class="hidden flex-1 flex flex-col space-y-4">
+        
+        <!-- Incident Alert Banner -->
+        <div class="rounded-2xl border-2 border-red-500/60 bg-red-500/10 p-4 flex items-start justify-between gap-4 shadow-xl">
+          <div class="flex items-start gap-3.5">
+            <span class="text-2xl p-2 rounded-xl bg-red-500/20 text-red-500">🚨</span>
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="font-mono-code text-xs text-red-500 font-bold">INCIDENT-AUSTIN-402</span>
+                <span class="rounded bg-red-500 px-2 py-0.5 text-[10px] font-black text-white uppercase animate-pulse">Critical Stockout</span>
+                <span class="rounded sf-inner-box px-1.5 py-0.5 text-[10px] text-slate-500 font-mono-code">Dynamic Table Lag: 38s</span>
+              </div>
+              <h3 class="text-base font-black sf-text-title font-outfit mt-1">Austin Gigafactory Battery Supply Disruption — 3.8 Days of Inventory</h3>
+              <p class="text-xs text-slate-600 dark:text-slate-300 mt-0.5">Maritime container #SHP-78442 carrying 2,280 battery cells is delayed 4 days at Port of Long Beach. Assembly lines halt in 91 hours without expedited reroute.</p>
+              <p class="text-[11px] font-mono-code text-red-500 mt-1 font-bold">PART_BAT_402 • On-Hand: 2,280 • Daily Burn: 600 • Financial Exposure: $250,000 / hr downtime</p>
+            </div>
+          </div>
+          <div class="flex gap-2 shrink-0">
+            <button onclick="navigatePage('twin'); inspectZone('CLEAN_ROOM');" class="rounded-lg border border-snowflake/30 sf-inner-box px-3 py-1.5 text-xs font-bold hover:border-snowflake transition-all">
+              Inspect in Twin
+            </button>
+            <button onclick="navigatePage('simulator')" class="rounded-lg bg-snowflake hover:bg-snowflake-500 text-polar-night px-3 py-1.5 text-xs font-black transition-all shadow-md">
+              Simulate Reroute
+            </button>
+          </div>
+        </div>
+
+        <!-- 4 Primary Snowflake Telemetry KPI Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          
+          <div class="sf-card rounded-xl p-4 flex flex-col justify-between">
+            <div class="flex items-start justify-between">
+              <div>
+                <p class="text-xs font-bold text-slate-500 uppercase font-mono-code">Days of Inventory (DOI)</p>
+                <h3 class="text-3xl font-black font-outfit text-red-500 mt-1">3.8 <span class="text-xs font-bold text-slate-500">Days</span></h3>
+              </div>
+              <span class="p-2 rounded-xl bg-red-500/15 text-red-500 text-lg">⚠️</span>
+            </div>
+            <p class="text-[11px] text-slate-500 font-mono-code mt-2 pt-2 border-t border-snowflake/15">Threshold: &lt; 5.0d • Austin Line 1</p>
+          </div>
+
+          <div class="sf-card rounded-xl p-4 flex flex-col justify-between">
+            <div class="flex items-start justify-between">
+              <div>
+                <p class="text-xs font-bold text-slate-500 uppercase font-mono-code">Governed OTIF %</p>
+                <h3 class="text-3xl font-black font-outfit text-slate-800 dark:text-white mt-1">81.4%</h3>
+              </div>
+              <span class="p-2 rounded-xl bg-snowflake/15 text-snowflake text-lg">📈</span>
+            </div>
+            <p class="text-[11px] text-slate-500 font-mono-code mt-2 pt-2 border-t border-snowflake/15">SLA Target: 95.0% • 4 Late Deliveries</p>
+          </div>
+
+          <div class="sf-card rounded-xl p-4 flex flex-col justify-between">
+            <div class="flex items-start justify-between">
+              <div>
+                <p class="text-xs font-bold text-slate-500 uppercase font-mono-code">SLA Penalty Recovery</p>
+                <h3 class="text-3xl font-black font-outfit text-emerald-600 mt-1">$140,000</h3>
+              </div>
+              <span class="p-2 rounded-xl bg-emerald-500/15 text-emerald-600 text-lg">⚖️</span>
+            </div>
+            <p class="text-[11px] text-slate-500 font-mono-code mt-2 pt-2 border-t border-snowflake/15">Apex Battery Contract • Clause 8.2</p>
+          </div>
+
+          <div class="sf-card rounded-xl p-4 flex flex-col justify-between">
+            <div class="flex items-start justify-between">
+              <div>
+                <p class="text-xs font-bold text-slate-500 uppercase font-mono-code">Demurrage Charges</p>
+                <h3 class="text-3xl font-black font-outfit text-amber-500 mt-1">$24,500</h3>
+              </div>
+              <span class="p-2 rounded-xl bg-amber-500/15 text-amber-500 text-lg">🚢</span>
+            </div>
+            <p class="text-[11px] text-slate-500 font-mono-code mt-2 pt-2 border-t border-snowflake/15">Long Beach Port Congestion • 4 Containers</p>
+          </div>
+
+        </div>
+
+        <!-- 3-WAY RECONCILIATION LEDGER TABLE -->
+        <div class="sf-card rounded-2xl p-5 space-y-4">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="text-sm font-black sf-text-title font-display uppercase tracking-wide">Autonomous 3-Way Reconciliation Ledger</h3>
+              <p class="text-xs text-slate-500 font-mono-code">Reconciles Procurement Purchase Orders against Carrier Bills of Lading and Warehouse Receiving Scans.</p>
+            </div>
+            <span class="px-2.5 py-1 rounded text-xs font-mono-code font-bold bg-snowflake/15 text-snowflake">Ground Truth Table</span>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs font-mono-code">
+              <thead class="border-b border-snowflake/20 text-slate-400 uppercase">
+                <tr>
+                  <th class="pb-2">PO Number</th>
+                  <th class="pb-2">Supplier</th>
+                  <th class="pb-2">Part Description</th>
+                  <th class="pb-2">Ordered Qty</th>
+                  <th class="pb-2">Shipped Qty</th>
+                  <th class="pb-2">Received Qty</th>
+                  <th class="pb-2">Promised Date</th>
+                  <th class="pb-2">Actual Arrival</th>
+                  <th class="pb-2">Reconciliation Status</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-snowflake/10 text-slate-700 dark:text-slate-300">
+                <tr class="hover:bg-snowflake/5">
+                  <td class="py-2.5 font-bold text-snowflake">PO-9412</td>
+                  <td>Apex Battery Cells</td>
+                  <td>4680 EV Cells (PART_BAT_402)</td>
+                  <td>2,280</td>
+                  <td>2,280</td>
+                  <td class="text-amber-500 font-bold">In-Transit</td>
+                  <td>2026-10-04</td>
+                  <td class="text-red-500 font-bold">2026-10-08 (+4d)</td>
+                  <td><span class="px-2 py-0.5 rounded text-[10px] font-bold bg-red-500/20 text-red-500">SLA BREACH ($140k)</span></td>
+                </tr>
+                <tr class="hover:bg-snowflake/5">
+                  <td class="py-2.5 font-bold text-snowflake">PO-9408</td>
+                  <td>Quantum Semiconductor</td>
+                  <td>Power Inverter MCU (MCU-7)</td>
+                  <td>5,000</td>
+                  <td>5,000</td>
+                  <td class="text-emerald-500 font-bold">5,000</td>
+                  <td>2026-10-02</td>
+                  <td class="text-emerald-500 font-bold">2026-10-02</td>
+                  <td><span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-600">RECONCILED (100%)</span></td>
+                </tr>
+                <tr class="hover:bg-snowflake/5">
+                  <td class="py-2.5 font-bold text-snowflake">PO-9395</td>
+                  <td>Nippon Cathode Chem</td>
+                  <td>Electrolyte Solvent (CHEM-E2)</td>
+                  <td>1,200 L</td>
+                  <td>1,200 L</td>
+                  <td class="text-emerald-500 font-bold">1,200 L</td>
+                  <td>2026-09-28</td>
+                  <td class="text-emerald-500 font-bold">2026-09-28</td>
+                  <td><span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-600">RECONCILED (100%)</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ===================================================================== -->
+      <!-- VIEW 3: CORTEX AI OPERATIONS (/agents)                                -->
+      <!-- ===================================================================== -->
+      <section id="view-agents" class="hidden flex-1 flex flex-col space-y-4">
+        
+        <div class="flex flex-wrap items-center justify-between gap-3 sf-card p-4 rounded-2xl">
+          <div>
+            <div class="inline-flex items-center gap-1.5 rounded-full border border-purple-500/30 bg-purple-500/10 px-2.5 py-0.5 text-[11px] font-mono-code text-purple-600 dark:text-purple-300 mb-1">
+              <span>Snowflake Cortex Agent Pipeline • Grounded in Semantic View &amp; Ontology Closure</span>
+            </div>
+            <h2 class="text-xl font-black tracking-tight sf-text-title font-outfit">Cortex Multi-Persona Conversational Analytics</h2>
+            <p class="text-xs text-slate-500">Autonomous supply chain intelligence agents inspect live dynamic tables, contracts, and ontology hierarchies.</p>
+          </div>
+          <button onclick="runCortexAnalysis()" class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-snowflake to-blue-600 text-polar-night font-black rounded-lg text-xs shadow-md hover:brightness-110 transition-all">
+            <span>⚡ Run Agent Reasoning Trace</span>
+          </button>
+        </div>
+
+        <!-- 3 Persona Quick Question Triggers -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+          
+          <div onclick="askCortex('Which suppliers have breached delivery agreements, and what is our penalty claim?')" class="sf-card p-4 rounded-xl cursor-pointer hover:border-snowflake transition-all group">
+            <span class="text-xs font-mono-code font-bold text-snowflake uppercase">1. Procurement Persona</span>
+            <h4 class="font-outfit font-black text-sm sf-text-title mt-1 group-hover:text-snowflake transition-colors">"Which suppliers have breached delivery agreements, and what is our penalty claim?"</h4>
+            <p class="text-[11px] text-slate-500 font-mono-code mt-2">Queries: DT_SUPPLIER_PERFORMANCE + Cortex Search on MSAs</p>
+          </div>
+
+          <div onclick="askCortex('How many days of battery inventory remain before Plant 2 stops?')" class="sf-card p-4 rounded-xl cursor-pointer hover:border-snowflake transition-all group">
+            <span class="text-xs font-mono-code font-bold text-amber-500 uppercase">2. Plant Operations Persona</span>
+            <h4 class="font-outfit font-black text-sm sf-text-title mt-1 group-hover:text-amber-500 transition-colors">"How many days of battery inventory remain before Plant 2 stops?"</h4>
+            <p class="text-[11px] text-slate-500 font-mono-code mt-2">Queries: DT_PLANT_STOCKOUT_RISK (3.8 Days DOI)</p>
+          </div>
+
+          <div onclick="askCortex('What shipments of battery modules are currently delayed?')" class="sf-card p-4 rounded-xl cursor-pointer hover:border-snowflake transition-all group">
+            <span class="text-xs font-mono-code font-bold text-purple-500 uppercase">3. Logistics Persona</span>
+            <h4 class="font-outfit font-black text-sm sf-text-title mt-1 group-hover:text-purple-500 transition-colors">"What shipments of battery modules are currently delayed?"</h4>
+            <p class="text-[11px] text-slate-500 font-mono-code mt-2">Queries: FACT_SHIPMENTS + Carrier Demurrage</p>
+          </div>
+
+        </div>
+
+        <!-- Agent Trace & Reasoning Container -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 flex-1">
+          
+          <div class="lg:col-span-7 sf-card p-4 rounded-2xl flex flex-col h-[460px]">
+            <h3 class="text-xs font-bold tracking-wider text-slate-400 uppercase font-mono-code mb-3 flex items-center justify-between">
+              <span>Autonomous Cortex Agent Reasoning Steps</span>
+              <span class="text-emerald-500 font-mono-code font-bold text-[11px]">Grounded in Horizon Catalog</span>
+            </h3>
+            <div id="cortex-agent-trace" class="flex-1 overflow-y-auto space-y-2.5 font-mono-code text-xs pr-1">
+              <div class="p-3 rounded-lg sf-inner-box border border-snowflake/20">
+                <p class="text-snowflake font-bold">STEP 1: INGEST NATURAL LANGUAGE QUESTION</p>
+                <p class="text-slate-600 dark:text-slate-300">Target Persona: Plant Operations Manager</p>
+                <p class="text-slate-500">Query: "How many days of battery inventory remain at Gigafactory Texas?"</p>
+              </div>
+              <div class="p-3 rounded-lg sf-inner-box border border-snowflake/20">
+                <p class="text-purple-500 font-bold">STEP 2: ONTOLOGY TRAVERSAL (SUPPLY_CHAIN_DB.ONT.ONT_CLASS)</p>
+                <p class="text-slate-600 dark:text-slate-300">Resolved class: Plant ('PLANT_02' - Gigafactory Texas) IS-A Facility IS-A SupplyChainNode</p>
+                <p class="text-slate-500">Resolved part: PART_BAT_402 (4680 High-Density Battery Cells)</p>
+              </div>
+              <div class="p-3 rounded-lg sf-inner-box border border-snowflake/20">
+                <p class="text-emerald-500 font-bold">STEP 3: DETERMINISTIC DYNAMIC TABLE SQL EXECUTION</p>
+                <pre class="bg-polar-night text-snowflake p-2 rounded text-[11px] overflow-x-auto">SELECT plant_name, part_name, on_hand_qty, plant_daily_burn_rate, days_of_inventory, stockout_risk_level FROM SUPPLY_CHAIN_DB.CORE.DT_PLANT_STOCKOUT_RISK WHERE plant_id = 'PLANT_02' AND part_id = 'PART_BAT_402';</pre>
+              </div>
+              <div class="p-3 rounded-lg sf-inner-box border border-red-500/30 bg-red-500/5">
+                <p class="text-red-500 font-bold">STEP 4: COMPOUND RISK SIGNAL SYNTHESIZED</p>
+                <p class="text-slate-700 dark:text-slate-200">Result: 2,280 on-hand / 600 daily burn = <strong>3.8 Days DOI</strong> (Status: CRITICAL_STOCKOUT_RISK).</p>
+                <p class="text-slate-500">Delayed Inbound Shipment #SHP-78442 (+4 days past promised date) confirmed.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="lg:col-span-5 sf-card p-4 rounded-2xl flex flex-col h-[460px]">
+            <h3 class="text-xs font-bold tracking-wider text-slate-400 uppercase font-mono-code mb-3">
+              <span>Verified Cortex Query Output &amp; Citations</span>
+            </h3>
+            <div class="flex-1 flex flex-col justify-between sf-inner-box p-4 rounded-xl border border-snowflake/20 font-mono-code text-xs">
+              <div class="space-y-3">
+                <div class="flex items-center justify-between pb-2 border-b border-snowflake/15">
+                  <span class="text-slate-500">VERIFIED STATUS:</span>
+                  <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-600 font-bold">PASSED (100% ACCURACY)</span>
+                </div>
+                <div>
+                  <span class="text-slate-500">ANSWER NARRATIVE:</span>
+                  <p class="text-slate-800 dark:text-white mt-1 leading-relaxed">
+                    Gigafactory Texas (Plant 2) currently has <strong>2,280 units</strong> of Part BAT-402 on hand. At full production burn rate of 600 units/day, exactly <strong>3.8 days of production runway remain</strong> before assembly line halt.
+                  </p>
+                </div>
+                <div>
+                  <span class="text-slate-500">RECOMMENDED ACTION:</span>
+                  <p class="text-amber-500 font-bold mt-1">
+                    Trigger emergency air-freight PO to Shenzhen EnerTech via MCP to deliver 2,500 replacement units within 48 hours.
+                  </p>
+                </div>
+              </div>
+
+              <button onclick="navigatePage('approvals')" class="w-full py-2.5 rounded-lg bg-snowflake hover:bg-snowflake-500 text-polar-night font-black text-xs transition-all shadow-md mt-4">
+                View Decision in Approvals Queue &rarr;
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+      </section>
+
+      <!-- ===================================================================== -->
+      <!-- VIEW 4: WHAT-IF SIMULATOR (/simulator)                                -->
+      <!-- ===================================================================== -->
+      <section id="view-simulator" class="hidden flex-1 flex flex-col space-y-4">
+        
+        <div class="flex items-center justify-between sf-card p-4 rounded-2xl">
+          <div>
+            <h2 class="text-xl font-black tracking-tight sf-text-title font-outfit">What-If Supply Disruption Simulator</h2>
+            <p class="text-xs text-slate-500 font-mono-code">Simulate maritime bottlenecks, line shutdowns, and emergency freight rerouting using Snowflake Dynamic Tables.</p>
+          </div>
+          <button onclick="approvePrescription('AIR_REROUTE')" class="px-4 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white font-black text-xs shadow-md transition-all">
+            Approve &amp; Dispatch Air-Freight MCP &rarr;
+          </button>
+        </div>
+
+        <!-- 4 Scenario Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+          
+          <div class="sf-card p-3.5 rounded-xl">
+            <p class="text-xs font-bold text-slate-400 font-mono-code uppercase">Reference Baseline</p>
+            <p class="text-2xl font-black font-outfit sf-text-title mt-1">100.0 <span class="text-xs text-slate-500 font-normal">/ 100</span></p>
+            <div class="mt-2 text-[11px] text-slate-500 font-mono-code space-y-1">
+              <p>Late Units: <span class="font-bold text-emerald-600">0</span></p>
+              <p>Downtime Cost: <span class="font-bold sf-text-title">$0</span></p>
+              <p>Austin DOI: <span class="font-bold text-emerald-600">14.2 Days</span></p>
+            </div>
+          </div>
+
+          <div class="sf-card p-3.5 rounded-xl border border-red-500/50 bg-red-500/5">
+            <p class="text-xs font-bold text-red-500 font-mono-code uppercase">Continue Unmitigated</p>
+            <p class="text-2xl font-black font-outfit text-red-500 mt-1">42.1 <span class="text-xs text-slate-500 font-normal">/ 100</span></p>
+            <div class="mt-2 text-[11px] text-slate-500 font-mono-code space-y-1">
+              <p>Late Units: <span class="font-bold text-red-500">2,280</span></p>
+              <p>Downtime Cost: <span class="font-bold text-red-500">$2,400,000</span></p>
+              <p>Assembly Halt: <span class="font-bold text-red-500">In 3.8 Days</span></p>
+            </div>
+          </div>
+
+          <div class="sf-card p-3.5 rounded-xl border border-amber-500/50">
+            <p class="text-xs font-bold text-amber-500 font-mono-code uppercase">Slow Assembly 50%</p>
+            <p class="text-2xl font-black font-outfit text-amber-500 mt-1">68.4 <span class="text-xs text-slate-500 font-normal">/ 100</span></p>
+            <div class="mt-2 text-[11px] text-slate-500 font-mono-code space-y-1">
+              <p>Late Units: <span class="font-bold text-amber-500">800</span></p>
+              <p>Downtime Cost: <span class="font-bold text-amber-500">$600,000</span></p>
+              <p>Austin DOI: <span class="font-bold text-amber-500">7.6 Days</span></p>
+            </div>
+          </div>
+
+          <div class="sf-card p-3.5 rounded-xl border-2 border-snowflake bg-snowflake/10 relative">
+            <span class="absolute top-2.5 right-2.5 rounded bg-emerald-500 text-polar-night px-1.5 py-0.2 text-[9px] font-black uppercase">Recommended</span>
+            <p class="text-xs font-bold text-snowflake font-mono-code uppercase">Air-Freight Expedite</p>
+            <p class="text-2xl font-black font-outfit text-snowflake mt-1">94.8 <span class="text-xs text-slate-500 font-normal">/ 100</span></p>
+            <div class="mt-2 text-[11px] text-slate-500 font-mono-code space-y-1">
+              <p>Late Units: <span class="font-bold text-emerald-600">0</span></p>
+              <p>Net Freight Cost: <span class="font-bold text-slate-700 dark:text-slate-300">$18,000</span></p>
+              <p>Austin DOI: <span class="font-bold text-emerald-600">Restored to 14.2d</span></p>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Levers & Cumulative Output Chart -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 flex-1">
+          
+          <div class="lg:col-span-4 sf-card p-4 rounded-2xl space-y-4">
+            <h3 class="text-sm font-black sf-text-title font-display uppercase tracking-wide">Simulation Levers</h3>
+            
+            <div class="space-y-1">
+              <label class="text-xs text-slate-500 font-mono-code font-bold">Plant Daily Production Rate</label>
+              <input type="range" min="300" max="800" value="600" class="w-full accent-snowflake cursor-pointer">
+              <div class="flex justify-between text-[11px] font-mono-code text-slate-400"><span>300 u/d</span><span class="font-bold text-snowflake">600 u/d</span><span>800 u/d</span></div>
+            </div>
+
+            <div class="flex items-center justify-between border-t border-snowflake/15 pt-3">
+              <div>
+                <p class="text-xs font-bold sf-text-title font-mono-code">Execute Air-Freight Reroute</p>
+                <p class="text-[11px] text-slate-500">Dispatches emergency charter via Shenzhen</p>
+              </div>
+              <input type="checkbox" checked class="h-4 w-4 accent-snowflake rounded cursor-pointer">
+            </div>
+
+            <div class="flex items-center justify-between border-t border-snowflake/15 pt-3">
+              <div>
+                <p class="text-xs font-bold sf-text-title font-mono-code">Automatic SLA Claim Filing</p>
+                <p class="text-[11px] text-slate-500">Offset expedite cost via $140k penalty</p>
+              </div>
+              <input type="checkbox" checked class="h-4 w-4 accent-snowflake rounded cursor-pointer">
+            </div>
+          </div>
+
+          <div class="lg:col-span-8 sf-card p-4 rounded-2xl flex flex-col justify-between">
+            <div>
+              <h3 class="text-sm font-black sf-text-title font-display uppercase tracking-wide">Days of Inventory Runway (Austin Gigafactory Line 1)</h3>
+              <p class="text-xs text-slate-500 font-mono-code mb-2">Compares unmitigated stockout curve against emergency air-freight recovery.</p>
+            </div>
+
+            <svg viewBox="0 0 600 220" class="w-full h-52">
+              <line x1="40" y1="20" x2="580" y2="20" stroke="rgba(41,181,232,0.15)" stroke-width="1" />
+              <line x1="40" y1="80" x2="580" y2="80" stroke="rgba(41,181,232,0.15)" stroke-width="1" />
+              <line x1="40" y1="140" x2="580" y2="140" stroke="rgba(41,181,232,0.15)" stroke-width="1" />
+              <line x1="40" y1="200" x2="580" y2="200" stroke="rgba(41,181,232,0.15)" stroke-width="1" />
+              
+              <!-- Critical Stockout Boundary (5 Days) -->
+              <line x1="40" y1="160" x2="580" y2="160" stroke="#EF4444" stroke-width="1.5" stroke-dasharray="4 4" />
+              <text x="45" y="155" fill="#EF4444" font-size="9" font-family="'JetBrains Mono', monospace" font-weight="bold">CRITICAL 5-DAY THRESHOLD</text>
+
+              <!-- Unmitigated line dropping to 0 -->
+              <path d="M 40 40 L 180 120 L 320 200 L 580 200" fill="none" stroke="#EF4444" stroke-width="2.5" stroke-dasharray="3 3" />
+              <text x="325" y="195" fill="#EF4444" font-size="9" font-family="'JetBrains Mono', monospace">Stockout (Day 3.8)</text>
+
+              <!-- Air-freight Recovery Curve -->
+              <path d="M 40 40 L 180 120 L 260 90 L 580 50" fill="none" stroke="#29B5E8" stroke-width="3" />
+              <circle cx="260" cy="90" r="4" fill="#10B981" />
+              <text x="270" y="85" fill="#10B981" font-size="10" font-family="'JetBrains Mono', monospace" font-weight="bold">Air Delivery Arrives (+2,500u)</text>
+            </svg>
+          </div>
+
+        </div>
+
+      </section>
+
+      <!-- ===================================================================== -->
+      <!-- VIEW 5: DECISION APPROVALS QUEUE (/approvals)                         -->
+      <!-- ===================================================================== -->
+      <section id="view-approvals" class="hidden flex-1 flex flex-col space-y-4">
+        
+        <div class="sf-card p-4 rounded-2xl">
+          <h2 class="text-xl font-black tracking-tight sf-text-title font-outfit">Governed Decision Approvals Queue</h2>
+          <p class="text-xs text-slate-500 font-mono-code">Human-in-the-loop governance for autonomous Cortex recommendations. Approved actions dispatch through registered MCP tools.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          
+          <!-- Approval Card 1 -->
+          <div class="sf-card p-5 rounded-2xl space-y-3.5 border-2 border-emerald-500/40">
+            <div class="flex items-start justify-between">
+              <div>
+                <span class="rounded bg-emerald-500/20 px-2 py-0.5 text-[10px] font-black text-emerald-600 uppercase font-mono-code">ACTION READY</span>
+                <h3 class="text-base font-black sf-text-title font-outfit mt-1.5">Issue SLA Breach &amp; Liquidated Damages Demand to Apex Battery</h3>
+                <p class="text-xs text-slate-500 font-mono-code">Triggered by Cortex Contract Mining over Master Service Agreement (MSA Section 8.2).</p>
+              </div>
+              <span class="font-mono-code text-xs text-slate-400 font-bold">DEC-LEGAL-01</span>
+            </div>
+
+            <div class="p-3.5 rounded-xl sf-inner-box border border-snowflake/20 text-xs font-mono-code space-y-1.5">
+              <p><span class="text-slate-400">Target Supplier:</span> <strong class="text-snowflake">Apex Battery Cells (SUP_001)</strong></p>
+              <p><span class="text-slate-400">Breach Summary:</span> <strong>4 Days Late past 72h Grace Period on PO-9412</strong></p>
+              <p><span class="text-slate-400">Liquidated Damages:</span> <strong class="text-emerald-500">$140,000 Legal Recovery</strong></p>
+            </div>
+
+            <div class="flex gap-2 pt-2">
+              <button onclick="approvePrescription('LEGAL_CLAIM')" class="flex-1 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white font-black text-xs transition-all shadow-md">
+                Approve &amp; Send Slack Notice via MCP
+              </button>
+              <button onclick="alert('Decision deferred for legal review.')" class="px-4 py-2 rounded-lg sf-inner-box text-slate-500 hover:text-slate-800 text-xs font-bold transition-all">
+                Defer
+              </button>
+            </div>
+          </div>
+
+          <!-- Approval Card 2 -->
+          <div class="sf-card p-5 rounded-2xl space-y-3.5 border-2 border-snowflake">
+            <div class="flex items-start justify-between">
+              <div>
+                <span class="rounded bg-snowflake/20 px-2 py-0.5 text-[10px] font-black text-snowflake uppercase font-mono-code">STOCKOUT MITIGATION</span>
+                <h3 class="text-base font-black sf-text-title font-outfit mt-1.5">Dispatch Emergency Air-Freight PO to Shenzhen EnerTech</h3>
+                <p class="text-xs text-slate-500 font-mono-code">Replaces delayed 2,280 battery cells to prevent Austin Plant 2 assembly stoppage.</p>
+              </div>
+              <span class="font-mono-code text-xs text-slate-400 font-bold">DEC-SUPPLY-02</span>
+            </div>
+
+            <div class="p-3.5 rounded-xl sf-inner-box border border-snowflake/20 text-xs font-mono-code space-y-1.5">
+              <p><span class="text-slate-400">Vendor:</span> <strong class="text-snowflake">Shenzhen EnerTech Express (Tier-1 Qualified)</strong></p>
+              <p><span class="text-slate-400">Order Volume:</span> <strong>2,500 Units (PART_BAT_402)</strong></p>
+              <p><span class="text-slate-400">Impact:</span> <strong class="text-emerald-500">Austin DOI Restored from 3.8d &rarr; 14.2d</strong></p>
+            </div>
+
+            <div class="flex gap-2 pt-2">
+              <button onclick="approvePrescription('AIR_REROUTE')" class="flex-1 py-2 rounded-lg bg-snowflake hover:bg-snowflake-500 text-polar-night font-black text-xs transition-all shadow-md">
+                Approve &amp; Create ERP Order via MCP
+              </button>
+              <button onclick="alert('Alternative suppliers evaluated in simulator.')" class="px-4 py-2 rounded-lg sf-inner-box text-slate-500 hover:text-slate-800 text-xs font-bold transition-all">
+                Evaluate
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+      </section>
+
+      <!-- ===================================================================== -->
+      <!-- VIEW 6: IMMUTABLE AUDIT TRAIL (/audit)                                -->
+      <!-- ===================================================================== -->
+      <section id="view-audit" class="hidden flex-1 flex flex-col space-y-4">
+        
+        <div class="sf-card p-4 rounded-2xl flex items-center justify-between">
+          <div>
+            <h2 class="text-xl font-black tracking-tight sf-text-title font-outfit">Snowflake Horizon Immutable Audit Ledger</h2>
+            <p class="text-xs text-slate-500 font-mono-code">Cryptographically verifiable query and execution history recorded on Snowflake.</p>
+          </div>
+          <span class="px-3 py-1 rounded-lg sf-inner-box text-xs font-mono-code text-snowflake font-bold">Role: AUDIT_COMPLIANCE</span>
+        </div>
+
+        <div class="sf-card rounded-2xl overflow-hidden">
+          <table class="w-full text-left text-xs font-mono-code">
+            <thead class="sf-inner-box border-b border-snowflake/20 text-slate-400 uppercase">
+              <tr>
+                <th class="p-3.5">Timestamp (UTC)</th>
+                <th class="p-3.5">Query ID</th>
+                <th class="p-3.5">User / Role</th>
+                <th class="p-3.5">Action Executed</th>
+                <th class="p-3.5">Target Table / Service</th>
+                <th class="p-3.5">Freshness</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-snowflake/10 text-slate-700 dark:text-slate-300">
+              <tr class="hover:bg-snowflake/5">
+                <td class="p-3.5">2026-10-19 13:45:12</td>
+                <td class="p-3.5 text-snowflake font-bold">01b49f2a-0001-a472</td>
+                <td>CORTEX_AGENT</td>
+                <td><span class="px-2 py-0.5 rounded bg-red-500/20 text-red-500 font-bold">STOCKOUT_ALARM</span></td>
+                <td>DT_PLANT_STOCKOUT_RISK</td>
+                <td class="text-emerald-500 font-bold">38s Lag</td>
+              </tr>
+              <tr class="hover:bg-snowflake/5">
+                <td class="p-3.5">2026-10-19 13:42:00</td>
+                <td class="p-3.5 text-snowflake font-bold">01b49f10-0001-a468</td>
+                <td>PROCUREMENT_VP</td>
+                <td><span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-600 font-bold">LEGAL_PENALTY_CALC</span></td>
+                <td>DT_SUPPLIER_PERFORMANCE</td>
+                <td class="text-emerald-500 font-bold">42s Lag</td>
+              </tr>
+              <tr class="hover:bg-snowflake/5">
+                <td class="p-3.5">2026-10-19 13:30:45</td>
+                <td class="p-3.5 text-snowflake font-bold">01b49ee8-0001-a442</td>
+                <td>SNOWPIPE_STREAM</td>
+                <td><span class="px-2 py-0.5 rounded bg-purple-500/20 text-purple-600 font-bold">RFID_PALLET_INGEST</span></td>
+                <td>STG_IOT_RFID_SNOWPIPE</td>
+                <td class="text-emerald-500 font-bold">Sub-Second</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </section>
+
+      <!-- ===================================================================== -->
+      <!-- VIEW 7: SYSTEM INTEGRATIONS & ARCHITECTURE (/integrations)            -->
+      <!-- ===================================================================== -->
+      <section id="view-integrations" class="hidden flex-1 flex flex-col space-y-4">
+        
+        <div class="sf-card p-4 rounded-2xl">
+          <h2 class="text-xl font-black tracking-tight sf-text-title font-outfit">System Architecture &amp; Enterprise Integrations</h2>
+          <p class="text-xs text-slate-500 font-mono-code">Status of connected Snowflake native services, Model Context Protocol (MCP) server, and Slack alert endpoints.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          
+          <div class="sf-card p-4 rounded-2xl space-y-3">
+            <div class="flex items-center justify-between pb-3 border-b border-snowflake/20">
+              <div class="flex items-center gap-2.5">
+                <span class="text-xl">❄️</span>
+                <div>
+                  <h3 class="font-outfit font-black text-sm sf-text-title">Snowflake Cortex Analyst</h3>
+                  <p class="text-[11px] text-slate-500 font-mono-code">Governed NL-to-SQL Semantic Views</p>
+                </div>
+              </div>
+              <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-600 text-xs font-bold font-mono-code">ONLINE</span>
+            </div>
+            <div class="text-xs font-mono-code space-y-1 text-slate-500">
+              <p>Model: <strong class="text-snowflake">inventory_capacity_transportation.yaml</strong></p>
+              <p>Database: <strong class="sf-text-title">SUPPLY_CHAIN_DB</strong></p>
+              <p>Warehouse: <strong class="sf-text-title">CORTEX_ANALYST_WH_M</strong></p>
+            </div>
+          </div>
+
+          <div class="sf-card p-4 rounded-2xl space-y-3">
+            <div class="flex items-center justify-between pb-3 border-b border-snowflake/20">
+              <div class="flex items-center gap-2.5">
+                <span class="text-xl">⚡</span>
+                <div>
+                  <h3 class="font-outfit font-black text-sm sf-text-title">Dynamic Tables Pipeline</h3>
+                  <p class="text-[11px] text-slate-500 font-mono-code">Near Real-Time Analytical Aggregation</p>
+                </div>
+              </div>
+              <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-600 text-xs font-bold font-mono-code">1-MIN LAG (ACTIVE)</span>
+            </div>
+            <div class="text-xs font-mono-code space-y-1 text-slate-500">
+              <p>Target Lag: <strong class="text-emerald-500">1 MINUTE</strong></p>
+              <p>Actual Lag: <strong class="text-emerald-500">38s (Clean)</strong></p>
+              <p>Pipeline: <strong class="sf-text-title">DT_PLANT_STOCKOUT_RISK</strong></p>
+            </div>
+          </div>
+
+          <div class="sf-card p-4 rounded-2xl space-y-3">
+            <div class="flex items-center justify-between pb-3 border-b border-snowflake/20">
+              <div class="flex items-center gap-2.5">
+                <span class="text-xl">🤖</span>
+                <div>
+                  <h3 class="font-outfit font-black text-sm sf-text-title">Model Context Protocol (MCP)</h3>
+                  <p class="text-[11px] text-slate-500 font-mono-code">Action Tool Dispatch Engine</p>
+                </div>
+              </div>
+              <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-600 text-xs font-bold font-mono-code">PORT 8000 (READY)</span>
+            </div>
+            <div class="text-xs font-mono-code space-y-1 text-slate-500">
+              <p>Server: <strong class="text-snowflake">mcp/supply_chain_mcp.py</strong></p>
+              <p>Tools: <strong class="sf-text-title">expedite_purchase_order, send_sla_alert</strong></p>
+            </div>
+          </div>
+
+          <div class="sf-card p-4 rounded-2xl space-y-3">
+            <div class="flex items-center justify-between pb-3 border-b border-snowflake/20">
+              <div class="flex items-center gap-2.5">
+                <span class="text-xl">💬</span>
+                <div>
+                  <h3 class="font-outfit font-black text-sm sf-text-title">Slack Notification Webhook</h3>
+                  <p class="text-[11px] text-slate-500 font-mono-code">Crisis Escalation Channel</p>
+                </div>
+              </div>
+              <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-600 text-xs font-bold font-mono-code">CONNECTED</span>
+            </div>
+            <div class="text-xs font-mono-code space-y-1 text-slate-500">
+              <p>Channel: <strong class="text-snowflake">#supply-chain-crisis</strong></p>
+              <p>Payload: <strong class="sf-text-title">SLA Breach Notice with Contract Citation</strong></p>
+            </div>
+          </div>
+
+        </div>
+
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- 4. SLIDE-OUT ENTITY INSPECTION DRAWER                                     -->
+  <!-- ========================================================================= -->
+  <div id="entity-inspector-drawer" class="drawer-box fixed inset-y-0 right-0 z-50 w-full max-w-xl shadow-2xl p-6 flex flex-col justify-between hidden overflow-y-auto">
+    <div class="flex flex-col gap-4">
+      
+      <!-- Drawer Header -->
+      <div class="flex items-start justify-between pb-4 border-b border-snowflake/20">
+        <div class="flex items-center gap-3">
+          <div id="insp-icon" class="w-12 h-12 rounded-xl bg-snowflake/15 border border-snowflake/30 text-snowflake flex items-center justify-center font-bold text-2xl shadow-md">
+            🧊
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h3 id="insp-title" class="font-black sf-text-title text-base leading-tight font-display">Zone A: Cryo ASRS High-Bay</h3>
+              <span id="insp-cat-badge" class="px-2 py-0.5 rounded text-[9px] font-bold uppercase bg-snowflake/15 text-snowflake border border-snowflake/30 font-mono-code">STORAGE</span>
+            </div>
+            <p id="insp-sub" class="text-[11px] text-slate-500 font-mono-code mt-0.5">SPATIAL_ID: ZONE_ASRS_TOWER • REVEALED SNOWFLAKE ONTOLOGY</p>
+          </div>
+        </div>
+        <button onclick="closeEntityInspector()" class="text-slate-400 hover:text-slate-800 dark:hover:text-white font-bold text-base p-1">✕</button>
+      </div>
+
+      <!-- Drawer Tabs Navigation -->
+      <div class="flex items-center gap-2 border-b border-snowflake/15 pb-2 text-xs font-mono-code">
+        <button onclick="switchInspTab('telemetry')" id="insp-tab-btn-telemetry" class="px-3 py-1.5 rounded-lg bg-snowflake text-polar-night font-bold">Telemetry</button>
+        <button onclick="switchInspTab('table')" id="insp-tab-btn-table" class="px-3 py-1.5 rounded-lg sf-inner-box text-slate-500 font-semibold hover:text-snowflake">Snowflake Table / DDL</button>
+        <button onclick="switchInspTab('ontology')" id="insp-tab-btn-ontology" class="px-3 py-1.5 rounded-lg sf-inner-box text-slate-500 font-semibold hover:text-snowflake">Ontology Lineage</button>
+        <button onclick="switchInspTab('analyst')" id="insp-tab-btn-analyst" class="px-3 py-1.5 rounded-lg sf-inner-box text-slate-500 font-semibold hover:text-snowflake">Cortex Analyst</button>
+      </div>
+
+      <!-- Tab 1: Live Telemetry -->
+      <div id="insp-tab-content-telemetry" class="flex flex-col gap-4">
+        <div class="grid grid-cols-2 gap-3" id="insp-telemetry-grid">
+          <!-- Populated dynamically via JS -->
+        </div>
+        <div class="sf-inner-box p-3.5 rounded-xl border border-snowflake/15 text-xs text-slate-600 dark:text-slate-300" id="insp-desc-box">
+          <!-- Description -->
+        </div>
+      </div>
+
+      <!-- Tab 2: Underlying Snowflake Table & DDL -->
+      <div id="insp-tab-content-table" class="flex flex-col gap-3 hidden">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-mono-code text-snowflake font-bold" id="insp-table-name">SUPPLY_CHAIN_DB.CORE.DT_ZONE_LIVE_TELEMETRY</span>
+          <button onclick="copyInspDDL()" class="text-[11px] font-mono-code text-snowflake hover:underline font-bold">Copy DDL</button>
+        </div>
+        <pre id="insp-ddl-code" class="bg-polar-night text-snowflake font-mono-code text-[11px] p-3 rounded-xl overflow-x-auto border border-snowflake/20 max-h-56"></pre>
+        <div class="text-[11px] text-slate-500 font-mono-code">Sample Materialized Record:</div>
+        <pre id="insp-sample-row" class="bg-polar-night text-slate-300 font-mono-code text-[10.5px] p-3 rounded-xl overflow-x-auto border border-snowflake/20 max-h-36"></pre>
+      </div>
+
+      <!-- Tab 3: Ontology Hierarchy & Transitive Closure -->
+      <div id="insp-tab-content-ontology" class="flex flex-col gap-3 hidden">
+        <div class="sf-inner-box p-3.5 rounded-xl border border-snowflake/20 space-y-2 text-xs font-mono-code">
+          <div class="text-snowflake font-bold">SUPPLY_CHAIN_DB.ONT.ONT_CLASS</div>
+          <p class="text-slate-700 dark:text-slate-300">Class: <strong class="text-snowflake">Warehouse</strong> (Concrete Entity)</p>
+          <p class="text-slate-700 dark:text-slate-300">Parent: <strong class="text-purple-500">Facility &rarr; SupplyChainNode</strong></p>
+          <p class="text-slate-700 dark:text-slate-300">Recursive Subtypes: <strong class="text-emerald-500">BondedWarehouse, ColdStorage</strong></p>
+          <p class="text-slate-500 text-[11px]">Any query over ancestor 'SupplyChainNode' or 'Warehouse' automatically traverses and includes this entity via CLASS_CLOSURE.</p>
+        </div>
+      </div>
+
+      <!-- Tab 4: Cortex Analyst Questions -->
+      <div id="insp-tab-content-analyst" class="flex flex-col gap-3 hidden">
+        <p class="text-xs text-slate-500 font-mono-code">Ask questions grounded in this zone's verified Snowflake schema:</p>
+        <div id="insp-cortex-prompts" class="flex flex-col gap-2"></div>
+        <div class="flex gap-2 mt-2">
+          <input type="text" id="insp-custom-query" placeholder="Ask Cortex Analyst anything about this node..." class="flex-1 sf-inner-box border border-snowflake/30 rounded-lg px-3 py-2 text-xs font-mono-code focus:outline-none focus:border-snowflake">
+          <button onclick="executeInspCustomQuery()" class="px-3.5 py-2 bg-snowflake hover:bg-snowflake-500 text-polar-night rounded-lg text-xs font-black transition-all">Ask</button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Drawer Footer Actions -->
+    <div class="pt-4 border-t border-snowflake/20 flex gap-2">
+      <button onclick="executeActionMCP('EXPEDITE')" class="flex-1 py-2 rounded-lg bg-snowflake hover:bg-snowflake-500 text-polar-night font-black text-xs transition-all shadow-md">
+        ⚡ Mitigate Risk via MCP
+      </button>
+      <button onclick="closeEntityInspector()" class="px-4 py-2 rounded-lg sf-inner-box text-slate-500 hover:text-slate-800 text-xs font-bold transition-all">
+        Close
+      </button>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- 5. ASK CORTEX COPILOT MODAL                                               -->
+  <!-- ========================================================================= -->
+  <div id="copilot-modal" class="fixed inset-0 z-50 bg-polar-night/70 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="sf-card max-w-2xl w-full rounded-2xl p-6 shadow-2xl border border-snowflake/30 space-y-4">
+      <div class="flex items-center justify-between pb-3 border-b border-snowflake/20">
+        <div class="flex items-center gap-2.5">
+          <span class="text-xl">🤖</span>
+          <h3 class="font-outfit font-black text-base sf-text-title">Snowflake Cortex AI Copilot</h3>
+        </div>
+        <button onclick="closeCopilotModal()" class="text-slate-400 hover:text-slate-800 dark:hover:text-white font-bold">✕</button>
+      </div>
+
+      <div class="space-y-2">
+        <label class="text-xs font-bold text-slate-500 font-mono-code">ASK ANY SUPPLY CHAIN QUESTION (CONVERSATIONAL NL-TO-SQL)</label>
+        <div class="flex gap-2">
+          <input type="text" id="copilot-input" placeholder="e.g., Why is Austin battery DOI at 3.8 days?" class="flex-1 sf-inner-box border border-snowflake/30 rounded-lg px-3.5 py-2.5 text-xs font-mono-code focus:outline-none focus:border-snowflake">
+          <button onclick="submitCopilotQuery()" class="px-5 py-2.5 bg-snowflake hover:bg-snowflake-500 text-polar-night font-black text-xs rounded-lg transition-all shadow-md">Ask</button>
+        </div>
+      </div>
+
+      <div class="space-y-2">
+        <p class="text-[11px] font-mono-code text-slate-400 font-bold uppercase">Quick Sample Prompts:</p>
+        <div class="flex flex-wrap gap-1.5 text-[11px] font-mono-code">
+          <button onclick="setCopilotQuery('Why is Austin battery DOI at 3.8 days?')" class="px-2.5 py-1 rounded-md sf-inner-box hover:border-snowflake text-slate-600 dark:text-slate-300">Why is Austin battery DOI at 3.8 days?</button>
+          <button onclick="setCopilotQuery('What are our liquidated damages from Apex Battery?')" class="px-2.5 py-1 rounded-md sf-inner-box hover:border-snowflake text-slate-600 dark:text-slate-300">Apex Battery liquidated damages?</button>
+          <button onclick="setCopilotQuery('What is the OTIF rate for maritime shipments?')" class="px-2.5 py-1 rounded-md sf-inner-box hover:border-snowflake text-slate-600 dark:text-slate-300">Maritime shipment OTIF %?</button>
+        </div>
+      </div>
+
+      <!-- Response Box -->
+      <div id="copilot-response-box" class="hidden p-4 rounded-xl sf-inner-box border border-snowflake/25 space-y-2 font-mono-code text-xs">
+        <div class="flex items-center justify-between text-snowflake font-bold">
+          <span>GROUND TRUTH RESPONSE:</span>
+          <span class="text-[10px] text-emerald-500">Snowflake Verified</span>
+        </div>
+        <p id="copilot-response-text" class="text-slate-800 dark:text-white leading-relaxed"></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- 6. ONBOARD FACILITY & THRESHOLD RULES MODALS                              -->
+  <!-- ========================================================================= -->
+  {onboard_modal_html}
+  </div>
+
+  {rules_modal_html}
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- 7. APPLICATION LOGIC & STATE STORE                                        -->
+  <!-- ========================================================================= -->
+  <script>
+    // 1. SPATIAL ONTOLOGY REGISTRY
+    {spatial_ontology_js};
+
+    // 2. GLOBAL STATE STORE
+    const state = {{
+      theme: 'light',
+      activePage: 'twin',
+      activeTwinMode: 'topology',
+      currentInspNode: 'ASRS_TOWER',
+      facilities: {{
+        WH_RIVERSIDE_01: {{
+          id: "WH_RIVERSIDE_01",
+          name: "Riverside Smart Hub",
+          loc: "12 Riverside Dr, Newark NJ",
+          badge: "ICEBERG.WH_RIVERSIDE_01",
+          stock: 1412,
+          cap: 1800,
+          pct: 78.4,
+          doi: 14.2,
+          doiStatus: "Target Met",
+          trucks: 1,
+          baysBusy: 2,
+          dock01: {{ carrier: "Autonomous Freight", status: "Active Loading 2/6", progress: "2/6", eta: 13 }},
+          dock02: {{ carrier: "Apex Battery Freight", status: "Standby Ready", progress: "Ready", eta: 35 }},
+          stepper: {{ id: "#SHP-78442", carrier: "SHUTTLE-2051", step: 3, eta: "09:53 UTC" }}
+        }},
+        PLANT_02: {{
+          id: "PLANT_02",
+          name: "Gigafactory Texas (Plant 2)",
+          loc: "13101 Harold Green Rd, Austin TX",
+          badge: "ICEBERG.AUSTIN_GIGA_01",
+          stock: 2280,
+          cap: 5000,
+          pct: 45.6,
+          doi: 3.8,
+          doiStatus: "Critical Shortage",
+          trucks: 4,
+          baysBusy: 3,
+          dock01: {{ carrier: "Apex Battery Logistics", status: "Delayed 4d", progress: "Held", eta: 0 }},
+          dock02: {{ carrier: "Shenzhen Air Charter", status: "Rerouted Inbound", progress: "En Route", eta: 180 }},
+          stepper: {{ id: "#SHP-88102", carrier: "APEX-OCEAN", step: 2, eta: "Delayed" }}
+        }},
+        PLANT_01: {{
+          id: "PLANT_01",
+          name: "Fremont Assembly Plant",
+          loc: "45500 Fremont Blvd, Fremont CA",
+          badge: "ICEBERG.FREMONT_ASSEMBLY",
+          stock: 4200,
+          cap: 5000,
+          pct: 84.0,
+          doi: 11.5,
+          doiStatus: "Target Met",
+          trucks: 2,
+          baysBusy: 2,
+          dock01: {{ carrier: "Pacific Freight Express", status: "Active Loading", progress: "4/6", eta: 8 }},
+          dock02: {{ carrier: "Nevada Shuttles", status: "Unloading", progress: "6/6", eta: 5 }},
+          stepper: {{ id: "#SHP-91024", carrier: "PACIFIC-44", step: 4, eta: "10:15 UTC" }}
+        }},
+        PLANT_03: {{
+          id: "PLANT_03",
+          name: "Berlin Gigafactory 4",
+          loc: "Grünheide, Brandenburg, Germany",
+          badge: "ICEBERG.BERLIN_GIGA_04",
+          stock: 3680,
+          cap: 4000,
+          pct: 92.0,
+          doi: 16.4,
+          doiStatus: "Optimal Buffer",
+          trucks: 3,
+          baysBusy: 1,
+          dock01: {{ carrier: "DB Schenker Express", status: "Cleared Customs", progress: "Ready", eta: 20 }},
+          dock02: {{ carrier: "Euro Cargo Shuttle", status: "Loading", progress: "1/6", eta: 40 }},
+          stepper: {{ id: "#SHP-66201", carrier: "SCHENKER-EU", step: 3, eta: "11:00 UTC" }}
+        }}
+      }},
+      currentFacilityId: "WH_RIVERSIDE_01"
+    }};
+
+    // 3. PAGE NAVIGATION CONTROLLER
+    function navigatePage(viewName) {{
+      const views = ['twin', 'dashboard', 'agents', 'simulator', 'approvals', 'audit', 'integrations'];
+      views.forEach(v => {{
+        const el = document.getElementById('view-' + v);
+        const btn = document.getElementById('nav-btn-' + v);
+        if (el) {{
+          if (v === viewName) {{
+            el.classList.remove('hidden');
+          }} else {{
+            el.classList.add('hidden');
+          }}
+        }}
+        if (btn) {{
+          if (v === viewName) {{
+            btn.className = "w-full flex items-center gap-2.5 px-3 py-2 rounded-lg bg-snowflake/15 text-snowflake border border-snowflake/30 font-bold transition-all shadow-sm";
+          }} else {{
+            btn.className = "w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-snowflake/10 hover:text-snowflake transition-all";
+          }}
+        }}
+      }});
+      state.activePage = viewName;
+    }}
+
+    // 4. TWIN MODE SWITCHER (Topology vs Floor Plan)
+    function setTwinView(mode) {{
+      state.activeTwinMode = mode;
+      const stageTopo = document.getElementById('stage-topology');
+      const stageFloor = document.getElementById('stage-floor');
+      const btnTopo = document.getElementById('tab-twin-topology');
+      const btnFloor = document.getElementById('tab-twin-floor');
+
+      if (mode === 'floor') {{
+        stageTopo.classList.add('hidden');
+        stageFloor.classList.remove('hidden');
+        btnFloor.className = "flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-bold bg-snowflake text-polar-night shadow-sm transition-all";
+        btnTopo.className = "flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-semibold text-slate-500 hover:text-snowflake transition-all";
+      }} else {{
+        stageFloor.classList.add('hidden');
+        stageTopo.classList.remove('hidden');
+        btnTopo.className = "flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-bold bg-snowflake text-polar-night shadow-sm transition-all";
+        btnFloor.className = "flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-semibold text-slate-500 hover:text-snowflake transition-all";
+      }}
+    }}
+
+    // 5. THEME TOGGLE (Default is Light)
+    function toggleTheme() {{
+      const html = document.documentElement;
+      const isLight = html.classList.contains('theme-light') || html.getAttribute('data-theme') === 'light';
+      
+      if (isLight) {{
+        html.classList.remove('theme-light');
+        html.classList.add('theme-dark');
+        html.setAttribute('data-theme', 'dark');
+        document.getElementById('theme-toggle-icon').textContent = '🌙';
+        document.getElementById('theme-toggle-label').textContent = 'Dark';
+        localStorage.setItem('sf-theme', 'dark');
+      }} else {{
+        html.classList.remove('theme-dark');
+        html.classList.add('theme-light');
+        html.setAttribute('data-theme', 'light');
+        document.getElementById('theme-toggle-icon').textContent = '☀️';
+        document.getElementById('theme-toggle-label').textContent = 'Light';
+        localStorage.setItem('sf-theme', 'light');
+      }}
+    }}
+
+    // 6. ZONE / ASSET INSPECTION DRAWER CONTROLLER
+    function inspectZone(zoneId) {{
+      const data = SPATIAL_ONTOLOGY[zoneId];
+      if (!data) return;
+      state.currentInspNode = zoneId;
+
+      document.getElementById('insp-icon').textContent = data.icon || "🧊";
+      document.getElementById('insp-title').textContent = data.title;
+      document.getElementById('insp-cat-badge').textContent = data.category;
+      document.getElementById('insp-sub').textContent = "SPATIAL_ID: " + data.id + " • REVEALED SNOWFLAKE ONTOLOGY";
+      document.getElementById('insp-desc-box').textContent = data.desc;
+
+      // Render Telemetry Grid
+      const grid = document.getElementById('insp-telemetry-grid');
+      grid.innerHTML = "";
+      data.telemetry.forEach(t => {{
+        const card = document.createElement('div');
+        card.className = "sf-inner-box p-3 rounded-xl border border-snowflake/15";
+        card.innerHTML = `
+          <div class="text-[10px] text-slate-400 font-mono-code font-bold uppercase">${{t.label}}</div>
+          <div class="text-base font-black sf-text-title font-outfit mt-0.5">${{t.value}}</div>
+          <div class="text-[10px] text-emerald-600 font-mono-code font-semibold mt-1">${{t.sub}}</div>
+        `;
+        grid.appendChild(card);
+      }});
+
+      // Render Table & DDL
+      if (data.snowflake) {{
+        document.getElementById('insp-table-name').textContent = data.snowflake.table;
+        document.getElementById('insp-ddl-code').textContent = data.snowflake.ddl;
+        document.getElementById('insp-sample-row').textContent = JSON.stringify(data.snowflake.sampleRow, null, 2);
+      }}
+
+      // Render Cortex Questions
+      const questionsContainer = document.getElementById('insp-cortex-prompts');
+      questionsContainer.innerHTML = "";
+      if (data.cortexQuestions) {{
+        data.cortexQuestions.forEach(q => {{
+          const btn = document.createElement('button');
+          btn.className = "text-left p-2.5 rounded-lg sf-inner-box hover:border-snowflake text-xs font-mono-code text-slate-700 dark:text-slate-300 transition-all";
+          btn.textContent = "💬 " + q.q;
+          btn.onclick = () => askCortex(q.q);
+          questionsContainer.appendChild(btn);
+        }});
+      }}
+
+      // Open drawer
+      document.getElementById('entity-inspector-drawer').classList.remove('hidden');
+      switchInspTab('telemetry');
+    }}
+
+    function closeEntityInspector() {{
+      document.getElementById('entity-inspector-drawer').classList.add('hidden');
+    }}
+
+    function switchInspTab(tabName) {{
+      const tabs = ['telemetry', 'table', 'ontology', 'analyst'];
+      tabs.forEach(t => {{
+        const btn = document.getElementById('insp-tab-btn-' + t);
+        const content = document.getElementById('insp-tab-content-' + t);
+        if (t === tabName) {{
+          btn.className = "px-3 py-1.5 rounded-lg bg-snowflake text-polar-night font-bold";
+          content.classList.remove('hidden');
+        }} else {{
+          btn.className = "px-3 py-1.5 rounded-lg sf-inner-box text-slate-500 font-semibold hover:text-snowflake";
+          content.classList.add('hidden');
+        }}
+      }});
+    }}
+
+    function copyInspDDL() {{
+      const code = document.getElementById('insp-ddl-code').textContent;
+      navigator.clipboard.writeText(code);
+      alert("Snowflake DDL copied to clipboard!");
+    }}
+
+    // 7. COPILOT MODAL & NL-TO-SQL
+    function openCopilotModal() {{
+      document.getElementById('copilot-modal').classList.remove('hidden');
+    }}
+
+    function closeCopilotModal() {{
+      document.getElementById('copilot-modal').classList.add('hidden');
+    }}
+
+    function setCopilotQuery(q) {{
+      document.getElementById('copilot-input').value = q;
+      submitCopilotQuery();
+    }}
+
+    function submitCopilotQuery() {{
+      const query = document.getElementById('copilot-input').value.trim();
+      if (!query) return;
+      askCortex(query);
+    }}
+
+    function askCortex(query) {{
+      openCopilotModal();
+      document.getElementById('copilot-input').value = query;
+      const box = document.getElementById('copilot-response-box');
+      const text = document.getElementById('copilot-response-text');
+      box.classList.remove('hidden');
+
+      const qLower = query.toLowerCase();
+      if (qLower.includes('austin') || qLower.includes('doi') || qLower.includes('battery')) {{
+        text.innerHTML = `
+          <strong>[Snowflake Cortex Analyst Result]</strong><br>
+          Grounded Table: <code class="text-snowflake">SUPPLY_CHAIN_DB.CORE.DT_PLANT_STOCKOUT_RISK</code><br>
+          Plant: <strong>Gigafactory Texas (Plant 2)</strong> | Part: <strong>4680 Battery Cells (BAT_402)</strong><br>
+          Current On-Hand: <strong>2,280 units</strong> | Burn Rate: <strong>600 units/day</strong><br>
+          Days of Inventory: <strong class="text-red-500">3.8 Days (CRITICAL_STOCKOUT_RISK)</strong><br>
+          Root Cause: Consignment #SHP-78442 delayed 4 days at Port of Long Beach.<br>
+          <em>Prescription: Emergency air-freight PO to Shenzhen EnerTech will restore buffer to 14.2 days.</em>
+        `;
+      }} else if (qLower.includes('penalty') || qLower.includes('liquidated') || qLower.includes('apex')) {{
+        text.innerHTML = `
+          <strong>[Snowflake Cortex Search &amp; Analyst Result]</strong><br>
+          Contract: <code class="text-snowflake">SUPPLY_CHAIN_DB.CORE.SUPPLIER_CONTRACTS_SEARCH</code><br>
+          Clause: <strong>Section 8.2 (Liquidated Damages)</strong><br>
+          Supplier: <strong>Apex Battery Cells (SUP_001)</strong><br>
+          Delay Duration: <strong>4 Days past 72h Grace Period</strong><br>
+          Liquidated Damages Liability: <strong class="text-emerald-500">$140,000 Recoverable</strong><br>
+          <em>Status: Decision DEC-LEGAL-01 ready for 1-click MCP approval.</em>
+        `;
+      }} else {{
+        text.innerHTML = `
+          <strong>[Snowflake Cortex Analyst Query Execution]</strong><br>
+          Grounded Model: <code class="text-snowflake">inventory_capacity_transportation.yaml</code><br>
+          Query: "${{query}}"<br>
+          Result: Reconciled with Snowflake Dynamic Tables (Lag: 38s). Network health index is 94.2% across 3 active plants.
+        `;
+      }}
+    }}
+
+    // 8. CRISIS DEMO TRIGGER & SIMULATION
+    function triggerCrisisDemo() {{
+      navigatePage('twin');
+      inspectZone('CLEAN_ROOM');
+      document.getElementById('top-sim-clock').textContent = "Mon, Oct 19 • 13:45 UTC (Crisis Mode)";
+      alert("🚨 CRISIS SCENARIO TRIGGERED: Austin Gigafactory Battery Stockout! Inspecting Zone B Cleanroom (3.8 Days DOI).");
+    }}
+
+    function advancePlantTime(hours) {{
+      const current = document.getElementById('top-sim-clock').textContent;
+      document.getElementById('top-sim-clock').textContent = `Mon, Oct 19 • +${{hours}}h simulation`;
+      alert(`Fast-forwarded ${{hours}} hour(s) of plant simulation time. Telemetry and Dynamic Tables updated.`);
+    }}
+
+    function approvePrescription(actionId) {{
+      if (actionId === 'LEGAL_CLAIM') {{
+        alert("✅ APPROVED DEC-LEGAL-01: Issued $140,000 liquidated damages notice to Apex Battery Cells and dispatched notification to #supply-chain-crisis on Slack via MCP!");
+      }} else {{
+        alert("✅ APPROVED DEC-SUPPLY-02: Dispatched emergency air-freight PO for 2,500 battery cells to Shenzhen EnerTech. Austin Gigafactory DOI restored to 14.2 Days!");
+      }}
+      navigatePage('dashboard');
+    }}
+
+    function executeActionMCP(type) {{
+      approvePrescription(type);
+    }}
+
+    // 9. FACILITY SWITCHER
+    function changeFacility(facId) {{
+      state.currentFacilityId = facId;
+      const fac = state.facilities[facId];
+      if (!fac) return;
+      alert(`Switched active Snowflake Iceberg facility to: ${{fac.name}} (${{fac.loc}})`);
+    }}
+
+    // 10. MODAL CONTROLS
+    function openOnboardModal() {{ document.getElementById('onboard-modal').classList.remove('hidden'); }}
+    function closeOnboardModal() {{ document.getElementById('onboard-modal').classList.add('hidden'); }}
+    function openRulesModal() {{ document.getElementById('rules-modal').classList.remove('hidden'); }}
+    function closeRulesModal() {{ document.getElementById('rules-modal').classList.add('hidden'); }}
+    function handleOnboard(e) {{ e.preventDefault(); alert("Facility onboarded and registered to SUPPLY_CHAIN_DB.CORE.DIM_PLANTS!"); closeOnboardModal(); }}
+    function updateRuleSlider(id, val) {{ document.getElementById(id).textContent = val; }}
+    function applyRules() {{ alert("Business threshold rules updated in CONFIG_RULES!"); closeRulesModal(); }}
+    function setTwinMode(mode) {{ alert(`Mode ${{mode}} activated on 3D twin.`); }}
+    function zoomTwin(scale) {{ 
+      const cont = document.getElementById('svg-viewport-container');
+      cont.style.transform = `scale(${{scale}})`;
+    }}
+    function resetCanvasTransform() {{
+      const cont = document.getElementById('svg-viewport-container');
+      if (cont) cont.style.transform = "scale(1)";
+    }}
+    function runCortexAnalysis() {{
+      askCortex('How many days of battery inventory remain before Plant 2 stops?');
+    }}
+
+    // Initialize Default View
+    window.addEventListener('DOMContentLoaded', () => {{
+      navigatePage('twin');
+      setTwinView('topology');
+    }});
+  </script>
+</body>
+</html>
+"""
+
+with open('index.html', 'w') as f:
+    f.write(html_content)
+
+print("Generated new index.html successfully with full multi-page architecture and Snowflake theming.")
