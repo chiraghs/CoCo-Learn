@@ -1,0 +1,5 @@
+channel_id,channel_name,fulfillment_type,ship_mode,sla_days
+1,Online,Ship-to-Home,Courier,2
+2,Retail,Store-Pickup,,0
+3,Wholesale,Bulk,Truck,7
+4,B2B Express,Priority,Air,1

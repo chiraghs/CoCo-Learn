@@ -1,0 +1,154 @@
+event_id,date,event_name,event_type,city,impact_level
+1,2025-01-20,Chinese New Year,HOLIDAY,ningbo,0.6
+2,2025-01-21,Chinese New Year,HOLIDAY,ningbo,0.6
+3,2025-01-22,Chinese New Year,HOLIDAY,ningbo,0.6
+4,2025-01-23,Chinese New Year,HOLIDAY,ningbo,0.6
+5,2025-01-24,Chinese New Year,HOLIDAY,ningbo,0.6
+6,2025-01-25,Chinese New Year,HOLIDAY,ningbo,0.6
+7,2025-01-26,Chinese New Year,HOLIDAY,ningbo,0.6
+8,2025-01-27,Chinese New Year,HOLIDAY,ningbo,0.6
+9,2025-01-28,Chinese New Year,HOLIDAY,ningbo,0.6
+10,2025-01-29,Chinese New Year,HOLIDAY,ningbo,0.6
+11,2025-01-30,Chinese New Year,HOLIDAY,ningbo,0.6
+12,2025-01-31,Chinese New Year,HOLIDAY,ningbo,0.6
+13,2025-02-01,Chinese New Year,HOLIDAY,ningbo,0.6
+14,2025-02-02,Chinese New Year,HOLIDAY,ningbo,0.6
+15,2025-02-03,Chinese New Year,HOLIDAY,ningbo,0.6
+16,2025-02-04,Chinese New Year,HOLIDAY,ningbo,0.6
+17,2025-02-05,Chinese New Year,HOLIDAY,ningbo,0.6
+18,2025-02-06,Chinese New Year,HOLIDAY,ningbo,0.6
+19,2025-02-07,Chinese New Year,HOLIDAY,ningbo,0.6
+20,2025-02-08,Chinese New Year,HOLIDAY,ningbo,0.6
+21,2025-02-09,Chinese New Year,HOLIDAY,ningbo,0.6
+22,2025-02-10,Chinese New Year,HOLIDAY,ningbo,0.6
+23,2025-02-11,Chinese New Year,HOLIDAY,ningbo,0.6
+24,2025-02-12,Chinese New Year,HOLIDAY,ningbo,0.6
+25,2025-02-13,Chinese New Year,HOLIDAY,ningbo,0.6
+26,2025-02-14,Chinese New Year,HOLIDAY,ningbo,0.6
+27,2025-02-15,Chinese New Year,HOLIDAY,ningbo,0.6
+28,2025-05-01,Labor Day,HOLIDAY,ningbo,0.3
+29,2025-05-02,Labor Day,HOLIDAY,ningbo,0.3
+30,2025-05-03,Labor Day,HOLIDAY,ningbo,0.3
+31,2025-05-04,Labor Day,HOLIDAY,ningbo,0.3
+32,2025-05-05,Labor Day,HOLIDAY,ningbo,0.3
+33,2025-10-01,Golden Week,HOLIDAY,ningbo,0.55
+34,2025-10-02,Golden Week,HOLIDAY,ningbo,0.55
+35,2025-10-03,Golden Week,HOLIDAY,ningbo,0.55
+36,2025-10-04,Golden Week,HOLIDAY,ningbo,0.55
+37,2025-10-05,Golden Week,HOLIDAY,ningbo,0.55
+38,2025-10-06,Golden Week,HOLIDAY,ningbo,0.55
+39,2025-10-07,Golden Week,HOLIDAY,ningbo,0.55
+40,2025-11-11,Singles Day,PROMO_LOGISTICS_BOTTLENECK,ningbo,0.4
+41,2025-01-25,Tet Holiday,HOLIDAY,ho chi minh,0.55
+42,2025-01-26,Tet Holiday,HOLIDAY,ho chi minh,0.55
+43,2025-01-27,Tet Holiday,HOLIDAY,ho chi minh,0.55
+44,2025-01-28,Tet Holiday,HOLIDAY,ho chi minh,0.55
+45,2025-01-29,Tet Holiday,HOLIDAY,ho chi minh,0.55
+46,2025-01-30,Tet Holiday,HOLIDAY,ho chi minh,0.55
+47,2025-01-31,Tet Holiday,HOLIDAY,ho chi minh,0.55
+48,2025-02-01,Tet Holiday,HOLIDAY,ho chi minh,0.55
+49,2025-02-02,Tet Holiday,HOLIDAY,ho chi minh,0.55
+50,2025-02-03,Tet Holiday,HOLIDAY,ho chi minh,0.55
+51,2025-02-04,Tet Holiday,HOLIDAY,ho chi minh,0.55
+52,2025-02-05,Tet Holiday,HOLIDAY,ho chi minh,0.55
+53,2025-02-06,Tet Holiday,HOLIDAY,ho chi minh,0.55
+54,2025-02-07,Tet Holiday,HOLIDAY,ho chi minh,0.55
+55,2025-02-08,Tet Holiday,HOLIDAY,ho chi minh,0.55
+56,2025-02-09,Tet Holiday,HOLIDAY,ho chi minh,0.55
+57,2025-02-10,Tet Holiday,HOLIDAY,ho chi minh,0.55
+58,2025-04-30,Liberation & Labor Day,HOLIDAY,ho chi minh,0.25
+59,2025-05-01,Liberation & Labor Day,HOLIDAY,ho chi minh,0.25
+60,2025-09-02,Independence Day,HOLIDAY,ho chi minh,0.2
+61,2025-01-25,Seollal,HOLIDAY,busan,0.45
+62,2025-01-26,Seollal,HOLIDAY,busan,0.45
+63,2025-01-27,Seollal,HOLIDAY,busan,0.45
+64,2025-01-28,Seollal,HOLIDAY,busan,0.45
+65,2025-01-29,Seollal,HOLIDAY,busan,0.45
+66,2025-01-30,Seollal,HOLIDAY,busan,0.45
+67,2025-01-31,Seollal,HOLIDAY,busan,0.45
+68,2025-02-01,Seollal,HOLIDAY,busan,0.45
+69,2025-02-02,Seollal,HOLIDAY,busan,0.45
+70,2025-02-03,Seollal,HOLIDAY,busan,0.45
+71,2025-02-04,Seollal,HOLIDAY,busan,0.45
+72,2025-02-05,Seollal,HOLIDAY,busan,0.45
+73,2025-09-15,Chuseok,HOLIDAY,busan,0.4
+74,2025-09-16,Chuseok,HOLIDAY,busan,0.4
+75,2025-09-17,Chuseok,HOLIDAY,busan,0.4
+76,2025-04-29,Golden Week,HOLIDAY,tokyo,0.5
+77,2025-04-30,Golden Week,HOLIDAY,tokyo,0.5
+78,2025-05-01,Golden Week,HOLIDAY,tokyo,0.5
+79,2025-05-02,Golden Week,HOLIDAY,tokyo,0.5
+80,2025-05-03,Golden Week,HOLIDAY,tokyo,0.5
+81,2025-05-04,Golden Week,HOLIDAY,tokyo,0.5
+82,2025-05-05,Golden Week,HOLIDAY,tokyo,0.5
+83,2025-08-13,Obon Festival,HOLIDAY,tokyo,0.3
+84,2025-08-14,Obon Festival,HOLIDAY,tokyo,0.3
+85,2025-08-15,Obon Festival,HOLIDAY,tokyo,0.3
+86,2025-08-16,Obon Festival,HOLIDAY,tokyo,0.3
+87,2025-12-29,New Year Holiday,HOLIDAY,tokyo,0.4
+88,2025-12-30,New Year Holiday,HOLIDAY,tokyo,0.4
+89,2025-12-31,New Year Holiday,HOLIDAY,tokyo,0.4
+90,2025-04-15,Easter Transport Restriction,LOGISTICS_RESTRICTION,stuttgart,0.25
+91,2025-04-16,Easter Transport Restriction,LOGISTICS_RESTRICTION,stuttgart,0.25
+92,2025-04-17,Easter Transport Restriction,LOGISTICS_RESTRICTION,stuttgart,0.25
+93,2025-04-18,Easter Transport Restriction,LOGISTICS_RESTRICTION,stuttgart,0.25
+94,2025-12-24,Christmas/NY,HOLIDAY,stuttgart,0.55
+95,2025-12-25,Christmas/NY,HOLIDAY,stuttgart,0.55
+96,2025-12-26,Christmas/NY,HOLIDAY,stuttgart,0.55
+97,2025-12-27,Christmas/NY,HOLIDAY,stuttgart,0.55
+98,2025-12-28,Christmas/NY,HOLIDAY,stuttgart,0.55
+99,2025-12-29,Christmas/NY,HOLIDAY,stuttgart,0.55
+100,2025-12-30,Christmas/NY,HOLIDAY,stuttgart,0.55
+101,2025-12-31,Christmas/NY,HOLIDAY,stuttgart,0.55
+102,2025-09-20,Oktoberfest,REGIONAL_EVENT_BOTTLENECK,munich,0.2
+103,2025-09-21,Oktoberfest,REGIONAL_EVENT_BOTTLENECK,munich,0.2
+104,2025-09-22,Oktoberfest,REGIONAL_EVENT_BOTTLENECK,munich,0.2
+105,2025-09-23,Oktoberfest,REGIONAL_EVENT_BOTTLENECK,munich,0.2
+106,2025-09-24,Oktoberfest,REGIONAL_EVENT_BOTTLENECK,munich,0.2
+107,2025-09-25,Oktoberfest,REGIONAL_EVENT_BOTTLENECK,munich,0.2
+108,2025-09-26,Oktoberfest,REGIONAL_EVENT_BOTTLENECK,munich,0.2
+109,2025-09-27,Oktoberfest,REGIONAL_EVENT_BOTTLENECK,munich,0.2
+110,2025-09-28,Oktoberfest,REGIONAL_EVENT_BOTTLENECK,munich,0.2
+111,2025-09-29,Oktoberfest,REGIONAL_EVENT_BOTTLENECK,munich,0.2
+112,2025-09-30,Oktoberfest,REGIONAL_EVENT_BOTTLENECK,munich,0.2
+113,2025-10-01,Oktoberfest,REGIONAL_EVENT_BOTTLENECK,munich,0.2
+114,2025-10-02,Oktoberfest,REGIONAL_EVENT_BOTTLENECK,munich,0.2
+115,2025-10-03,Oktoberfest,REGIONAL_EVENT_BOTTLENECK,munich,0.2
+116,2025-10-04,Oktoberfest,REGIONAL_EVENT_BOTTLENECK,munich,0.2
+117,2025-10-05,Oktoberfest,REGIONAL_EVENT_BOTTLENECK,munich,0.2
+118,2025-08-15,Ferragosto,HOLIDAY_SHUTDOWN,milano,0.6
+119,2025-08-16,Ferragosto,HOLIDAY_SHUTDOWN,milano,0.6
+120,2025-08-17,Ferragosto,HOLIDAY_SHUTDOWN,milano,0.6
+121,2025-08-18,Ferragosto,HOLIDAY_SHUTDOWN,milano,0.6
+122,2025-08-19,Ferragosto,HOLIDAY_SHUTDOWN,milano,0.6
+123,2025-08-20,Ferragosto,HOLIDAY_SHUTDOWN,milano,0.6
+124,2025-08-21,Ferragosto,HOLIDAY_SHUTDOWN,milano,0.6
+125,2025-08-22,Ferragosto,HOLIDAY_SHUTDOWN,milano,0.6
+126,2025-08-23,Ferragosto,HOLIDAY_SHUTDOWN,milano,0.6
+127,2025-08-24,Ferragosto,HOLIDAY_SHUTDOWN,milano,0.6
+128,2025-08-25,Ferragosto,HOLIDAY_SHUTDOWN,milano,0.6
+129,2025-08-26,Ferragosto,HOLIDAY_SHUTDOWN,milano,0.6
+130,2025-08-27,Ferragosto,HOLIDAY_SHUTDOWN,milano,0.6
+131,2025-08-28,Ferragosto,HOLIDAY_SHUTDOWN,milano,0.6
+132,2025-08-29,Ferragosto,HOLIDAY_SHUTDOWN,milano,0.6
+133,2025-08-30,Ferragosto,HOLIDAY_SHUTDOWN,milano,0.6
+134,2025-07-01,Independence Day Slowdown,HOLIDAY,california,0.2
+135,2025-07-02,Independence Day Slowdown,HOLIDAY,california,0.2
+136,2025-07-03,Independence Day Slowdown,HOLIDAY,california,0.2
+137,2025-07-04,Independence Day Slowdown,HOLIDAY,california,0.2
+138,2025-11-27,Thanksgiving/Black Friday,PROMO_LOGISTICS_BOTTLENECK,california,0.5
+139,2025-11-28,Thanksgiving/Black Friday,PROMO_LOGISTICS_BOTTLENECK,california,0.5
+140,2025-03-30,Eid al-Fitr,HOLIDAY,istanbul,0.5
+141,2025-03-31,Eid al-Fitr,HOLIDAY,istanbul,0.5
+142,2025-04-01,Eid al-Fitr,HOLIDAY,istanbul,0.5
+143,2025-04-02,Eid al-Fitr,HOLIDAY,istanbul,0.5
+144,2025-06-05,Eid al-Adha,HOLIDAY,istanbul,0.6
+145,2025-06-06,Eid al-Adha,HOLIDAY,istanbul,0.6
+146,2025-06-07,Eid al-Adha,HOLIDAY,istanbul,0.6
+147,2025-06-08,Eid al-Adha,HOLIDAY,istanbul,0.6
+148,2025-06-09,Eid al-Adha,HOLIDAY,istanbul,0.6
+149,2025-11-25,Black Friday Week,PROMO,istanbul,0.4
+150,2025-11-26,Black Friday Week,PROMO,istanbul,0.4
+151,2025-11-27,Black Friday Week,PROMO,istanbul,0.4
+152,2025-11-28,Black Friday Week,PROMO,istanbul,0.4
+153,2025-11-29,Black Friday Week,PROMO,istanbul,0.4

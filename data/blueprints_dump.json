@@ -1,0 +1,2017 @@
+{
+  "WH_RIVERSIDE_01": {
+    "factory_id": "WH_RIVERSIDE_01",
+    "blueprint_name": "Riverside Smart Hub Blueprint",
+    "layout_type": "smart_hub_asrs",
+    "canvas_config": {
+      "panX": 40,
+      "panY": 80,
+      "zoom": 0.82
+    },
+    "nodes": [
+      {
+        "id": "SUP_001",
+        "name": "Apex Battery Cells (Supplier)",
+        "type": "Inventory",
+        "bay": "Zone 1 \u2022 Tier-1 Supplier",
+        "x": 20,
+        "y": 70,
+        "w": 190,
+        "h": 96,
+        "icon": "battery",
+        "status": "CRITICAL",
+        "alert": "Delayed 4d (Damages k)",
+        "spec": "Part BAT-402 \u2022 Daily Burn 600"
+      },
+      {
+        "id": "SUP_002",
+        "name": "Quantum Semiconductor",
+        "type": "Inventory",
+        "bay": "Zone 1 \u2022 Tier-1 Supplier",
+        "x": 20,
+        "y": 230,
+        "w": 190,
+        "h": 96,
+        "icon": "chip",
+        "status": "HEALTHY",
+        "spec": "MCU-8800 Microcontrollers"
+      },
+      {
+        "id": "TRANS_01",
+        "name": "Maritime Carrier TRK-2051",
+        "type": "Machine",
+        "bay": "Zone 2 \u2022 Port Transit",
+        "x": 260,
+        "y": 70,
+        "w": 190,
+        "h": 96,
+        "machine_id": "TRANS_01",
+        "icon": "transit",
+        "status": "WARNING",
+        "alert": "Congested Berth +36h",
+        "spec": "Port of NY/NJ Inbound Lane"
+      },
+      {
+        "id": "RFID_01",
+        "name": "RFID Automated Gate Alpha",
+        "type": "Machine",
+        "bay": "Zone 2 \u2022 Security Gate",
+        "x": 260,
+        "y": 230,
+        "w": 190,
+        "h": 96,
+        "machine_id": "RFID_01",
+        "icon": "rfid",
+        "status": "HEALTHY",
+        "spec": "EPCglobal Gen2 960 scans/min"
+      },
+      {
+        "id": "DOCK_01",
+        "name": "Inbound Dock Bay 01",
+        "type": "Machine",
+        "bay": "Zone 3 \u2022 Receiving Bay",
+        "x": 510,
+        "y": 70,
+        "w": 190,
+        "h": 96,
+        "machine_id": "DOCK_01",
+        "icon": "dock",
+        "status": "WARNING",
+        "alert": "Capacity 85% \u2022 FL-01 Active",
+        "spec": "Hydraulic Ramp & Cross-Dock"
+      },
+      {
+        "id": "DOCK_02",
+        "name": "Inbound Dock Bay 02",
+        "type": "Machine",
+        "bay": "Zone 3 \u2022 Receiving Bay",
+        "x": 510,
+        "y": 230,
+        "w": 190,
+        "h": 96,
+        "machine_id": "DOCK_02",
+        "icon": "dock",
+        "status": "HEALTHY",
+        "spec": "Rapid Unload \u2022 Sensor Calibrated"
+      },
+      {
+        "id": "ASRS_01",
+        "name": "ASRS High-Bay Storage Vault",
+        "type": "UnitFacility",
+        "bay": "Zone 4 \u2022 Core Automation",
+        "x": 760,
+        "y": 140,
+        "w": 210,
+        "h": 110,
+        "icon": "vault",
+        "status": "HEALTHY",
+        "spec": "1,412 / 1,800 Units (78.4% Full)"
+      },
+      {
+        "id": "CLEAN_01",
+        "name": "Cleanroom Sub-Assembly",
+        "type": "Machine",
+        "bay": "Zone 5 \u2022 Production",
+        "x": 1030,
+        "y": 70,
+        "w": 190,
+        "h": 96,
+        "machine_id": "CLEAN_01",
+        "icon": "cleanroom",
+        "status": "HEALTHY",
+        "spec": "ISO Class 5 Module Build"
+      },
+      {
+        "id": "DISPATCH_01",
+        "name": "Automated Dispatch Bay",
+        "type": "Dispatch",
+        "bay": "Zone 5 \u2022 Fulfillment",
+        "x": 1030,
+        "y": 230,
+        "w": 190,
+        "h": 96,
+        "icon": "dispatch",
+        "status": "HEALTHY",
+        "spec": "Outbound Freight Shuttles"
+      }
+    ],
+    "edges": [
+      {
+        "from": "SUP_001",
+        "to": "TRANS_01",
+        "path": "M 210 118 L 260 118",
+        "color": "#ef4444",
+        "stroke": "2.4",
+        "is_hot": true
+      },
+      {
+        "from": "TRANS_01",
+        "to": "DOCK_01",
+        "path": "M 450 118 L 510 118",
+        "color": "#ef4444",
+        "stroke": "2.4",
+        "is_hot": true
+      },
+      {
+        "from": "SUP_002",
+        "to": "RFID_01",
+        "path": "M 210 278 L 260 278",
+        "color": "#06b6d4",
+        "stroke": "2.0"
+      },
+      {
+        "from": "RFID_01",
+        "to": "DOCK_02",
+        "path": "M 450 278 L 510 278",
+        "color": "#06b6d4",
+        "stroke": "2.0"
+      },
+      {
+        "from": "DOCK_01",
+        "to": "ASRS_01",
+        "path": "M 700 118 C 730 118, 730 180, 760 180",
+        "color": "#06b6d4",
+        "stroke": "2.0"
+      },
+      {
+        "from": "DOCK_02",
+        "to": "ASRS_01",
+        "path": "M 700 278 C 730 278, 730 210, 760 210",
+        "color": "#06b6d4",
+        "stroke": "2.0"
+      },
+      {
+        "from": "ASRS_01",
+        "to": "CLEAN_01",
+        "path": "M 970 180 C 1000 180, 1000 118, 1030 118",
+        "color": "#a855f7",
+        "stroke": "2.2"
+      },
+      {
+        "from": "ASRS_01",
+        "to": "DISPATCH_01",
+        "path": "M 970 210 C 1000 210, 1000 278, 1030 278",
+        "color": "#10b981",
+        "stroke": "2.2"
+      },
+      {
+        "from": "CLEAN_01",
+        "to": "DISPATCH_01",
+        "path": "M 1125 166 L 1125 230",
+        "color": "#10b981",
+        "stroke": "2.0"
+      }
+    ]
+  },
+  "PLANT_02": {
+    "factory_id": "PLANT_02",
+    "blueprint_name": "Austin Gigafactory 1 Blueprint",
+    "layout_type": "giga_cell",
+    "canvas_config": {
+      "panX": 40,
+      "panY": 80,
+      "zoom": 0.82
+    },
+    "nodes": [
+      {
+        "id": "GIGA_RAW",
+        "name": "Raw Infeed & Cathode Slurry",
+        "type": "Inventory",
+        "bay": "Zone 1 \u2022 Chemical Storage",
+        "x": 20,
+        "y": 140,
+        "w": 190,
+        "h": 96,
+        "icon": "battery",
+        "status": "CRITICAL",
+        "alert": "DOI 3.8d (Threshold 5.0d)",
+        "spec": "2,280 Units \u2022 45.6% Cap"
+      },
+      {
+        "id": "M_PRESS_01",
+        "name": "GigaPress 9000t Die Cast",
+        "type": "Machine",
+        "bay": "Zone 2 \u2022 Megacasting Cell",
+        "x": 260,
+        "y": 60,
+        "w": 190,
+        "h": 100,
+        "machine_id": "M_AUSTIN_01",
+        "icon": "press",
+        "spec": "Single-Piece Rear Underbody"
+      },
+      {
+        "id": "M_CELL_02",
+        "name": "High-Speed Cell Winder",
+        "type": "Machine",
+        "bay": "Zone 2 \u2022 Battery Module",
+        "x": 260,
+        "y": 220,
+        "w": 190,
+        "h": 100,
+        "machine_id": "M_AUSTIN_02",
+        "icon": "winder",
+        "spec": "4680 Structural Battery Pack"
+      },
+      {
+        "id": "M_ROBOT_03",
+        "name": "Robotic Welding Gantry",
+        "type": "Machine",
+        "bay": "Zone 3 \u2022 Body-in-White",
+        "x": 520,
+        "y": 60,
+        "w": 190,
+        "h": 100,
+        "machine_id": "M_AUSTIN_03",
+        "icon": "robot",
+        "spec": "Laser Seam Welding 0.2mm"
+      },
+      {
+        "id": "M_PACK_04",
+        "name": "Battery Pack Marriage Station",
+        "type": "Machine",
+        "bay": "Zone 3 \u2022 Powertrain Integration",
+        "x": 520,
+        "y": 220,
+        "w": 190,
+        "h": 100,
+        "machine_id": "M_AUSTIN_04",
+        "icon": "marriage",
+        "spec": "Autonomous Torque Fastening"
+      },
+      {
+        "id": "M_PAINT_05",
+        "name": "Eco-DIP Paint Robots",
+        "type": "Machine",
+        "bay": "Zone 4 \u2022 Advanced Coating",
+        "x": 780,
+        "y": 60,
+        "w": 190,
+        "h": 100,
+        "machine_id": "M_AUSTIN_05",
+        "icon": "paint",
+        "spec": "Electrostatic Multi-Coat"
+      },
+      {
+        "id": "M_DYNO_06",
+        "name": "End-of-Line Dyno & ADAS QA",
+        "type": "UnitFacility",
+        "bay": "Zone 4 \u2022 Vehicle Validation",
+        "x": 780,
+        "y": 220,
+        "w": 200,
+        "h": 105,
+        "icon": "dyno",
+        "status": "HEALTHY",
+        "spec": "Full Acceleration & Sensor Cal"
+      },
+      {
+        "id": "GIGA_OUT",
+        "name": "Supercharger Logistics Staging",
+        "type": "Dispatch",
+        "bay": "Zone 5 \u2022 Carrier Railhead",
+        "x": 1040,
+        "y": 140,
+        "w": 190,
+        "h": 96,
+        "icon": "dispatch",
+        "status": "HEALTHY",
+        "spec": "Double-Stack Auto Rack Trains"
+      }
+    ],
+    "edges": [
+      {
+        "from": "GIGA_RAW",
+        "to": "M_PRESS_01",
+        "path": "M 210 170 C 235 170, 235 110, 260 110",
+        "color": "#ef4444",
+        "stroke": "2.4",
+        "is_hot": true
+      },
+      {
+        "from": "GIGA_RAW",
+        "to": "M_CELL_02",
+        "path": "M 210 170 C 235 170, 235 270, 260 270",
+        "color": "#ef4444",
+        "stroke": "2.4",
+        "is_hot": true
+      },
+      {
+        "from": "M_PRESS_01",
+        "to": "M_ROBOT_03",
+        "path": "M 450 110 L 520 110",
+        "color": "#06b6d4",
+        "stroke": "2.0"
+      },
+      {
+        "from": "M_CELL_02",
+        "to": "M_PACK_04",
+        "path": "M 450 270 L 520 270",
+        "color": "#06b6d4",
+        "stroke": "2.0"
+      },
+      {
+        "from": "M_ROBOT_03",
+        "to": "M_PAINT_05",
+        "path": "M 710 110 L 780 110",
+        "color": "#06b6d4",
+        "stroke": "2.0"
+      },
+      {
+        "from": "M_PACK_04",
+        "to": "M_DYNO_06",
+        "path": "M 710 270 L 780 270",
+        "color": "#06b6d4",
+        "stroke": "2.0"
+      },
+      {
+        "from": "M_PAINT_05",
+        "to": "GIGA_OUT",
+        "path": "M 970 110 C 1005 110, 1005 170, 1040 170",
+        "color": "#10b981",
+        "stroke": "2.2"
+      },
+      {
+        "from": "M_DYNO_06",
+        "to": "GIGA_OUT",
+        "path": "M 980 270 C 1010 270, 1010 210, 1040 210",
+        "color": "#10b981",
+        "stroke": "2.2"
+      }
+    ]
+  },
+  "PLANT_01": {
+    "factory_id": "PLANT_01",
+    "blueprint_name": "Fremont Assembly Plant Blueprint",
+    "layout_type": "assembly_line",
+    "canvas_config": {
+      "panX": 40,
+      "panY": 80,
+      "zoom": 0.82
+    },
+    "nodes": [
+      {
+        "id": "FRE_COILS",
+        "name": "Automated Steel Coils",
+        "type": "Inventory",
+        "bay": "Zone 1 \u2022 Raw Material Infeed",
+        "x": 20,
+        "y": 140,
+        "w": 190,
+        "h": 96,
+        "icon": "coils",
+        "status": "HEALTHY",
+        "spec": "High-Strength Dual-Phase 980"
+      },
+      {
+        "id": "M_FRE_STAMP",
+        "name": "Schuler Servo Press",
+        "type": "Machine",
+        "bay": "Zone 2 \u2022 Tandem Stamping",
+        "x": 260,
+        "y": 60,
+        "w": 190,
+        "h": 100,
+        "machine_id": "M_FRE_STAMP",
+        "icon": "press",
+        "spec": "7-Stage High-Speed Press Line"
+      },
+      {
+        "id": "M_FRE_BIW",
+        "name": "KUKA BIW Robotic Cell",
+        "type": "Machine",
+        "bay": "Zone 2 \u2022 Framing & Hemming",
+        "x": 260,
+        "y": 220,
+        "w": 190,
+        "h": 100,
+        "machine_id": "M_FRE_BIW",
+        "icon": "robot",
+        "spec": "48 Synchronized Spot Welders"
+      },
+      {
+        "id": "M_FRE_SEAL",
+        "name": "Vision Sealing Dispenser",
+        "type": "Machine",
+        "bay": "Zone 3 \u2022 Vision Sealing",
+        "x": 520,
+        "y": 60,
+        "w": 190,
+        "h": 100,
+        "machine_id": "M_FRE_SEAL",
+        "icon": "seal",
+        "spec": "Automated Bead Dispensing"
+      },
+      {
+        "id": "M_FRE_PAINT",
+        "name": "Durr EcoBell3 Paint",
+        "type": "Machine",
+        "bay": "Zone 3 \u2022 Multi-Coat Booth",
+        "x": 520,
+        "y": 220,
+        "w": 190,
+        "h": 100,
+        "machine_id": "M_FRE_PAINT",
+        "icon": "paint",
+        "spec": "Waterborne Metallic Clearcoat"
+      },
+      {
+        "id": "M_FRE_TRIM",
+        "name": "Ergonomic Trim Line",
+        "type": "Machine",
+        "bay": "Zone 4 \u2022 Interior & Wire Harness",
+        "x": 780,
+        "y": 60,
+        "w": 190,
+        "h": 100,
+        "machine_id": "M_FRE_TRIM",
+        "icon": "trim",
+        "spec": "Cockpit & Glass Robot Insertion"
+      },
+      {
+        "id": "M_FRE_ROLLS",
+        "name": "Rolling Road & Brake QA",
+        "type": "UnitFacility",
+        "bay": "Zone 4 \u2022 Validation Bay",
+        "x": 780,
+        "y": 220,
+        "w": 200,
+        "h": 105,
+        "icon": "rolls",
+        "status": "HEALTHY",
+        "spec": "Dynamometer & 3D Wheel Alignment"
+      },
+      {
+        "id": "FRE_DISPATCH",
+        "name": "Rail & Fleet Staging",
+        "type": "Dispatch",
+        "bay": "Zone 5 \u2022 Union Pacific Railhead",
+        "x": 1040,
+        "y": 140,
+        "w": 190,
+        "h": 96,
+        "icon": "dispatch",
+        "status": "HEALTHY",
+        "spec": "Daily Car Hauler Multi-Train"
+      }
+    ],
+    "edges": [
+      {
+        "from": "FRE_COILS",
+        "to": "M_FRE_STAMP",
+        "path": "M 210 170 C 235 170, 235 110, 260 110",
+        "color": "#06b6d4",
+        "stroke": "2.0"
+      },
+      {
+        "from": "FRE_COILS",
+        "to": "M_FRE_BIW",
+        "path": "M 210 170 C 235 170, 235 270, 260 270",
+        "color": "#06b6d4",
+        "stroke": "2.0"
+      },
+      {
+        "from": "M_FRE_STAMP",
+        "to": "M_FRE_SEAL",
+        "path": "M 450 110 L 520 110",
+        "color": "#06b6d4",
+        "stroke": "2.0"
+      },
+      {
+        "from": "M_FRE_BIW",
+        "to": "M_FRE_PAINT",
+        "path": "M 450 270 L 520 270",
+        "color": "#06b6d4",
+        "stroke": "2.0"
+      },
+      {
+        "from": "M_FRE_SEAL",
+        "to": "M_FRE_TRIM",
+        "path": "M 710 110 L 780 110",
+        "color": "#06b6d4",
+        "stroke": "2.0"
+      },
+      {
+        "from": "M_FRE_PAINT",
+        "to": "M_FRE_ROLLS",
+        "path": "M 710 270 L 780 270",
+        "color": "#06b6d4",
+        "stroke": "2.0"
+      },
+      {
+        "from": "M_FRE_TRIM",
+        "to": "FRE_DISPATCH",
+        "path": "M 970 110 C 1005 110, 1005 170, 1040 170",
+        "color": "#10b981",
+        "stroke": "2.2"
+      },
+      {
+        "from": "M_FRE_ROLLS",
+        "to": "FRE_DISPATCH",
+        "path": "M 980 270 C 1010 270, 1010 210, 1040 210",
+        "color": "#10b981",
+        "stroke": "2.2"
+      }
+    ]
+  },
+  "PLANT_03": {
+    "factory_id": "PLANT_03",
+    "blueprint_name": "Berlin Gigafactory 4 Blueprint",
+    "layout_type": "cell_factory",
+    "canvas_config": {
+      "panX": 40,
+      "panY": 80,
+      "zoom": 0.82
+    },
+    "nodes": [
+      {
+        "id": "BER_MAT",
+        "name": "Cathode Precursor Buffer",
+        "type": "Inventory",
+        "bay": "Zone 1 \u2022 Chemical Infeed",
+        "x": 20,
+        "y": 140,
+        "w": 190,
+        "h": 96,
+        "icon": "cathode",
+        "status": "HEALTHY",
+        "spec": "NMC 811 Lithium Precursor"
+      },
+      {
+        "id": "M_BER_COAT",
+        "name": "Slot-Die Anode Coater",
+        "type": "Machine",
+        "bay": "Zone 2 \u2022 Precision Coating",
+        "x": 260,
+        "y": 60,
+        "w": 190,
+        "h": 100,
+        "machine_id": "M_BER_COAT",
+        "icon": "coater",
+        "spec": "Continuous Web Floating Oven"
+      },
+      {
+        "id": "M_BER_CAL",
+        "name": "Calender Density Press",
+        "type": "Machine",
+        "bay": "Zone 2 \u2022 Foil Densification",
+        "x": 260,
+        "y": 220,
+        "w": 190,
+        "h": 100,
+        "machine_id": "M_BER_CAL",
+        "icon": "press",
+        "spec": "High-Pressure Hydraulic Gap 2\u00b5m"
+      },
+      {
+        "id": "M_BER_WIND",
+        "name": "Cell Winding Station",
+        "type": "Machine",
+        "bay": "Zone 3 \u2022 Tabless Cell Winder",
+        "x": 520,
+        "y": 60,
+        "w": 190,
+        "h": 100,
+        "machine_id": "M_BER_WIND",
+        "icon": "winder",
+        "spec": "250ppm Continuous Motion Cell"
+      },
+      {
+        "id": "M_BER_ELEC",
+        "name": "Electrolyte Filling Bay",
+        "type": "Machine",
+        "bay": "Zone 3 \u2022 Glovebox Dryroom",
+        "x": 520,
+        "y": 220,
+        "w": 190,
+        "h": 100,
+        "machine_id": "M_BER_ELEC",
+        "icon": "vacuum",
+        "spec": "Argon Atmosphere Dew Point -65\u00b0C"
+      },
+      {
+        "id": "M_BER_FORM",
+        "name": "Formation & Aging Trays",
+        "type": "Machine",
+        "bay": "Zone 4 \u2022 Electrochemical Aging",
+        "x": 780,
+        "y": 60,
+        "w": 190,
+        "h": 100,
+        "machine_id": "M_BER_FORM",
+        "icon": "form",
+        "spec": "32-Day Closed-Loop Cycling Rack"
+      },
+      {
+        "id": "M_BER_MET",
+        "name": "Helium Leak Metrology",
+        "type": "UnitFacility",
+        "bay": "Zone 4 \u2022 Safety Screening",
+        "x": 780,
+        "y": 220,
+        "w": 200,
+        "h": 105,
+        "icon": "leak",
+        "status": "HEALTHY",
+        "spec": "Laser Barcode & Impedance Check"
+      },
+      {
+        "id": "BER_DISPATCH",
+        "name": "Intermodal Rail Logistics",
+        "type": "Dispatch",
+        "bay": "Zone 5 \u2022 European Rail Logistics",
+        "x": 1040,
+        "y": 140,
+        "w": 190,
+        "h": 96,
+        "icon": "dispatch",
+        "status": "HEALTHY",
+        "spec": "Direct Freight to Stuttgart & Munich"
+      }
+    ],
+    "edges": [
+      {
+        "from": "BER_MAT",
+        "to": "M_BER_COAT",
+        "path": "M 210 170 C 235 170, 235 110, 260 110",
+        "color": "#06b6d4",
+        "stroke": "2.0"
+      },
+      {
+        "from": "BER_MAT",
+        "to": "M_BER_CAL",
+        "path": "M 210 170 C 235 170, 235 270, 260 270",
+        "color": "#06b6d4",
+        "stroke": "2.0"
+      },
+      {
+        "from": "M_BER_COAT",
+        "to": "M_BER_WIND",
+        "path": "M 450 110 L 520 110",
+        "color": "#06b6d4",
+        "stroke": "2.0"
+      },
+      {
+        "from": "M_BER_CAL",
+        "to": "M_BER_ELEC",
+        "path": "M 450 270 L 520 270",
+        "color": "#06b6d4",
+        "stroke": "2.0"
+      },
+      {
+        "from": "M_BER_WIND",
+        "to": "M_BER_FORM",
+        "path": "M 710 110 L 780 110",
+        "color": "#06b6d4",
+        "stroke": "2.0"
+      },
+      {
+        "from": "M_BER_ELEC",
+        "to": "M_BER_MET",
+        "path": "M 710 270 L 780 270",
+        "color": "#06b6d4",
+        "stroke": "2.0"
+      },
+      {
+        "from": "M_BER_FORM",
+        "to": "BER_DISPATCH",
+        "path": "M 970 110 C 1005 110, 1005 170, 1040 170",
+        "color": "#10b981",
+        "stroke": "2.2"
+      },
+      {
+        "from": "M_BER_MET",
+        "to": "BER_DISPATCH",
+        "path": "M 980 270 C 1010 270, 1010 210, 1040 210",
+        "color": "#10b981",
+        "stroke": "2.2"
+      }
+    ]
+  },
+  "PLANT_DETROIT": {
+    "factory_id": "PLANT_DETROIT",
+    "blueprint_name": "Apex Detroit Powertrain & Heavy Robotic Cell",
+    "layout_type": "linear_robotic_cell",
+    "canvas_config": {
+      "panX": 40,
+      "panY": 80,
+      "zoom": 0.82
+    },
+    "nodes": [
+      {
+        "id": "DET_STORES",
+        "name": "Raw Steel Billet Storage",
+        "type": "Inventory",
+        "bay": "Infeed Bay A",
+        "x": 20,
+        "y": 140,
+        "w": 180,
+        "h": 96,
+        "icon": "inventory",
+        "status": "HEALTHY",
+        "spec": "Grade 4140 Chrome-Moly Forgings"
+      },
+      {
+        "id": "M1",
+        "name": "CNC Milling Cell M1",
+        "type": "Machine",
+        "bay": "Cell 1 \u2022 Heavy Roughing",
+        "x": 240,
+        "y": 60,
+        "w": 190,
+        "h": 100,
+        "machine_id": "M1",
+        "icon": "cnc",
+        "spec": "Mazak 5-Axis Variaxis i-800"
+      },
+      {
+        "id": "M4",
+        "name": "Deep Boring Lathe M4",
+        "type": "Machine",
+        "bay": "Cell 1 \u2022 Cylindrical Bore",
+        "x": 240,
+        "y": 220,
+        "w": 190,
+        "h": 100,
+        "machine_id": "M4",
+        "icon": "lathe",
+        "spec": "Okuma LB3000 EX-II CNC Lathe"
+      },
+      {
+        "id": "M7",
+        "name": "Assembly Robot A3 (M7)",
+        "type": "Machine",
+        "bay": "Cell 2 \u2022 Robotic Powertrain",
+        "x": 480,
+        "y": 60,
+        "w": 200,
+        "h": 105,
+        "machine_id": "M7",
+        "icon": "robot",
+        "alert": "Spindle Bearing Wear (Risk 94%)",
+        "spec": "KUKA KR 500 Titan Heavy Robot"
+      },
+      {
+        "id": "M10",
+        "name": "Precision Grinder M10",
+        "type": "Machine",
+        "bay": "Cell 2 \u2022 Tolerance Finish",
+        "x": 480,
+        "y": 220,
+        "w": 200,
+        "h": 100,
+        "machine_id": "M10",
+        "icon": "grinder",
+        "spec": "Studer S33 Precision Grinder"
+      },
+      {
+        "id": "M13",
+        "name": "Deburring Cell M13",
+        "type": "Machine",
+        "bay": "Cell 3 \u2022 Edge Finishing",
+        "x": 720,
+        "y": 60,
+        "w": 190,
+        "h": 100,
+        "machine_id": "M13",
+        "icon": "deburr",
+        "spec": "FANUC M-20iB Robotic Deburrer"
+      },
+      {
+        "id": "M16",
+        "name": "Ultrasonic Wash M16",
+        "type": "Machine",
+        "bay": "Cell 3 \u2022 Solvent Cleaning",
+        "x": 720,
+        "y": 220,
+        "w": 190,
+        "h": 100,
+        "machine_id": "M16",
+        "icon": "wash",
+        "spec": "Amsonic 4-Stage Degreasing"
+      },
+      {
+        "id": "M19",
+        "name": "CMM Metrology M19",
+        "type": "Machine",
+        "bay": "Cell 4 \u2022 Quality Assurance",
+        "x": 960,
+        "y": 60,
+        "w": 190,
+        "h": 100,
+        "machine_id": "M19",
+        "icon": "cmm",
+        "spec": "Zeiss Prismo Ultra-Accurate CMM"
+      },
+      {
+        "id": "M22",
+        "name": "Powertrain Dyno M22",
+        "type": "Machine",
+        "bay": "Cell 4 \u2022 Load Testing",
+        "x": 960,
+        "y": 220,
+        "w": 190,
+        "h": 100,
+        "machine_id": "M22",
+        "icon": "dyno",
+        "spec": "AVL 500kW Transient Dynamometer"
+      },
+      {
+        "id": "M25",
+        "name": "Crating Robot M25",
+        "type": "Machine",
+        "bay": "Outfeed Bay \u2022 Packaging",
+        "x": 1200,
+        "y": 140,
+        "w": 190,
+        "h": 100,
+        "machine_id": "M25",
+        "icon": "crate",
+        "spec": "ABB IRB 6700 Automated Packer"
+      }
+    ],
+    "edges": [
+      {
+        "from": "DET_STORES",
+        "to": "M1",
+        "path": "M 200 170 C 220 170, 220 110, 240 110",
+        "color": "#3987e5",
+        "stroke": "2.0"
+      },
+      {
+        "from": "DET_STORES",
+        "to": "M4",
+        "path": "M 200 170 C 220 170, 220 270, 240 270",
+        "color": "#3987e5",
+        "stroke": "2.0"
+      },
+      {
+        "from": "M1",
+        "to": "M7",
+        "path": "M 430 110 L 480 110",
+        "color": "#ef4444",
+        "stroke": "2.4",
+        "is_hot": true
+      },
+      {
+        "from": "M4",
+        "to": "M10",
+        "path": "M 430 270 L 480 270",
+        "color": "#3987e5",
+        "stroke": "2.0"
+      },
+      {
+        "from": "M7",
+        "to": "M13",
+        "path": "M 680 110 L 720 110",
+        "color": "#ef4444",
+        "stroke": "2.4",
+        "is_hot": true
+      },
+      {
+        "from": "M10",
+        "to": "M16",
+        "path": "M 680 270 L 720 270",
+        "color": "#3987e5",
+        "stroke": "2.0"
+      },
+      {
+        "from": "M13",
+        "to": "M19",
+        "path": "M 910 110 L 960 110",
+        "color": "#3987e5",
+        "stroke": "2.0"
+      },
+      {
+        "from": "M16",
+        "to": "M22",
+        "path": "M 910 270 L 960 270",
+        "color": "#3987e5",
+        "stroke": "2.0"
+      },
+      {
+        "from": "M19",
+        "to": "M25",
+        "path": "M 1150 110 C 1175 110, 1175 190, 1200 190",
+        "color": "#10b981",
+        "stroke": "2.0"
+      },
+      {
+        "from": "M22",
+        "to": "M25",
+        "path": "M 1150 270 C 1175 270, 1175 190, 1200 190",
+        "color": "#10b981",
+        "stroke": "2.0"
+      }
+    ]
+  },
+  "PLANT_MUNICH": {
+    "factory_id": "PLANT_MUNICH",
+    "blueprint_name": "Bavaria Munich SMT & Cryogenic Valve Cleanroom",
+    "layout_type": "cleanroom_smt_flow",
+    "canvas_config": {
+      "panX": 40,
+      "panY": 80,
+      "zoom": 0.82
+    },
+    "nodes": [
+      {
+        "id": "MUC_STORES",
+        "name": "SMT Component Reel Store",
+        "type": "Inventory",
+        "bay": "Air-Lock Infeed",
+        "x": 20,
+        "y": 140,
+        "w": 180,
+        "h": 96,
+        "icon": "reels",
+        "status": "HEALTHY",
+        "spec": "Moisture-Sensitive Dry Cabinets"
+      },
+      {
+        "id": "M3",
+        "name": "Solder Stencil Printer M3",
+        "type": "Machine",
+        "bay": "Zone 1 \u2022 SMT Printing",
+        "x": 260,
+        "y": 60,
+        "w": 190,
+        "h": 100,
+        "machine_id": "M3",
+        "icon": "printer",
+        "spec": "DEK NeoHorizon Laser Stencil"
+      },
+      {
+        "id": "M6",
+        "name": "High-Speed Chip Shooter M6",
+        "type": "Machine",
+        "bay": "Zone 1 \u2022 Placement",
+        "x": 260,
+        "y": 220,
+        "w": 190,
+        "h": 100,
+        "machine_id": "M6",
+        "icon": "chip",
+        "spec": "Fuji NXT III (65,000 cph)"
+      },
+      {
+        "id": "M9",
+        "name": "Cryogenic Dispenser M9",
+        "type": "Machine",
+        "bay": "Zone 2 \u2022 Valve Cell",
+        "x": 520,
+        "y": 60,
+        "w": 200,
+        "h": 100,
+        "machine_id": "M9",
+        "icon": "dispenser",
+        "spec": "Micro-Valve Dispensing Unit"
+      },
+      {
+        "id": "M12",
+        "name": "Assembly Robot B3 (M12)",
+        "type": "Machine",
+        "bay": "Zone 2 \u2022 Valve Cell",
+        "x": 520,
+        "y": 190,
+        "w": 200,
+        "h": 105,
+        "machine_id": "M12",
+        "icon": "robot",
+        "alert": "Valve Drift \u2022 Redundant Backup M15 Online",
+        "spec": "Cryogenic Actuator Inserter"
+      },
+      {
+        "id": "M15",
+        "name": "Hot-Standby Twin M15",
+        "type": "Machine",
+        "bay": "Zone 2 \u2022 Hot Standby",
+        "x": 520,
+        "y": 320,
+        "w": 200,
+        "h": 95,
+        "machine_id": "M15",
+        "icon": "backup",
+        "status": "BACKUP",
+        "spec": "Redundant Twin for M12"
+      },
+      {
+        "id": "M18",
+        "name": "10-Zone Reflow Oven M18",
+        "type": "Machine",
+        "bay": "Zone 3 \u2022 Thermal Tunnel",
+        "x": 780,
+        "y": 60,
+        "w": 190,
+        "h": 100,
+        "machine_id": "M18",
+        "icon": "oven",
+        "spec": "Nitrogen Atmosphere Convection"
+      },
+      {
+        "id": "M21",
+        "name": "Flying Probe Tester M21",
+        "type": "Machine",
+        "bay": "Zone 3 \u2022 Metrology QA",
+        "x": 780,
+        "y": 220,
+        "w": 190,
+        "h": 100,
+        "machine_id": "M21",
+        "icon": "qa",
+        "spec": "Seica 4-Axis Flying Probe"
+      },
+      {
+        "id": "M24",
+        "name": "Nitrogen Packager M24",
+        "type": "Machine",
+        "bay": "Zone 4 \u2022 Clean Dispatch",
+        "x": 1040,
+        "y": 140,
+        "w": 190,
+        "h": 100,
+        "machine_id": "M24",
+        "icon": "pack",
+        "spec": "Hermetic Class 10,000 Sealer"
+      }
+    ],
+    "edges": [
+      {
+        "from": "MUC_STORES",
+        "to": "M3",
+        "path": "M 200 170 C 230 170, 230 110, 260 110",
+        "color": "#06b6d4",
+        "stroke": "2.0"
+      },
+      {
+        "from": "MUC_STORES",
+        "to": "M6",
+        "path": "M 200 170 C 230 170, 230 270, 260 270",
+        "color": "#06b6d4",
+        "stroke": "2.0"
+      },
+      {
+        "from": "M3",
+        "to": "M9",
+        "path": "M 450 110 L 520 110",
+        "color": "#06b6d4",
+        "stroke": "2.0"
+      },
+      {
+        "from": "M6",
+        "to": "M12",
+        "path": "M 450 270 C 480 270, 490 240, 520 240",
+        "color": "#f59e0b",
+        "stroke": "2.2"
+      },
+      {
+        "from": "M6",
+        "to": "M15",
+        "path": "M 450 270 C 480 270, 490 365, 520 365",
+        "color": "#10b981",
+        "stroke": "1.8",
+        "dashes": "4 4"
+      },
+      {
+        "from": "M9",
+        "to": "M18",
+        "path": "M 720 110 L 780 110",
+        "color": "#06b6d4",
+        "stroke": "2.0"
+      },
+      {
+        "from": "M12",
+        "to": "M21",
+        "path": "M 720 240 C 750 240, 750 270, 780 270",
+        "color": "#06b6d4",
+        "stroke": "2.0"
+      },
+      {
+        "from": "M15",
+        "to": "M21",
+        "path": "M 720 365 C 750 365, 750 270, 780 270",
+        "color": "#10b981",
+        "stroke": "1.8",
+        "dashes": "4 4"
+      },
+      {
+        "from": "M18",
+        "to": "M24",
+        "path": "M 970 110 C 1000 110, 1000 190, 1040 190",
+        "color": "#10b981",
+        "stroke": "2.0"
+      },
+      {
+        "from": "M21",
+        "to": "M24",
+        "path": "M 970 270 C 1000 270, 1000 190, 1040 190",
+        "color": "#10b981",
+        "stroke": "2.0"
+      }
+    ]
+  },
+  "PLANT_AUSTIN": {
+    "factory_id": "PLANT_AUSTIN",
+    "blueprint_name": "Silicon Hill Austin Semiconductor Wafer Fab",
+    "layout_type": "semiconductor_fab_cluster",
+    "canvas_config": {
+      "panX": 40,
+      "panY": 80,
+      "zoom": 0.82
+    },
+    "nodes": [
+      {
+        "id": "AUS_INGOT",
+        "name": "Silicon Ingot Bay",
+        "type": "Inventory",
+        "bay": "Clean Infeed",
+        "x": 20,
+        "y": 140,
+        "w": 180,
+        "h": 96,
+        "icon": "silicon",
+        "status": "HEALTHY",
+        "spec": "300mm Monocrystalline Silicon"
+      },
+      {
+        "id": "M2",
+        "name": "Wire Saw Slicer M2",
+        "type": "Machine",
+        "bay": "Cluster A \u2022 Ingot Saw",
+        "x": 260,
+        "y": 60,
+        "w": 190,
+        "h": 100,
+        "machine_id": "M2",
+        "icon": "saw",
+        "spec": "Diamond Wire Multi-Slicing"
+      },
+      {
+        "id": "M5",
+        "name": "Wafer Planarizer M5",
+        "type": "Machine",
+        "bay": "Cluster A \u2022 CMP Lapping",
+        "x": 260,
+        "y": 220,
+        "w": 190,
+        "h": 100,
+        "machine_id": "M5",
+        "icon": "cmp",
+        "spec": "Chemical-Mechanical Polishing"
+      },
+      {
+        "id": "M8",
+        "name": "DRIE Reactive Etcher M8",
+        "type": "Machine",
+        "bay": "Cluster B \u2022 Photolithography",
+        "x": 520,
+        "y": 60,
+        "w": 200,
+        "h": 100,
+        "machine_id": "M8",
+        "icon": "etcher",
+        "spec": "Deep Reactive-Ion Plasma"
+      },
+      {
+        "id": "M11",
+        "name": "Laser Micro-Dicing M11",
+        "type": "Machine",
+        "bay": "Cluster B \u2022 Dicing Bay",
+        "x": 520,
+        "y": 220,
+        "w": 200,
+        "h": 100,
+        "machine_id": "M11",
+        "icon": "laser",
+        "spec": "Picosecond UV Laser Dicer"
+      },
+      {
+        "id": "M14",
+        "name": "Tooling Spindle M14",
+        "type": "Machine",
+        "bay": "Cluster C \u2022 Micro-Tooling",
+        "x": 780,
+        "y": 60,
+        "w": 190,
+        "h": 100,
+        "machine_id": "M14",
+        "icon": "spindle",
+        "spec": "Air-Bearing 120,000 RPM Spindle"
+      },
+      {
+        "id": "M17",
+        "name": "Ultrasonic Die Bonder M17",
+        "type": "Machine",
+        "bay": "Cluster C \u2022 Bonding",
+        "x": 780,
+        "y": 220,
+        "w": 190,
+        "h": 100,
+        "machine_id": "M17",
+        "icon": "bonder",
+        "spec": "High-Density Sub-Micron Bonder"
+      },
+      {
+        "id": "M20",
+        "name": "Thermosonic Bonder M20",
+        "type": "Machine",
+        "bay": "Cluster D \u2022 Wire Bonding",
+        "x": 1040,
+        "y": 60,
+        "w": 190,
+        "h": 96,
+        "machine_id": "M20",
+        "icon": "wire",
+        "spec": "Gold-Ball Micro-Interconnect"
+      },
+      {
+        "id": "M23",
+        "name": "Hermetic Sealer M23",
+        "type": "Machine",
+        "bay": "Cluster D \u2022 Clean Vacuum Outfeed",
+        "x": 1040,
+        "y": 210,
+        "w": 190,
+        "h": 96,
+        "machine_id": "M23",
+        "icon": "seal",
+        "spec": "Class 100 Vacuum Nitrogen Seal"
+      }
+    ],
+    "edges": [
+      {
+        "from": "AUS_INGOT",
+        "to": "M2",
+        "path": "M 200 170 C 230 170, 230 110, 260 110",
+        "color": "#10b981",
+        "stroke": "2.0"
+      },
+      {
+        "from": "AUS_INGOT",
+        "to": "M5",
+        "path": "M 200 170 C 230 170, 230 270, 260 270",
+        "color": "#10b981",
+        "stroke": "2.0"
+      },
+      {
+        "from": "M2",
+        "to": "M8",
+        "path": "M 450 110 L 520 110",
+        "color": "#10b981",
+        "stroke": "2.0"
+      },
+      {
+        "from": "M5",
+        "to": "M11",
+        "path": "M 450 270 L 520 270",
+        "color": "#10b981",
+        "stroke": "2.0"
+      },
+      {
+        "from": "M8",
+        "to": "M14",
+        "path": "M 720 110 L 780 110",
+        "color": "#10b981",
+        "stroke": "2.0"
+      },
+      {
+        "from": "M11",
+        "to": "M17",
+        "path": "M 720 270 L 780 270",
+        "color": "#10b981",
+        "stroke": "2.0"
+      },
+      {
+        "from": "M14",
+        "to": "M20",
+        "path": "M 970 110 L 1040 110",
+        "color": "#10b981",
+        "stroke": "2.0"
+      },
+      {
+        "from": "M17",
+        "to": "M23",
+        "path": "M 970 270 C 1000 270, 1000 260, 1040 260",
+        "color": "#10b981",
+        "stroke": "2.0"
+      },
+      {
+        "from": "M20",
+        "to": "M23",
+        "path": "M 1135 156 L 1135 210",
+        "color": "#10b981",
+        "stroke": "2.0"
+      }
+    ]
+  },
+  "ALL": {
+    "factory_id": "ALL",
+    "blueprint_name": "Global Enterprise Connected Supply Chain Network",
+    "layout_type": "macro_supply_chain",
+    "canvas_config": {
+      "panX": 40,
+      "panY": 120,
+      "zoom": 0.85
+    },
+    "nodes": [
+      {
+        "id": "GLOBAL_SUPPLIERS",
+        "name": "Global Suppliers (15)",
+        "type": "NetworkHub",
+        "bay": "Tier-1 Supply Network",
+        "x": 20,
+        "y": 140,
+        "w": 200,
+        "h": 110,
+        "icon": "suppliers",
+        "spec": "15 Global Vendors across NA, EU, Asia"
+      },
+      {
+        "id": "PLANT_DETROIT",
+        "name": "Apex Advanced Assembly",
+        "type": "Plant",
+        "bay": "Detroit Facility",
+        "x": 300,
+        "y": 40,
+        "w": 210,
+        "h": 90,
+        "alert": "1 Critical Alert (M7)",
+        "spec": "9 CNC Units \u2022 ECU-200 Line"
+      },
+      {
+        "id": "PLANT_MUNICH",
+        "name": "Bavaria Mechatronics",
+        "type": "Plant",
+        "bay": "Munich Facility",
+        "x": 300,
+        "y": 160,
+        "w": 210,
+        "h": 90,
+        "alert": "1 Warning Alert (M12 Backup Online)",
+        "spec": "8 Mechatronic Units \u2022 SH-40 Line"
+      },
+      {
+        "id": "PLANT_AUSTIN",
+        "name": "Silicon Hill Precision",
+        "type": "Plant",
+        "bay": "Austin Facility",
+        "x": 300,
+        "y": 280,
+        "w": 210,
+        "h": 90,
+        "status": "HEALTHY",
+        "spec": "8 Fab Units \u2022 Semiconductor Micro-Tooling"
+      },
+      {
+        "id": "GLOBAL_WAREHOUSES",
+        "name": "Regional Hubs (6)",
+        "type": "NetworkHub",
+        "bay": "Warehouse Buffers",
+        "x": 600,
+        "y": 140,
+        "w": 210,
+        "h": 110,
+        "icon": "warehouse",
+        "spec": "Chicago, Newark, Long Beach, Dallas, Frankfurt, Gothenburg"
+      },
+      {
+        "id": "GLOBAL_CUSTOMERS",
+        "name": "Enterprise Customers (40)",
+        "type": "NetworkHub",
+        "bay": "SLA Fulfillment",
+        "x": 900,
+        "y": 140,
+        "w": 210,
+        "h": 110,
+        "icon": "customers",
+        "spec": "10 Strategic, 15 Enterprise, 15 Standard"
+      }
+    ],
+    "edges": [
+      {
+        "from": "GLOBAL_SUPPLIERS",
+        "to": "PLANT_DETROIT",
+        "path": "M 220 170 C 260 170, 260 85, 300 85",
+        "color": "#a855f7",
+        "stroke": "2.2"
+      },
+      {
+        "from": "GLOBAL_SUPPLIERS",
+        "to": "PLANT_MUNICH",
+        "path": "M 220 195 L 300 205",
+        "color": "#a855f7",
+        "stroke": "2.2"
+      },
+      {
+        "from": "GLOBAL_SUPPLIERS",
+        "to": "PLANT_AUSTIN",
+        "path": "M 220 220 C 260 220, 260 325, 300 325",
+        "color": "#a855f7",
+        "stroke": "2.2"
+      },
+      {
+        "from": "PLANT_DETROIT",
+        "to": "GLOBAL_WAREHOUSES",
+        "path": "M 510 85 C 550 85, 560 170, 600 170",
+        "color": "#ef4444",
+        "stroke": "2.4",
+        "is_hot": true
+      },
+      {
+        "from": "PLANT_MUNICH",
+        "to": "GLOBAL_WAREHOUSES",
+        "path": "M 510 205 L 600 195",
+        "color": "#06b6d4",
+        "stroke": "2.2"
+      },
+      {
+        "from": "PLANT_AUSTIN",
+        "to": "GLOBAL_WAREHOUSES",
+        "path": "M 510 325 C 550 325, 560 220, 600 220",
+        "color": "#10b981",
+        "stroke": "2.2"
+      },
+      {
+        "from": "GLOBAL_WAREHOUSES",
+        "to": "GLOBAL_CUSTOMERS",
+        "path": "M 810 195 L 900 195",
+        "color": "#10b981",
+        "stroke": "2.5"
+      }
+    ]
+  },
+  "PLANT_LONDON_FAB": {
+    "factory_id": "PLANT_LONDON_FAB",
+    "blueprint_name": "Thames London Cleanroom Fab Alpha (Wafer Lithography & Etch)",
+    "layout_type": "cleanroom_wafer_fab",
+    "canvas_config": {
+      "panX": 40,
+      "panY": 80,
+      "zoom": 0.82
+    },
+    "nodes": [
+      {
+        "id": "LDN_INGOT",
+        "name": "300mm Silicon Ingot Vault",
+        "type": "Inventory",
+        "bay": "Zone 1 \u2022 Raw Infeed",
+        "x": 40,
+        "y": 140,
+        "w": 190,
+        "h": 96,
+        "icon": "silicon",
+        "status": "HEALTHY",
+        "spec": "99.9999999% Pure Monocrystalline Silicon"
+      },
+      {
+        "id": "LDN-SLI-01",
+        "name": "Diamond Wire Slicer Alpha",
+        "type": "Machine",
+        "bay": "Zone 2 \u2022 Ingot Slicing",
+        "x": 280,
+        "y": 60,
+        "w": 190,
+        "h": 100,
+        "machine_id": "LDN_M1",
+        "icon": "saw",
+        "spec": "Meyer Burger Diamond Multi-Wire Slicer"
+      },
+      {
+        "id": "LDN-CMP-02",
+        "name": "Nanotech CMP Planarizer",
+        "type": "Machine",
+        "bay": "Zone 2 \u2022 Chemical-Mechanical Polishing",
+        "x": 280,
+        "y": 220,
+        "w": 190,
+        "h": 100,
+        "machine_id": "LDN_M2",
+        "icon": "cmp",
+        "spec": "Ebara CMP Double-Sided Polisher"
+      },
+      {
+        "id": "LDN-EUV-03",
+        "name": "Extreme UV Litho Stepper",
+        "type": "Machine",
+        "bay": "Zone 3 \u2022 ISO Class 3 Cleanroom",
+        "x": 540,
+        "y": 60,
+        "w": 200,
+        "h": 100,
+        "machine_id": "LDN_M3",
+        "icon": "laser",
+        "spec": "ASML Twinscan 13.5nm High-NA EUV"
+      },
+      {
+        "id": "LDN-RIE-04",
+        "name": "Deep Reactive-Ion Etcher",
+        "type": "Machine",
+        "bay": "Zone 3 \u2022 Plasma Patterning",
+        "x": 540,
+        "y": 220,
+        "w": 200,
+        "h": 100,
+        "machine_id": "LDN_M4",
+        "icon": "etcher",
+        "spec": "Lam Research Cryogenic Bosch DRIE"
+      },
+      {
+        "id": "LDN-CVD-05",
+        "name": "Atomic Layer CVD Chamber",
+        "type": "Machine",
+        "bay": "Zone 4 \u2022 Thin-Film Epitaxy",
+        "x": 800,
+        "y": 140,
+        "w": 200,
+        "h": 100,
+        "machine_id": "LDN_M5",
+        "icon": "reactor",
+        "spec": "Applied Materials Endura ALD/CVD"
+      },
+      {
+        "id": "LDN_WAFER_VAULT",
+        "name": "Cassette Wafer Vault",
+        "type": "Inventory",
+        "bay": "Clean Outfeed",
+        "x": 1060,
+        "y": 140,
+        "w": 190,
+        "h": 96,
+        "icon": "cassette",
+        "status": "HEALTHY",
+        "spec": "Automated Nitrogen FOUP Buffer System"
+      }
+    ],
+    "edges": [
+      {
+        "from": "LDN_INGOT",
+        "to": "LDN-SLI-01",
+        "path": "M 230 170 C 255 170, 255 110, 280 110",
+        "color": "#06b6d4",
+        "stroke": "2.0"
+      },
+      {
+        "from": "LDN_INGOT",
+        "to": "LDN-CMP-02",
+        "path": "M 230 170 C 255 170, 255 270, 280 270",
+        "color": "#06b6d4",
+        "stroke": "2.0"
+      },
+      {
+        "from": "LDN-SLI-01",
+        "to": "LDN-EUV-03",
+        "path": "M 470 110 L 540 110",
+        "color": "#06b6d4",
+        "stroke": "2.0"
+      },
+      {
+        "from": "LDN-CMP-02",
+        "to": "LDN-RIE-04",
+        "path": "M 470 270 L 540 270",
+        "color": "#06b6d4",
+        "stroke": "2.0"
+      },
+      {
+        "from": "LDN-EUV-03",
+        "to": "LDN-CVD-05",
+        "path": "M 740 110 C 770 110, 770 190, 800 190",
+        "color": "#06b6d4",
+        "stroke": "2.0"
+      },
+      {
+        "from": "LDN-RIE-04",
+        "to": "LDN-CVD-05",
+        "path": "M 740 270 C 770 270, 770 190, 800 190",
+        "color": "#06b6d4",
+        "stroke": "2.0"
+      },
+      {
+        "from": "LDN-CVD-05",
+        "to": "LDN_WAFER_VAULT",
+        "path": "M 1000 190 L 1060 190",
+        "color": "#10b981",
+        "stroke": "2.2"
+      }
+    ]
+  },
+  "PLANT_LONDON_PKG": {
+    "factory_id": "PLANT_LONDON_PKG",
+    "blueprint_name": "Thames London Packaging Beta (Die Attach & Wire Bonder)",
+    "layout_type": "cleanroom_micro_packaging",
+    "canvas_config": {
+      "panX": 40,
+      "panY": 80,
+      "zoom": 0.82
+    },
+    "nodes": [
+      {
+        "id": "LDN_WAFER_IN",
+        "name": "FOUP Cassette Infeed Bay",
+        "type": "Inventory",
+        "bay": "Zone 1 \u2022 Wafer Dock",
+        "x": 40,
+        "y": 140,
+        "w": 190,
+        "h": 96,
+        "icon": "cassette",
+        "status": "HEALTHY",
+        "spec": "Sealed FOUP Nitrogen Cassette Interface"
+      },
+      {
+        "id": "LDN-DCE-01",
+        "name": "Picosecond Laser Dicer",
+        "type": "Machine",
+        "bay": "Zone 2 \u2022 Laser Singulation",
+        "x": 280,
+        "y": 60,
+        "w": 190,
+        "h": 100,
+        "machine_id": "LDN_M6",
+        "icon": "laser",
+        "spec": "DISCO DFL7362 Picosecond UV Stealth Dicer"
+      },
+      {
+        "id": "LDN-ATT-02",
+        "name": "Eutectic Die Attach Beta",
+        "type": "Machine",
+        "bay": "Zone 2 \u2022 High-Speed Mount",
+        "x": 280,
+        "y": 220,
+        "w": 190,
+        "h": 100,
+        "machine_id": "LDN_M7",
+        "icon": "mount",
+        "spec": "Besi Datacon 8800 FC Ultra Die Bonder"
+      },
+      {
+        "id": "LDN-BND-03",
+        "name": "Ultra-Fine Pitch Wire Bonder",
+        "type": "Machine",
+        "bay": "Zone 3 \u2022 Gold/Copper Interconnect",
+        "x": 540,
+        "y": 60,
+        "w": 200,
+        "h": 100,
+        "machine_id": "LDN_M8",
+        "icon": "wire",
+        "spec": "Kulicke & Soffa PowerSeries Elite Bonder"
+      },
+      {
+        "id": "LDN-ENC-04",
+        "name": "Hermetic Vacuum Sealer",
+        "type": "Machine",
+        "bay": "Zone 3 \u2022 Cryogenic Packaging",
+        "x": 540,
+        "y": 220,
+        "w": 200,
+        "h": 100,
+        "machine_id": "LDN_M9",
+        "icon": "seal",
+        "spec": "SST Vacuum Reflow & Sealing System"
+      },
+      {
+        "id": "LDN-XRY-05",
+        "name": "3D CT X-Ray Metrology",
+        "type": "Machine",
+        "bay": "Zone 4 \u2022 Non-Destructive QC",
+        "x": 800,
+        "y": 140,
+        "w": 200,
+        "h": 100,
+        "machine_id": "LDN_M10",
+        "icon": "xray",
+        "spec": "Nikon Metrology XT H 225 Nanofocus"
+      },
+      {
+        "id": "LDN_PKG_OUT",
+        "name": "Shielded Component Outfeed",
+        "type": "Inventory",
+        "bay": "Clean Outfeed",
+        "x": 1060,
+        "y": 140,
+        "w": 190,
+        "h": 96,
+        "icon": "pack",
+        "status": "HEALTHY",
+        "spec": "Electrostatic Antistatic Tray Dispatch"
+      }
+    ],
+    "edges": [
+      {
+        "from": "LDN_WAFER_IN",
+        "to": "LDN-DCE-01",
+        "path": "M 230 170 C 255 170, 255 110, 280 110",
+        "color": "#10b981",
+        "stroke": "2.0"
+      },
+      {
+        "from": "LDN_WAFER_IN",
+        "to": "LDN-ATT-02",
+        "path": "M 230 170 C 255 170, 255 270, 280 270",
+        "color": "#10b981",
+        "stroke": "2.0"
+      },
+      {
+        "from": "LDN-DCE-01",
+        "to": "LDN-BND-03",
+        "path": "M 470 110 L 540 110",
+        "color": "#10b981",
+        "stroke": "2.0"
+      },
+      {
+        "from": "LDN-ATT-02",
+        "to": "LDN-ENC-04",
+        "path": "M 470 270 L 540 270",
+        "color": "#10b981",
+        "stroke": "2.0"
+      },
+      {
+        "from": "LDN-BND-03",
+        "to": "LDN-XRY-05",
+        "path": "M 740 110 C 770 110, 770 190, 800 190",
+        "color": "#10b981",
+        "stroke": "2.0"
+      },
+      {
+        "from": "LDN-ENC-04",
+        "to": "LDN-XRY-05",
+        "path": "M 740 270 C 770 270, 770 190, 800 190",
+        "color": "#10b981",
+        "stroke": "2.0"
+      },
+      {
+        "from": "LDN-XRY-05",
+        "to": "LDN_PKG_OUT",
+        "path": "M 1000 190 L 1060 190",
+        "color": "#10b981",
+        "stroke": "2.2"
+      }
+    ]
+  },
+  "PLANT_LONDON_ALL": {
+    "factory_id": "PLANT_LONDON_ALL",
+    "blueprint_name": "London Semiconductor Foundry (2 Lines Leading to 1 Unit Facility)",
+    "layout_type": "two_plants_one_unit_facility",
+    "canvas_config": {
+      "panX": 40,
+      "panY": 60,
+      "zoom": 0.78
+    },
+    "nodes": [
+      {
+        "id": "LDN_STORES",
+        "name": "London Clean Infeed Vault",
+        "type": "Inventory",
+        "bay": "Vault Infeed",
+        "x": 20,
+        "y": 190,
+        "w": 180,
+        "h": 110,
+        "icon": "vault",
+        "status": "HEALTHY",
+        "spec": "Dual Infeed: Silicon Ingots & Substrates"
+      },
+      {
+        "id": "LDN-SLI-01",
+        "name": "Diamond Wire Slicer (Line Alpha)",
+        "type": "Machine",
+        "bay": "Plant 1 \u2022 Wafer Fab",
+        "x": 230,
+        "y": 60,
+        "w": 190,
+        "h": 96,
+        "machine_id": "LDN_M1",
+        "spec": "Wafer Saw \u2022 100nm Slicing"
+      },
+      {
+        "id": "LDN-EUV-03",
+        "name": "EUV Photolithography (Line Alpha)",
+        "type": "Machine",
+        "bay": "Plant 1 \u2022 Wafer Fab",
+        "x": 445,
+        "y": 60,
+        "w": 190,
+        "h": 96,
+        "machine_id": "LDN_M3",
+        "spec": "ASML 13.5nm EUV Litho"
+      },
+      {
+        "id": "LDN-RIE-04",
+        "name": "Deep Reactive Etcher (Line Alpha)",
+        "type": "Machine",
+        "bay": "Plant 1 \u2022 Wafer Fab",
+        "x": 660,
+        "y": 60,
+        "w": 190,
+        "h": 96,
+        "machine_id": "LDN_M4",
+        "spec": "Plasma Etch Bosch Process"
+      },
+      {
+        "id": "LDN-CVD-05",
+        "name": "ALD Epitaxy Chamber (Line Alpha)",
+        "type": "Machine",
+        "bay": "Plant 1 \u2022 Wafer Fab",
+        "x": 875,
+        "y": 60,
+        "w": 190,
+        "h": 96,
+        "machine_id": "LDN_M5",
+        "spec": "Atomic Thin-Film Deposition"
+      },
+      {
+        "id": "LDN-DCE-01",
+        "name": "Laser Wafer Dicer (Line Beta)",
+        "type": "Machine",
+        "bay": "Plant 2 \u2022 Packaging",
+        "x": 230,
+        "y": 320,
+        "w": 190,
+        "h": 96,
+        "machine_id": "LDN_M6",
+        "spec": "Picosecond UV Laser Singulation"
+      },
+      {
+        "id": "LDN-ATT-02",
+        "name": "Eutectic Die Attach (Line Beta)",
+        "type": "Machine",
+        "bay": "Plant 2 \u2022 Packaging",
+        "x": 445,
+        "y": 320,
+        "w": 190,
+        "h": 96,
+        "machine_id": "LDN_M7",
+        "spec": "Sub-Micron High-Speed Mount"
+      },
+      {
+        "id": "LDN-BND-03",
+        "name": "Fine Wire Bonder (Line Beta)",
+        "type": "Machine",
+        "bay": "Plant 2 \u2022 Packaging",
+        "x": 660,
+        "y": 320,
+        "w": 190,
+        "h": 96,
+        "machine_id": "LDN_M8",
+        "spec": "Gold-Ball Interconnect Cell"
+      },
+      {
+        "id": "LDN-ENC-04",
+        "name": "Cryo Vacuum Sealer (Line Beta)",
+        "type": "Machine",
+        "bay": "Plant 2 \u2022 Packaging",
+        "x": 875,
+        "y": 320,
+        "w": 190,
+        "h": 96,
+        "machine_id": "LDN_M9",
+        "spec": "Class 10 Hermetic Seal"
+      },
+      {
+        "id": "LDN-UNIT-QC",
+        "name": "Unit Final Cleanroom Inspection Bay",
+        "type": "UnitFacility",
+        "bay": "London Shared Unit Facility",
+        "x": 1100,
+        "y": 140,
+        "w": 220,
+        "h": 130,
+        "icon": "unit_facility",
+        "spec": "Shared Unit Facility \u2022 Quantum Prober & Automated CT Metrology",
+        "status": "HEALTHY"
+      },
+      {
+        "id": "LDN-UNIT-DISPATCH",
+        "name": "Airlock Freight Dispatch Bay",
+        "type": "Dispatch",
+        "bay": "Unit Dispatch Bay",
+        "x": 1100,
+        "y": 330,
+        "w": 220,
+        "h": 96,
+        "icon": "dispatch",
+        "spec": "Direct Air Cargo to Cambridge & European Foundries",
+        "status": "HEALTHY"
+      }
+    ],
+    "edges": [
+      {
+        "from": "LDN_STORES",
+        "to": "LDN-SLI-01",
+        "path": "M 200 220 C 215 220, 215 108, 230 108",
+        "color": "#06b6d4",
+        "stroke": "2.2"
+      },
+      {
+        "from": "LDN_STORES",
+        "to": "LDN-DCE-01",
+        "path": "M 200 260 C 215 260, 215 368, 230 368",
+        "color": "#10b981",
+        "stroke": "2.2"
+      },
+      {
+        "from": "LDN-SLI-01",
+        "to": "LDN-EUV-03",
+        "path": "M 420 108 L 445 108",
+        "color": "#06b6d4",
+        "stroke": "2.0"
+      },
+      {
+        "from": "LDN-EUV-03",
+        "to": "LDN-RIE-04",
+        "path": "M 635 108 L 660 108",
+        "color": "#06b6d4",
+        "stroke": "2.0"
+      },
+      {
+        "from": "LDN-RIE-04",
+        "to": "LDN-CVD-05",
+        "path": "M 850 108 L 875 108",
+        "color": "#06b6d4",
+        "stroke": "2.0"
+      },
+      {
+        "from": "LDN-DCE-01",
+        "to": "LDN-ATT-02",
+        "path": "M 420 368 L 445 368",
+        "color": "#10b981",
+        "stroke": "2.0"
+      },
+      {
+        "from": "LDN-ATT-02",
+        "to": "LDN-BND-03",
+        "path": "M 635 368 L 660 368",
+        "color": "#10b981",
+        "stroke": "2.0"
+      },
+      {
+        "from": "LDN-BND-03",
+        "to": "LDN-ENC-04",
+        "path": "M 850 368 L 875 368",
+        "color": "#10b981",
+        "stroke": "2.0"
+      },
+      {
+        "from": "LDN-CVD-05",
+        "to": "LDN-UNIT-QC",
+        "path": "M 1065 108 C 1085 108, 1085 180, 1100 180",
+        "color": "#06b6d4",
+        "stroke": "2.6"
+      },
+      {
+        "from": "LDN-ENC-04",
+        "to": "LDN-UNIT-QC",
+        "path": "M 1065 368 C 1085 368, 1085 230, 1100 230",
+        "color": "#10b981",
+        "stroke": "2.6"
+      },
+      {
+        "from": "LDN-UNIT-QC",
+        "to": "LDN-UNIT-DISPATCH",
+        "path": "M 1210 270 L 1210 330",
+        "color": "#a855f7",
+        "stroke": "2.4"
+      }
+    ]
+  }
+}

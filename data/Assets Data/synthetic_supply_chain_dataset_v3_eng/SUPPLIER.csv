@@ -1,0 +1,13 @@
+supplier_id,supplier_name,supplier_city,supplier_country,is_active
+1,Supplier X (Fast/Exp),ningbo,China,True
+2,Supplier Y (Slow/Chp),ho chi minh,Vietnam,True
+3,Supplier 3,busan,South Korea,True
+4,Supplier 4,tokyo,Japan,True
+5,Supplier 5,stuttgart,Germany,True
+6,Supplier 6,munich,Germany,True
+7,Supplier 7,milano,Italy,True
+8,Supplier 8,california,USA,True
+9,Supplier 9,istanbul,Turkey,True
+10,Supplier 10,ningbo,China,True
+11,Supplier 11,stuttgart,Germany,True
+12,Supplier 12,california,USA,True
