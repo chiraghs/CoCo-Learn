@@ -1668,47 +1668,94 @@
   </div>
 
   <!-- ========================================================================= -->
-  <!-- 5. ASK CORTEX COPILOT MODAL                                               -->
+  <!-- 5. ASK COCO — SNOWFLAKE CORTEX CONVERSATIONAL COPILOT MODAL               -->
   <!-- ========================================================================= -->
-  <div id="copilot-modal" class="fixed inset-0 z-50 bg-polar-night/70 backdrop-blur-sm flex items-center justify-center p-4 hidden">
-    <div class="sf-card max-w-2xl w-full rounded-2xl p-6 shadow-2xl border border-snowflake/30 space-y-4">
-      <div class="flex items-center justify-between pb-3 border-b border-snowflake/20">
-        <div class="flex items-center gap-2.5">
-          <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-snowflake to-purple-600 text-white flex items-center justify-center p-1.5 shadow-md">
+  <div id="copilot-modal" class="fixed inset-0 z-50 bg-polar-night/70 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 hidden">
+    <div class="sf-card max-w-3xl w-full h-[660px] max-h-[92vh] rounded-2xl shadow-2xl border border-snowflake/30 flex flex-col overflow-hidden">
+      
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between px-5 py-3.5 border-b border-snowflake/20 bg-slate-50/70 dark:bg-black/30">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-snowflake to-purple-600 text-white flex items-center justify-center p-2 shadow-md">
             <svg class="w-full h-full" viewBox="0 0 24 24" fill="currentColor">
               <path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456z"/>
             </svg>
           </div>
-          <h3 class="font-outfit font-black text-base sf-text-title">Ask CoCo — Snowflake Cortex Agent</h3>
+          <div>
+            <div class="flex items-center gap-2">
+              <h3 class="font-outfit font-black text-sm sm:text-base sf-text-title">Ask CoCo — Snowflake Cortex Agent</h3>
+              <span class="rounded bg-snowflake/15 border border-snowflake/30 px-2 py-0.5 text-[10px] font-bold text-snowflake font-mono-code">NL-to-SQL + Reasoning</span>
+            </div>
+            <p class="text-[11px] text-slate-500 font-mono-code">Multi-Turn Conversational Reasoning over Snowflake Dynamic Tables &amp; Iceberg</p>
+          </div>
         </div>
-        <button onclick="closeCopilotModal()" class="text-slate-400 hover:text-slate-800 dark:hover:text-white font-bold">✕</button>
-      </div>
-
-      <div class="space-y-2">
-        <label class="text-xs font-bold text-slate-500 font-mono-code">ASK ANY SUPPLY CHAIN QUESTION (CONVERSATIONAL NL-TO-SQL)</label>
-        <div class="flex gap-2">
-          <input type="text" id="copilot-input" placeholder="e.g., Why is Austin battery DOI at 3.8 days?" class="flex-1 sf-inner-box border border-snowflake/30 rounded-lg px-3.5 py-2.5 text-xs font-mono-code focus:outline-none focus:border-snowflake">
-          <button onclick="submitCopilotQuery()" class="px-5 py-2.5 bg-snowflake hover:bg-snowflake-500 text-polar-night font-black text-xs rounded-lg transition-all shadow-md">Ask</button>
-        </div>
-      </div>
-
-      <div class="space-y-2">
-        <p class="text-[11px] font-mono-code text-slate-400 font-bold uppercase">Quick Sample Prompts:</p>
-        <div class="flex flex-wrap gap-1.5 text-[11px] font-mono-code">
-          <button onclick="setCopilotQuery('Why is Austin battery DOI at 3.8 days?')" class="px-2.5 py-1 rounded-md sf-inner-box hover:border-snowflake text-slate-600 dark:text-slate-300">Why is Austin battery DOI at 3.8 days?</button>
-          <button onclick="setCopilotQuery('What are our liquidated damages from Apex Battery?')" class="px-2.5 py-1 rounded-md sf-inner-box hover:border-snowflake text-slate-600 dark:text-slate-300">Apex Battery liquidated damages?</button>
-          <button onclick="setCopilotQuery('What is the OTIF rate for maritime shipments?')" class="px-2.5 py-1 rounded-md sf-inner-box hover:border-snowflake text-slate-600 dark:text-slate-300">Maritime shipment OTIF %?</button>
+        <div class="flex items-center gap-2">
+          <button onclick="clearCopilotChat()" class="px-2.5 py-1 rounded-lg sf-inner-box text-slate-500 hover:text-snowflake text-xs font-mono-code font-bold transition-all" title="Reset chat thread">
+            🧹 Clear
+          </button>
+          <button onclick="closeCopilotModal()" class="text-slate-400 hover:text-slate-800 dark:hover:text-white font-bold p-1 text-base">✕</button>
         </div>
       </div>
 
-      <!-- Response Box -->
-      <div id="copilot-response-box" class="hidden p-4 rounded-xl sf-inner-box border border-snowflake/25 space-y-2 font-mono-code text-xs">
-        <div class="flex items-center justify-between text-snowflake font-bold">
-          <span>GROUND TRUTH RESPONSE:</span>
-          <span class="text-[10px] text-emerald-500">Snowflake Verified</span>
-        </div>
-        <p id="copilot-response-text" class="text-slate-800 dark:text-white leading-relaxed"></p>
+      <!-- Quick Prompt Suggestion Chips -->
+      <div class="border-b border-snowflake/15 bg-slate-100/60 dark:bg-black/20 px-4 py-2 flex items-center gap-1.5 overflow-x-auto text-[11px] font-mono-code no-scrollbar">
+        <span class="text-slate-400 text-[10px] uppercase font-bold tracking-wider shrink-0 mr-1">Suggestions:</span>
+        <button onclick="sendCopilotPrompt('Why is Austin battery DOI at 3.8 days?')" class="shrink-0 rounded-full border border-snowflake/25 sf-inner-box px-3 py-1 text-slate-700 dark:text-slate-300 hover:border-snowflake hover:text-snowflake transition-all">⚡ Austin Battery Shortage (3.8d)</button>
+        <button onclick="sendCopilotPrompt('What are our liquidated damages from Apex Battery?')" class="shrink-0 rounded-full border border-snowflake/25 sf-inner-box px-3 py-1 text-slate-700 dark:text-slate-300 hover:border-snowflake hover:text-snowflake transition-all">⚖️ Apex Liquidated Damages ($140k)</button>
+        <button onclick="sendCopilotPrompt('What is the failure risk on Detroit robot M7?')" class="shrink-0 rounded-full border border-snowflake/25 sf-inner-box px-3 py-1 text-slate-700 dark:text-slate-300 hover:border-snowflake hover:text-snowflake transition-all">🤖 Detroit Robot M7 Wear</button>
+        <button onclick="sendCopilotPrompt('Which shipments are delayed at Port of Long Beach?')" class="shrink-0 rounded-full border border-snowflake/25 sf-inner-box px-3 py-1 text-slate-700 dark:text-slate-300 hover:border-snowflake hover:text-snowflake transition-all">🚢 Port of Long Beach Delay</button>
+        <button onclick="sendCopilotPrompt('How does CoCo verify ground truth without hallucination?')" class="shrink-0 rounded-full border border-snowflake/25 sf-inner-box px-3 py-1 text-slate-700 dark:text-slate-300 hover:border-snowflake hover:text-snowflake transition-all">🛡️ 3-Way Reconciliation</button>
+        <button onclick="sendCopilotPrompt('What can you do?')" class="shrink-0 rounded-full border border-snowflake/25 sf-inner-box px-3 py-1 text-slate-700 dark:text-slate-300 hover:border-snowflake hover:text-snowflake transition-all">💬 What can you do?</button>
       </div>
+
+      <!-- Chat Thread Container -->
+      <div id="copilot-chat-thread" class="flex-1 overflow-y-auto p-4 sm:p-5 space-y-4 font-mono-code text-xs">
+        <!-- Initial Welcome Message from CoCo -->
+        <div class="flex items-start gap-3">
+          <div class="w-8 h-8 shrink-0 rounded-xl bg-gradient-to-br from-snowflake to-purple-600 text-white flex items-center justify-center font-bold text-xs shadow-md">
+            ❄️
+          </div>
+          <div class="rounded-2xl rounded-tl-none sf-inner-box border border-snowflake/25 p-4 text-xs text-slate-800 dark:text-slate-200 max-w-[85%] shadow-sm space-y-2">
+            <div class="flex items-center justify-between text-[10px] text-slate-400 border-b border-snowflake/15 pb-1.5">
+              <span class="flex items-center gap-1.5 text-snowflake font-bold">
+                <span class="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                CoCo Cortex Agent &bull; SUPPLY_CHAIN_DB.CORE
+              </span>
+              <span class="text-emerald-500 font-bold">Lag: 38s (Clean)</span>
+            </div>
+            <p class="font-bold sf-text-title text-[13px]">Hello! I am CoCo, your Snowflake Cortex Supply Chain Copilot.</p>
+            <p class="text-slate-600 dark:text-slate-300 leading-relaxed font-sans text-xs">
+              I reason continuously across live <strong>Snowflake Dynamic Tables</strong>, Iceberg datasets, and our 3D digital twins. Ask me anything in plain English — whether analyzing stockout risks, calculating contractual liquidated damages, diagnosing robot telemetry anomalies, or dispatching automated 1-click mitigation orders via MCP.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Input Footer -->
+      <div class="border-t border-snowflake/20 bg-slate-50/80 dark:bg-black/40 p-3 sm:p-4 flex flex-col gap-2">
+        <div class="flex items-center gap-2">
+          <input 
+            type="text" 
+            id="copilot-user-input" 
+            placeholder="Ask CoCo anything... (e.g., 'Why is Austin at 3.8 days?' or 'Hello!')" 
+            class="flex-1 sf-inner-box border border-snowflake/30 rounded-xl px-4 py-2.5 text-xs font-mono-code focus:outline-none focus:border-snowflake placeholder:text-slate-400"
+            onkeydown="if(event.key === 'Enter') submitCopilotQuery();"
+          />
+          <button 
+            id="copilot-submit-btn" 
+            onclick="submitCopilotQuery()" 
+            class="flex items-center gap-1.5 px-4 py-2.5 bg-snowflake hover:bg-snowflake-500 text-polar-night font-black text-xs rounded-xl transition-all shadow-md shrink-0"
+          >
+            <span>Ask</span>
+            <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+          </button>
+        </div>
+        <div class="flex items-center justify-between text-[10px] text-slate-400 font-mono-code px-1">
+          <span>Supported: Multi-turn questions, Cortex NL-to-SQL, Contract audits, MCP dispatch</span>
+          <span>Press <strong>Enter ↵</strong> to send</span>
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -2351,62 +2398,333 @@ FROM SUPPLY_CHAIN_DB.RAW.MQTT_AMR_FLEET_STREAM;`,
       alert("Snowflake DDL copied to clipboard!");
     }
 
-    // 7. COPILOT MODAL & NL-TO-SQL
+    // 7. COPILOT CONVERSATIONAL MULTI-TURN CHAT & NL-TO-SQL
+    let copilotChatHistory = [];
+
     function openCopilotModal() {
-      document.getElementById('copilot-modal').classList.remove('hidden');
+      const modal = document.getElementById('copilot-modal');
+      if (modal) {
+        modal.classList.remove('hidden');
+        const input = document.getElementById('copilot-user-input');
+        if (input) setTimeout(() => input.focus(), 50);
+        const thread = document.getElementById('copilot-chat-thread');
+        if (thread) thread.scrollTop = thread.scrollHeight;
+      }
     }
 
     function closeCopilotModal() {
-      document.getElementById('copilot-modal').classList.add('hidden');
+      const modal = document.getElementById('copilot-modal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function clearCopilotChat() {
+      copilotChatHistory = [];
+      const thread = document.getElementById('copilot-chat-thread');
+      if (!thread) return;
+      thread.innerHTML = `
+        <div class="flex items-start gap-3">
+          <div class="w-8 h-8 shrink-0 rounded-xl bg-gradient-to-br from-snowflake to-purple-600 text-white flex items-center justify-center font-bold text-xs shadow-md">
+            ❄️
+          </div>
+          <div class="rounded-2xl rounded-tl-none sf-inner-box border border-snowflake/25 p-4 text-xs text-slate-800 dark:text-slate-200 max-w-[85%] shadow-sm space-y-2">
+            <div class="flex items-center justify-between text-[10px] text-slate-400 border-b border-snowflake/15 pb-1.5">
+              <span class="flex items-center gap-1.5 text-snowflake font-bold">
+                <span class="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                CoCo Cortex Agent &bull; SUPPLY_CHAIN_DB.CORE
+              </span>
+              <span class="text-emerald-500 font-bold">Lag: 38s (Clean)</span>
+            </div>
+            <p class="font-bold sf-text-title text-[13px]">Chat thread cleared. How can I assist you with your supply chain?</p>
+            <p class="text-slate-600 dark:text-slate-300 leading-relaxed font-sans text-xs">
+              Ask about inventory runways, supplier breach damages, robot health anomalies, or trigger 1-click MCP mitigation actions.
+            </p>
+          </div>
+        </div>
+      `;
+    }
+
+    function sendCopilotPrompt(text) {
+      openCopilotModal();
+      const input = document.getElementById('copilot-user-input');
+      if (input) {
+        input.value = text;
+        submitCopilotQuery();
+      }
     }
 
     function setCopilotQuery(q) {
-      document.getElementById('copilot-input').value = q;
-      submitCopilotQuery();
-    }
-
-    function submitCopilotQuery() {
-      const query = document.getElementById('copilot-input').value.trim();
-      if (!query) return;
-      askCortex(query);
+      sendCopilotPrompt(q);
     }
 
     function askCortex(query) {
-      openCopilotModal();
-      document.getElementById('copilot-input').value = query;
-      const box = document.getElementById('copilot-response-box');
-      const text = document.getElementById('copilot-response-text');
-      box.classList.remove('hidden');
+      sendCopilotPrompt(query);
+    }
 
-      const qLower = query.toLowerCase();
-      if (qLower.includes('austin') || qLower.includes('doi') || qLower.includes('battery')) {
-        text.innerHTML = `
-          <strong>[Snowflake Cortex Analyst Result]</strong><br>
-          Grounded Table: <code class="text-snowflake">SUPPLY_CHAIN_DB.CORE.DT_PLANT_STOCKOUT_RISK</code><br>
-          Plant: <strong>Gigafactory Texas (Plant 2)</strong> | Part: <strong>4680 Battery Cells (BAT_402)</strong><br>
-          Current On-Hand: <strong>2,280 units</strong> | Burn Rate: <strong>600 units/day</strong><br>
-          Days of Inventory: <strong class="text-red-500">3.8 Days (CRITICAL_STOCKOUT_RISK)</strong><br>
-          Root Cause: Consignment #SHP-78442 delayed 4 days at Port of Long Beach.<br>
-          <em>Prescription: Emergency air-freight PO to Shenzhen EnerTech will restore buffer to 14.2 days.</em>
-        `;
-      } else if (qLower.includes('penalty') || qLower.includes('liquidated') || qLower.includes('apex')) {
-        text.innerHTML = `
-          <strong>[Snowflake Cortex Search &amp; Analyst Result]</strong><br>
-          Contract: <code class="text-snowflake">SUPPLY_CHAIN_DB.CORE.SUPPLIER_CONTRACTS_SEARCH</code><br>
-          Clause: <strong>Section 8.2 (Liquidated Damages)</strong><br>
-          Supplier: <strong>Apex Battery Cells (SUP_001)</strong><br>
-          Delay Duration: <strong>4 Days past 72h Grace Period</strong><br>
-          Liquidated Damages Liability: <strong class="text-emerald-500">$140,000 Recoverable</strong><br>
-          <em>Status: Decision DEC-LEGAL-01 ready for 1-click MCP approval.</em>
-        `;
-      } else {
-        text.innerHTML = `
-          <strong>[Snowflake Cortex Analyst Query Execution]</strong><br>
-          Grounded Model: <code class="text-snowflake">inventory_capacity_transportation.yaml</code><br>
-          Query: "${query}"<br>
-          Result: Reconciled with Snowflake Dynamic Tables (Lag: 38s). Network health index is 94.2% across 3 active plants.
+    function executeInspCustomQuery() {
+      const el = document.getElementById('insp-custom-query');
+      if (el && el.value.trim()) {
+        const q = el.value.trim();
+        el.value = '';
+        askCortex(q);
+      }
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function formatCopilotMarkdown(md) {
+      if (!md) return '';
+      return escapeHtml(md)
+        .replace(/^### (.*?)(?:\n|$)/gm, '<h4 class="text-sm font-black text-snowflake font-display mt-2.5 mb-1">$1</h4>')
+        .replace(/^## (.*?)(?:\n|$)/gm, '<h3 class="text-base font-black sf-text-title font-display mt-2 mb-1">$1</h3>')
+        .replace(/^# (.*?)(?:\n|$)/gm, '<h2 class="text-lg font-black sf-text-title font-display mt-2 mb-1">$1</h2>')
+        .replace(/\*\*(.*?)\*\*/g, '<strong class="text-snowflake font-bold">$1</strong>')
+        .replace(/\*(.*?)\*/g, '<em class="text-slate-400">$1</em>')
+        .replace(/`([^`]+)`/g, '<code class="px-1.5 py-0.5 rounded bg-snowflake/15 text-snowflake font-mono-code text-[11px]">$1</code>')
+        .replace(/^&gt; (.*?)(?:\n|$)/gm, '<blockquote class="border-l-2 border-snowflake/50 pl-3 py-1 my-1.5 text-slate-500 italic">$1</blockquote>')
+        .replace(/^- (.*?)(?:\n|$)/gm, '<div class="flex items-start gap-2 my-1"><span class="text-snowflake">•</span><span>$1</span></div>')
+        .replace(/^\d+\. (.*?)(?:\n|$)/gm, '<div class="flex items-start gap-2 my-1"><span class="text-snowflake font-bold">▪</span><span>$1</span></div>')
+        .replace(/\n\n/g, '<br/>')
+        .replace(/\n/g, '<br/>');
+    }
+
+    function generateClientSideCopilotResponse(query) {
+      const q = query.toLowerCase().trim();
+      if (q.includes('hello') || q.includes('hi') || q.includes('who are you') || q.includes('hey')) {
+        return {
+          status: 'success',
+          provider: 'Snowflake Cortex Agent',
+          model: 'Cortex AI / Multi-Turn Copilot',
+          answer: "## Hello! 👋 I'm CoCo\n\nI am your autonomous **Snowflake Cortex Supply Chain Copilot**. I monitor our multi-plant global network in near real-time via **Snowflake Dynamic Tables** (38s actual lag) and 3D digital twins.\n\n### What would you like to investigate today?\n- ⚡ **Austin Gigafactory Stockout**: *Why is Austin battery DOI at 3.8 days?*\n- ⚖️ **Contractual SLA Breach**: *What are our liquidated damages from Apex Battery?*\n- 🤖 **Predictive Machine Health**: *What is the failure risk on assembly robot M7?*\n- 🚢 **Maritime Bottlenecks**: *Which inbound shipments are delayed at Port of Long Beach?*\n- 🔄 **3-Way Reconciliation**: *How does CoCo verify ground truth without hallucination?*",
+          sql: null,
+          suggested_actions: [
+            { label: "⚡ Austin Battery Risk", prompt: "Why is Austin battery DOI at 3.8 days?" },
+            { label: "⚖️ Apex Liquidated Damages", prompt: "What are our liquidated damages from Apex Battery?" },
+            { label: "🤖 Robot M7 Health", prompt: "What is the failure risk on Detroit robot M7?" }
+          ],
+          total_latency_ms: 18.2
+        };
+      }
+      if (q.includes('what can you do') || q.includes('help') || q.includes('command')) {
+        return {
+          status: 'success',
+          provider: 'Snowflake Cortex Agent',
+          model: 'Cortex Analyst / Semantic Model',
+          answer: "### CoCo Autonomous Capabilities\n\n1. **Continuous Telemetry & DOI Forecasting:** Polling Dynamic Tables every 60s for stockout alerts.\n2. **Governed Cortex Contract Mining:** Parsing supplier MSAs via vector search for SLA penalty enforcement.\n3. **Predictive Equipment Failure Diagnostics:** Monitoring bearing vibrations and motor temperatures.\n4. **Autonomous MCP Action Dispatch:** 1-Click mitigation approvals (air freight, PO reroutes, Slack alerts).",
+          sql: "SELECT table_name, target_lag, refresh_mode FROM SUPPLY_CHAIN_DB.INFORMATION_SCHEMA.DYNAMIC_TABLES WHERE table_schema = 'CORE';",
+          suggested_actions: [
+            { label: "⚡ Test Austin Risk", prompt: "Why is Austin battery DOI at 3.8 days?" },
+            { label: "⚖️ Apex Liquidated Damages", prompt: "What are our liquidated damages from Apex Battery?" }
+          ],
+          total_latency_ms: 22.0
+        };
+      }
+      if (q.includes('austin') || q.includes('battery') || q.includes('doi') || q.includes('4680') || q.includes('shortfall')) {
+        return {
+          status: 'success',
+          provider: 'Snowflake Cortex Analyst',
+          model: 'inventory_capacity_transportation.yaml',
+          answer: "### 🚨 Critical Risk: Austin Gigafactory Battery Stockout\n\n- **Plant:** Austin Gigafactory (`PLANT_02`)\n- **Component:** 4680 High-Density Battery Cells (`PART_BAT_402`)\n- **Current DOI:** **3.8 Days** (CRITICAL: threshold is 5.0 Days)\n- **Active Buffer:** 2,280 units on-hand | Daily burn rate: **600 units/day**\n\n**Root Cause:**\nConsignment `#SHP-78442` from Apex Battery Cells is delayed 14 days due to berth congestion at Port of Long Beach. Line 1 assembly faces stoppage in 3.8 days ($140k/day downtime).\n\n**Prescription:**\nDispatch an emergency air-freight PO for **2,500 units** to backup vendor **Shenzhen EnerTech Express** to restore DOI to **14.2 Days**.",
+          sql: "SELECT plant_id, plant_name, part_id, part_name, days_of_inventory, stockout_risk_level FROM SUPPLY_CHAIN_DB.CORE.DT_PLANT_STOCKOUT_RISK WHERE plant_id = 'PLANT_02';",
+          suggested_actions: [
+            { label: "⚡ 1-Click Air Expedite via MCP", action: "EXPEDITE" },
+            { label: "⚖️ Audit Apex SLA Penalties", prompt: "What are our liquidated damages from Apex Battery?" }
+          ],
+          total_latency_ms: 31.4
+        };
+      }
+      if (q.includes('penalty') || q.includes('liquidated') || q.includes('apex') || q.includes('section 8') || q.includes('damages')) {
+        return {
+          status: 'success',
+          provider: 'Snowflake Cortex Search & Analyst',
+          model: 'SUPPLIER_CONTRACTS_SEARCH (Vector Index)',
+          answer: "### ⚖️ Contractual SLA Audit: Apex Battery Cells Ltd\n\n- **Supplier:** Apex Battery Cells Ltd (`SUP_001`)\n- **Document:** Master Service Agreement (Section 8.2 Liquidated Damages)\n- **Calculation:** 5% PO Base ($30,000) + 11 Billable Delay Days × $10,000/day ($110,000) = **$140,000.00 USD Recoverable**.\n\nDecision `DEC-LEGAL-01` is staged in the Governed Approvals Queue ready for 1-click execution.",
+          sql: "SELECT PARSE_JSON(SNOWFLAKE.CORTEX.SEARCH_PREVIEW('SUPPLY_CHAIN_DB.CORE.SUPPLIER_CONTRACTS_SEARCH', '{\"query\": \"Apex Battery liquidated damages Section 8\", \"limit\": 1}'))['results'][0]['clause_text']::STRING;",
+          suggested_actions: [
+            { label: "📄 Go to Approvals Queue", action: "NAVIGATE_APPROVALS" },
+            { label: "⚡ Check Austin Battery Risk", prompt: "Why is Austin battery DOI at 3.8 days?" }
+          ],
+          total_latency_ms: 27.6
+        };
+      }
+      if (q.includes('m7') || q.includes('robot') || q.includes('machine') || q.includes('vibration') || q.includes('spindle')) {
+        return {
+          status: 'success',
+          provider: 'Snowflake Cortex Telemetry Stream',
+          model: 'DT_MACHINE_TELEMETRY',
+          answer: "### 🤖 Asset Health Warning: Detroit Assembly Robot A3 (M7)\n\n- **Node:** Detroit Powertrain Plant (`PLANT_01`), Cell 2\n- **Machine:** Robot A3 (`MACHINE_M7`)\n- **Failure Risk:** **94.0% (CRITICAL ALERT)** — 2 Days until Bearing Seizure\n- **Telemetry:** Spindle vibration RMS at **1.82 mm/s** (Normal: < 0.45 mm/s)\n\nMitigation: Pre-calibrated Hot-Standby Twin `M15` on Standby Bay 4 is ready for automated workload transfer.",
+          sql: "SELECT machine_id, plant_id, failure_risk, predicted_failure_days, vibration_rms, temperature_c FROM SUPPLY_CHAIN_DB.CORE.DT_MACHINE_TELEMETRY WHERE machine_id = 'M7';",
+          suggested_actions: [
+            { label: "🔄 Switch to Hot-Standby M15", action: "REROUTE_M15" },
+            { label: "🔍 Inspect Detroit Digital Twin", action: "INSPECT_DETROIT" }
+          ],
+          total_latency_ms: 25.1
+        };
+      }
+      return {
+        status: 'success',
+        provider: 'Snowflake Cortex & CoCo Engine',
+        model: 'Cortex Analyst / Semantic Model',
+        answer: `### SupplyChainIQ CoCo Analysis for: *"${query}"*\n\nReconciled across the Snowflake Semantic Model (\`inventory_capacity_transportation.yaml\`) and active plant blueprints.\n- **Active Plants:** 11 manufacturing & logistics nodes monitored\n- **Network Health Index:** **94.2%**\n- **Active Alerts:** 1 Critical Stockout Risk (Austin 4680 Cells, 3.8d DOI) and 1 High Machine Wear Alert (Detroit Robot M7, 94% risk).`,
+        sql: "SELECT plant_id, count(*) as active_nodes, sum(stock_on_hand) as total_units FROM SUPPLY_CHAIN_DB.CORE.DT_FACILITY_LIVE_TELEMETRY GROUP BY plant_id;",
+        suggested_actions: [
+          { label: "⚡ Austin Battery Shortage (3.8d)", prompt: "Why is Austin battery DOI at 3.8 days?" },
+          { label: "⚖️ Apex Liquidated Damages ($140k)", prompt: "What are our liquidated damages from Apex Battery?" }
+        ],
+        total_latency_ms: 32.5
+      };
+    }
+
+    async function submitCopilotQuery() {
+      const input = document.getElementById('copilot-user-input');
+      const thread = document.getElementById('copilot-chat-thread');
+      const sendBtn = document.getElementById('copilot-submit-btn');
+      if (!input || !thread) return;
+
+      const query = input.value.trim();
+      if (!query) return;
+
+      input.value = '';
+      if (sendBtn) sendBtn.disabled = true;
+
+      // 1. Append User Message Bubble
+      const userBubble = document.createElement('div');
+      userBubble.className = "flex items-start justify-end gap-2.5";
+      userBubble.innerHTML = `
+        <div class="rounded-2xl rounded-tr-none bg-snowflake px-4 py-2.5 text-xs text-polar-night font-bold max-w-[80%] shadow-md">
+          <p class="whitespace-pre-wrap">${escapeHtml(query)}</p>
+        </div>
+        <div class="w-7 h-7 rounded-lg bg-polar-night text-snowflake border border-snowflake/30 flex items-center justify-center text-[10px] font-bold shadow shrink-0">
+          YOU
+        </div>
+      `;
+      thread.appendChild(userBubble);
+      thread.scrollTop = thread.scrollHeight;
+
+      // 2. Append Loading Placeholder Bubble
+      const loadingId = 'copilot-loading-' + Date.now();
+      const loadingBubble = document.createElement('div');
+      loadingBubble.id = loadingId;
+      loadingBubble.className = "flex items-start gap-3 animate-pulse";
+      loadingBubble.innerHTML = `
+        <div class="w-8 h-8 shrink-0 rounded-xl bg-gradient-to-br from-snowflake to-purple-600 text-white flex items-center justify-center font-bold text-xs shadow-md">
+          ❄️
+        </div>
+        <div class="rounded-2xl rounded-tl-none sf-inner-box border border-snowflake/25 p-3.5 text-xs text-slate-500 max-w-[85%] flex items-center gap-2.5">
+          <span class="inline-block h-3.5 w-3.5 animate-spin rounded-full border-2 border-snowflake border-t-transparent"></span>
+          <span>CoCo is reasoning across Snowflake Cortex Agent &amp; Semantic Model...</span>
+        </div>
+      `;
+      thread.appendChild(loadingBubble);
+      thread.scrollTop = thread.scrollHeight;
+
+      let data = null;
+      try {
+        const resp = await fetch(API_BASE + '/api/copilot', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query: query, history: copilotChatHistory })
+        });
+        if (resp.ok) {
+          data = await resp.json();
+        }
+      } catch (err) {
+        console.warn("Backend /api/copilot unavailable, using client-side conversational engine:", err);
+      }
+
+      if (!data || data.status !== 'success') {
+        data = generateClientSideCopilotResponse(query);
+      }
+
+      const loader = document.getElementById(loadingId);
+      if (loader) loader.remove();
+
+      copilotChatHistory.push({ role: 'user', content: query });
+      if (data && data.answer) {
+        copilotChatHistory.push({ role: 'assistant', content: data.answer });
+      }
+
+      // 3. Append CoCo Assistant Bubble
+      const responseBubble = document.createElement('div');
+      responseBubble.className = "flex items-start gap-3";
+
+      const formattedAnswer = formatCopilotMarkdown(data.answer || data.explanation || '');
+
+      let sqlAccordion = '';
+      if (data.sql) {
+        sqlAccordion = `
+          <details class="mt-2.5 rounded-xl border border-snowflake/20 sf-inner-box overflow-hidden">
+            <summary class="cursor-pointer px-3 py-2 text-[11px] font-bold text-snowflake flex items-center justify-between select-none hover:bg-snowflake/10 transition-all">
+              <span class="flex items-center gap-1.5">
+                <svg class="w-3.5 h-3.5 text-snowflake" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
+                Snowflake Ground Truth SQL &amp; Reconciliation Ledger
+              </span>
+              <span class="px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-500 text-[9px] font-bold">VERIFIED 100%</span>
+            </summary>
+            <div class="p-3 bg-polar-night text-snowflake font-mono-code text-[11px] border-t border-snowflake/20 overflow-x-auto select-all">
+              <pre class="leading-relaxed">${escapeHtml(data.sql)}</pre>
+            </div>
+          </details>
         `;
       }
+
+      let actionsHtml = '';
+      if (data.suggested_actions && data.suggested_actions.length > 0) {
+        actionsHtml = `
+          <div class="mt-3 pt-2.5 border-t border-snowflake/15 flex flex-wrap gap-1.5">
+            <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider shrink-0 mr-1 self-center">Follow-up:</span>
+            ${data.suggested_actions.map(act => {
+              if (act.action === 'EXPEDITE') {
+                return `<button onclick="executeActionMCP('EXPEDITE')" class="px-2.5 py-1 rounded-lg bg-snowflake hover:bg-snowflake-500 text-polar-night font-bold text-[10.5px] transition-all shadow-sm">⚡ 1-Click Air Expedite via MCP</button>`;
+              } else if (act.action === 'NAVIGATE_APPROVALS') {
+                return `<button onclick="closeCopilotModal(); navigatePage('approvals');" class="px-2.5 py-1 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-[10.5px] transition-all shadow-sm">📄 Open Approvals Queue</button>`;
+              } else if (act.action === 'INSPECT_AUSTIN') {
+                return `<button onclick="closeCopilotModal(); navigatePage('twin'); selectFacility('PLANT_02');" class="px-2.5 py-1 rounded-lg sf-inner-box hover:border-snowflake text-snowflake font-bold text-[10.5px] transition-all">🔍 Inspect Austin Twin</button>`;
+              } else if (act.action === 'INSPECT_DETROIT') {
+                return `<button onclick="closeCopilotModal(); navigatePage('twin'); selectFacility('PLANT_01');" class="px-2.5 py-1 rounded-lg sf-inner-box hover:border-snowflake text-snowflake font-bold text-[10.5px] transition-all">🔍 Inspect Detroit Line</button>`;
+              } else if (act.action === 'REROUTE_M15') {
+                return `<button onclick="alert('✅ Automated workload failover to Hot-Standby M15 dispatched via MCP!');" class="px-2.5 py-1 rounded-lg bg-purple-500 hover:bg-purple-600 text-white font-bold text-[10.5px] transition-all">🔄 Switch to Hot-Standby M15</button>`;
+              } else if (act.action === 'LEGAL_CLAIM') {
+                return `<button onclick="approvePrescription('LEGAL_CLAIM')" class="px-2.5 py-1 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-[10.5px] transition-all">⚖️ Dispatch $140k Notice</button>`;
+              } else {
+                return `<button onclick="sendCopilotPrompt('${escapeHtml(act.prompt || act.label)}')" class="px-2.5 py-1 rounded-lg sf-inner-box hover:border-snowflake text-slate-700 dark:text-slate-300 hover:text-snowflake font-semibold text-[10.5px] transition-all">${escapeHtml(act.label)}</button>`;
+              }
+            }).join('')}
+          </div>
+        `;
+      }
+
+      responseBubble.innerHTML = `
+        <div class="w-8 h-8 shrink-0 rounded-xl bg-gradient-to-br from-snowflake to-purple-600 text-white flex items-center justify-center font-bold text-xs shadow-md">
+          ❄️
+        </div>
+        <div class="rounded-2xl rounded-tl-none sf-inner-box border border-snowflake/25 p-4 text-xs text-slate-800 dark:text-slate-200 max-w-[85%] shadow-sm space-y-2">
+          <div class="flex items-center justify-between text-[10px] text-slate-400 border-b border-snowflake/15 pb-1.5 font-mono-code">
+            <span class="flex items-center gap-1.5 text-snowflake font-bold">
+              <span class="h-1.5 w-1.5 rounded-full bg-snowflake"></span>
+              ${escapeHtml(data.provider || 'Snowflake Cortex AI')} &bull; ${escapeHtml(data.model || 'Semantic Model')}
+            </span>
+            <span>⚡ ${data.total_latency_ms || 24.5}ms</span>
+          </div>
+          <div class="text-slate-700 dark:text-slate-200 leading-relaxed font-sans text-xs">
+            ${formattedAnswer}
+          </div>
+          ${sqlAccordion}
+          ${actionsHtml}
+        </div>
+      `;
+
+      thread.appendChild(responseBubble);
+      thread.scrollTop = thread.scrollHeight;
+      if (sendBtn) sendBtn.disabled = false;
+      if (input) input.focus();
     }
 
     // 8. CRISIS DEMO TRIGGER & SIMULATION
