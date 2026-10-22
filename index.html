@@ -410,6 +410,11 @@
           <span>⚡ Simulate Supply Shock</span>
         </button>
 
+        <!-- Watch Demo Video Button -->
+        <button onclick="openVideoModal()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-emerald-500/15 border border-emerald-500/30 text-emerald-600 hover:bg-emerald-500/25 transition-all shadow-sm" title="Watch 94s Platform & Cortex Demo Video">
+          <span>🎬 Watch Demo (94s)</span>
+        </button>
+
         <!-- Ask CoCo Button -->
         <button onclick="openCopilotModal()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-purple-500/15 border border-purple-500/30 text-purple-600 hover:bg-purple-500/25 transition-all shadow-sm">
           <svg class="w-3.5 h-3.5 text-purple-600" viewBox="0 0 24 24" fill="currentColor">
@@ -1704,6 +1709,7 @@
         <button onclick="sendCopilotPrompt('What are our liquidated damages from Apex Battery?')" class="shrink-0 rounded-full border border-snowflake/25 sf-inner-box px-3 py-1 text-slate-700 dark:text-slate-300 hover:border-snowflake hover:text-snowflake transition-all">⚖️ Apex Liquidated Damages ($140k)</button>
         <button onclick="sendCopilotPrompt('What is the failure risk on Detroit robot M7?')" class="shrink-0 rounded-full border border-snowflake/25 sf-inner-box px-3 py-1 text-slate-700 dark:text-slate-300 hover:border-snowflake hover:text-snowflake transition-all">🤖 Detroit Robot M7 Wear</button>
         <button onclick="sendCopilotPrompt('Which shipments are delayed at Port of Long Beach?')" class="shrink-0 rounded-full border border-snowflake/25 sf-inner-box px-3 py-1 text-slate-700 dark:text-slate-300 hover:border-snowflake hover:text-snowflake transition-all">🚢 Port of Long Beach Delay</button>
+        <button onclick="sendCopilotPrompt('How is the Red Sea Suez Canal crisis impacting our Munich inverter shipments?')" class="shrink-0 rounded-full border border-snowflake/25 sf-inner-box px-3 py-1 text-slate-700 dark:text-slate-300 hover:border-snowflake hover:text-snowflake transition-all">🌊 Red Sea / Suez Canal Diversion</button>
         <button onclick="sendCopilotPrompt('How does CoCo verify ground truth without hallucination?')" class="shrink-0 rounded-full border border-snowflake/25 sf-inner-box px-3 py-1 text-slate-700 dark:text-slate-300 hover:border-snowflake hover:text-snowflake transition-all">🛡️ 3-Way Reconciliation</button>
         <button onclick="sendCopilotPrompt('What can you do?')" class="shrink-0 rounded-full border border-snowflake/25 sf-inner-box px-3 py-1 text-slate-700 dark:text-slate-300 hover:border-snowflake hover:text-snowflake transition-all">💬 What can you do?</button>
       </div>
@@ -1756,6 +1762,41 @@
         </div>
       </div>
 
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- 5b. BROADCAST DEMO VIDEO MODAL (UNDER 2 MINUTES)                          -->
+  <!-- ========================================================================= -->
+  <div id="video-modal" class="fixed inset-0 z-50 bg-polar-night/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 hidden">
+    <div class="sf-card max-w-4xl w-full rounded-3xl shadow-2xl border border-snowflake/40 flex flex-col overflow-hidden">
+      <div class="flex items-center justify-between px-6 py-4 border-b border-snowflake/20 bg-slate-50/80 dark:bg-black/40">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500 to-snowflake text-white flex items-center justify-center font-bold text-base shadow-md">
+            🎬
+          </div>
+          <div>
+            <h3 class="font-outfit font-black text-base sf-text-title">SupplyChainIQ &bull; Platform Walkthrough (94s)</h3>
+            <p class="text-xs text-slate-500 font-mono-code">Autonomous Digital Twin Studio on Snowflake Cortex, Dynamic Tables &amp; MCP</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <a href="static/coco_demo.mp4" download="coco_cortex_platform_demo.mp4" class="px-3 py-1.5 rounded-lg sf-inner-box text-snowflake hover:bg-snowflake/15 text-xs font-mono-code font-bold transition-all" title="Download MP4 Video">
+            ⬇️ Download MP4 (3.4 MB)
+          </a>
+          <button onclick="closeVideoModal()" class="text-slate-400 hover:text-slate-800 dark:hover:text-white font-bold p-1 text-lg">✕</button>
+        </div>
+      </div>
+      <div class="p-4 bg-black flex items-center justify-center">
+        <video id="platform-demo-video" controls class="w-full max-h-[70vh] rounded-2xl shadow-lg border border-snowflake/20" preload="metadata">
+          <source src="static/coco_demo.mp4" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
+      </div>
+      <div class="px-6 py-3 border-t border-snowflake/15 bg-slate-50/70 dark:bg-black/30 flex items-center justify-between text-[11px] font-mono-code text-slate-500">
+        <span>Chapters: Architecture &bull; Long Beach Stockout &bull; Red Sea Crisis &bull; Ask CoCo &bull; 1-Click MCP</span>
+        <span class="text-emerald-500 font-bold">Runtime: 94 seconds (&lt; 2 min)</span>
+      </div>
     </div>
   </div>
 
@@ -2398,6 +2439,25 @@ FROM SUPPLY_CHAIN_DB.RAW.MQTT_AMR_FLEET_STREAM;`,
       alert("Snowflake DDL copied to clipboard!");
     }
 
+    // Video Walkthrough Modal
+    function openVideoModal() {
+      const modal = document.getElementById('video-modal');
+      const video = document.getElementById('platform-demo-video');
+      if (modal) {
+        modal.classList.remove('hidden');
+        if (video) video.play().catch(() => {});
+      }
+    }
+
+    function closeVideoModal() {
+      const modal = document.getElementById('video-modal');
+      const video = document.getElementById('platform-demo-video');
+      if (modal) {
+        modal.classList.add('hidden');
+        if (video) video.pause();
+      }
+    }
+
     // 7. COPILOT CONVERSATIONAL MULTI-TURN CHAT & NL-TO-SQL
     let copilotChatHistory = [];
 
@@ -2566,6 +2626,46 @@ FROM SUPPLY_CHAIN_DB.RAW.MQTT_AMR_FLEET_STREAM;`,
             { label: "🔍 Inspect Detroit Digital Twin", action: "INSPECT_DETROIT" }
           ],
           total_latency_ms: 25.1
+        };
+      }
+      if (q.includes('red sea') || q.includes('suez') || q.includes('cape of good hope') || q.includes('munich') || q.includes('inverter') || q.includes('shp-suez-992')) {
+        return {
+          status: 'success',
+          provider: 'Snowflake Cortex Logistics & Dynamic Tables',
+          model: 'DT_ACTIVE_DISRUPTIONS',
+          answer: "### 🌊 Geopolitical Maritime Disruption: Red Sea & Suez Canal Crisis\n\n- **Consignment:** `#SHP-SUEZ-992` (1,200 High-Efficiency Inverters `PART_INV_901`)\n- **Carrier:** Maersk Line (Triple-E Class)\n- **Destination:** Munich Mechatronics Hub (`PLANT_MUNICH_01`)\n- **Reroute Path:** Diverted around the **Cape of Good Hope** (+4,500 nautical miles)\n- **Transit Delay:** **+12.0 Calendar Days**\n- **Demurrage & Bunker Surcharge:** **$85,000.00 USD**\n\nMunich inverter buffer will drop to 4.2 days runway upon next production cycle. Maersk contract Section 14.4 caps war-risk surcharges, enabling a $40,000 carrier insurance recovery.",
+          sql: "SELECT shipment_id, carrier, origin_port, destination_plant, delay_days, demurrage_usd FROM SUPPLY_CHAIN_DB.CORE.DT_ACTIVE_DISRUPTIONS WHERE shipment_id = 'SHP-SUEZ-992';",
+          suggested_actions: [
+            { label: "🔍 Inspect Munich Plant Twin", action: "INSPECT_MUNICH" },
+            { label: "⚡ Evaluate Austin Battery Shortage", prompt: "Why is Austin battery DOI at 3.8 days?" }
+          ],
+          total_latency_ms: 26.4
+        };
+      }
+      if (q.includes('baltimore') || q.includes('bridge') || q.includes('norfolk') || q.includes('stampings')) {
+        return {
+          status: 'success',
+          provider: 'Snowflake Cortex Intermodal Service',
+          model: 'DT_ACTIVE_DISRUPTIONS',
+          answer: "### 🌉 Infrastructure Disruption: Baltimore Key Bridge Port Diversion\n\n- **Consignment:** `#SHP-BALT-104` (3,400 Chassis Stampings)\n- **Diverted Port:** Port of Virginia (Norfolk) &rarr; Detroit Powertrain Plant (`PLANT_01`)\n- **Delay:** **+6.0 Calendar Days** (Drayage Congestion)\n\nChassis buffer at Detroit remains at 8.1 days DOI, maintaining safe assembly buffer.",
+          sql: "SELECT shipment_id, carrier, origin_port, destination_plant, delay_days FROM SUPPLY_CHAIN_DB.CORE.DT_ACTIVE_DISRUPTIONS WHERE shipment_id = 'SHP-BALT-104';",
+          suggested_actions: [
+            { label: "🔍 Inspect Detroit Line", action: "INSPECT_DETROIT" }
+          ],
+          total_latency_ms: 24.1
+        };
+      }
+      if (q.includes('tsmc') || q.includes('semiconductor') || q.includes('chip') || q.includes('mcu')) {
+        return {
+          status: 'success',
+          provider: 'Snowflake Cortex Semiconductor Supply Service',
+          model: 'DT_ACTIVE_DISRUPTIONS',
+          answer: "### 🔬 Semiconductor Supply Alert: TSMC Fab Allocation Throttle\n\n- **Component:** 5nm Automotive Microcontrollers (`PART_MCU_505`)\n- **Node:** Riverside Smart Logistics Hub (`WH_RIVERSIDE_01`)\n- **Impact:** Cleanroom sensor recalibration throttles factory quota **15%**, extending lead times by **+18 Calendar Days**.",
+          sql: "SELECT shipment_id, carrier, part_name, quantity, delay_days FROM SUPPLY_CHAIN_DB.CORE.DT_ACTIVE_DISRUPTIONS WHERE shipment_id = 'SHP-TSMC-501';",
+          suggested_actions: [
+            { label: "⚡ Evaluate Austin Battery Shortage", prompt: "Why is Austin battery DOI at 3.8 days?" }
+          ],
+          total_latency_ms: 28.0
         };
       }
       return {

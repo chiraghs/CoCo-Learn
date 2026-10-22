@@ -217,6 +217,97 @@ def generate_conversational_response(query: str, history: Optional[List[Dict[str
             "total_latency_ms": 29.3
         }
 
+    # 6b. Red Sea / Suez Canal Shipping Crisis (Cape of Good Hope Reroute)
+    if any(w in q for w in ["red sea", "suez", "bab-el-mandeb", "cape of good hope", "houthi", "inverter", "munich", "shp-suez-992"]):
+        return {
+            "status": "success",
+            "mode": "analytical",
+            "provider": "Snowflake Cortex Logistics & Dynamic Tables",
+            "model": "DT_ACTIVE_DISRUPTIONS",
+            "question": query,
+            "answer": (
+                "### 🌊 Geopolitical Maritime Disruption: Red Sea & Suez Canal Crisis\n\n"
+                "- **Consignment:** `#SHP-SUEZ-992` (1,200 High-Efficiency Inverters `PART_INV_901`)\n"
+                "- **Carrier:** Maersk Line (Triple-E Class)\n"
+                "- **Destination:** Munich Mechatronics Hub (`PLANT_MUNICH_01`)\n"
+                "- **Reroute Path:** Diverted around the **Cape of Good Hope** (+4,500 nautical miles)\n"
+                "- **Transit Delay:** **+12.0 Calendar Days**\n"
+                "- **Demurrage & Bunker Surcharge:** **$85,000.00 USD**\n\n"
+                "**Supply Chain Ripple Effect:**\n"
+                "Munich inverter buffer will drop to 4.2 days runway upon next production cycle. However, Maersk contract Section 14.4 caps war-risk surcharges at $45,000 per 1,000 TEU, enabling a $40,000 carrier insurance recovery."
+            ),
+            "sql": "SELECT shipment_id, carrier, origin_port, destination_plant, delay_days, demurrage_usd, root_cause_event FROM SUPPLY_CHAIN_DB.CORE.DT_ACTIVE_DISRUPTIONS WHERE shipment_id = 'SHP-SUEZ-992';",
+            "ground_truth_data": [
+                {
+                    "shipment_id": "SHP-SUEZ-992",
+                    "carrier": "Maersk Line (Triple-E)",
+                    "origin_port": "Bab-el-Mandeb Strait",
+                    "destination_plant": "Munich Mechatronics Hub",
+                    "delay_days": 12.0,
+                    "demurrage_usd": 85000.0,
+                    "status": "DIVERTED_CAPE_GOOD_HOPE",
+                    "reconciliation_verified": True
+                }
+            ],
+            "suggested_actions": [
+                {"label": "🔍 Inspect Munich Plant Twin", "action": "INSPECT_MUNICH"},
+                {"label": "⚡ Evaluate Austin Battery Shortage", "prompt": "Why is Austin battery DOI at 3.8 days?"}
+            ],
+            "total_latency_ms": 26.4
+        }
+
+    # 6c. Baltimore Bridge Collapse & Intermodal Drayage Reroute
+    if any(w in q for w in ["baltimore", "bridge", "key bridge", "norfolk", "virginia", "shp-balt-104", "stampings"]):
+        return {
+            "status": "success",
+            "mode": "analytical",
+            "provider": "Snowflake Cortex Intermodal Service",
+            "model": "DT_ACTIVE_DISRUPTIONS",
+            "question": query,
+            "answer": (
+                "### 🌉 Infrastructure Disruption: Baltimore Key Bridge Port Diversion\n\n"
+                "- **Consignment:** `#SHP-BALT-104` (3,400 High-Tensile Chassis Stampings)\n"
+                "- **Original Destination:** Port of Baltimore &rarr; Diverted to **Port of Virginia (Norfolk)**\n"
+                "- **Destination Node:** Detroit Powertrain Plant (`PLANT_01`)\n"
+                "- **Intermodal Drayage Delay:** **+6.0 Calendar Days**\n"
+                "- **Demurrage & Rail Surcharge:** **$28,000.00 USD**\n\n"
+                "**Operational Status:**\n"
+                "Chassis buffer at Detroit remains at 8.1 days DOI, which is above the 5.0-day safety boundary. No line stoppage is anticipated."
+            ),
+            "sql": "SELECT shipment_id, carrier, origin_port, destination_plant, delay_days, demurrage_usd FROM SUPPLY_CHAIN_DB.CORE.DT_ACTIVE_DISRUPTIONS WHERE shipment_id = 'SHP-BALT-104';",
+            "suggested_actions": [
+                {"label": "🔍 Inspect Detroit Line", "action": "INSPECT_DETROIT"},
+                {"label": "🤖 Check Robot M7 Risk", "prompt": "What is the failure risk on Detroit robot M7?"}
+            ],
+            "total_latency_ms": 24.1
+        }
+
+    # 6d. Taiwan TSMC Semiconductor Wafer Allocation Throttle
+    if any(w in q for w in ["tsmc", "semiconductor", "chip", "mcu", "taiwan", "hsinchu", "seismic", "shp-tsmc-501"]):
+        return {
+            "status": "success",
+            "mode": "analytical",
+            "provider": "Snowflake Cortex Semiconductor Supply Service",
+            "model": "DT_ACTIVE_DISRUPTIONS",
+            "question": query,
+            "answer": (
+                "### 🔬 Semiconductor Supply Alert: TSMC Fab Allocation Throttle\n\n"
+                "- **Component:** 5nm Automotive Microcontrollers (`PART_MCU_505`)\n"
+                "- **Consignment:** `#SHP-TSMC-501` (5,000 Units)\n"
+                "- **Facility Impact:** Riverside Smart Logistics Hub (`WH_RIVERSIDE_01`)\n"
+                "- **Trigger:** Hsinchu Science Park seismic safety interlock initiated cleanroom recalibration.\n"
+                "- **Allocation Impact:** Factory quota throttled **15%**, extending lead times by **+18 Calendar Days**.\n\n"
+                "**Mitigation Recommendation:**\n"
+                "Prioritize allocation to Tier-1 active vehicle builds and activate secondary sourcing agreement with GlobalFoundries Dresden."
+            ),
+            "sql": "SELECT shipment_id, carrier, part_name, quantity, delay_days, root_cause_event FROM SUPPLY_CHAIN_DB.CORE.DT_ACTIVE_DISRUPTIONS WHERE shipment_id = 'SHP-TSMC-501';",
+            "suggested_actions": [
+                {"label": "⚡ Evaluate Austin Battery Shortage", "prompt": "Why is Austin battery DOI at 3.8 days?"},
+                {"label": "⚖️ Apex Liquidated Damages", "prompt": "What are our liquidated damages from Apex Battery?"}
+            ],
+            "total_latency_ms": 28.0
+        }
+
     # 7. 3-Way Reconciliation & Architecture Questions
     if any(w in q for w in ["reconciliation", "3-way", "ledger", "dynamic table", "iceberg", "hallucination", "architecture"]):
         return {

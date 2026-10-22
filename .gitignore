@@ -8,3 +8,4 @@ node_modules/
 *.log
 *.bak
 .cortex/
+scripts/video_gen_temp/
