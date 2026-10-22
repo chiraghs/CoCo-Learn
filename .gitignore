@@ -9,3 +9,4 @@ node_modules/
 *.bak
 .cortex/
 scripts/video_gen_temp/
+scripts/ui_record_temp/
