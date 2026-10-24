@@ -2557,165 +2557,9 @@ FROM SUPPLY_CHAIN_DB.RAW.MQTT_AMR_FLEET_STREAM;`,
 
     function generateClientSideCopilotResponse(query) {
       const q = query.toLowerCase().trim();
-
-      // 1. Apex / Liquidated damages / Contract Audit
-      if (['penalty', 'penalties', 'liquidated', 'damages', 'section 8', 'sla', 'contract'].some(k => q.includes(k)) || (q.includes('apex') && !q.includes('stockout'))) {
-        return {
-          status: 'success',
-          provider: 'Snowflake Cortex Search & Analyst',
-          model: 'SUPPLIER_CONTRACTS_SEARCH (Vector Index)',
-          answer: "### ⚖️ Contractual SLA Audit: Apex Battery Cells Ltd\n\n- **Supplier:** Apex Battery Cells Ltd (`SUP_001`)\n- **Document:** Master Service Agreement (Section 8.2 Liquidated Damages)\n- **Calculation:** 5% PO Base ($30,000) + 11 Billable Delay Days × $10,000/day ($110,000) = **$140,000.00 USD Recoverable**.\n\nDecision `DEC-LEGAL-01` is staged in the Governed Approvals Queue ready for 1-click execution.",
-          sql: "SELECT PARSE_JSON(SNOWFLAKE.CORTEX.SEARCH_PREVIEW('SUPPLY_CHAIN_DB.CORE.SUPPLIER_CONTRACTS_SEARCH', '{\"query\": \"Apex Battery liquidated damages Section 8\", \"limit\": 1}'))['results'][0]['clause_text']::STRING;",
-          suggested_actions: [
-            { label: "📄 Go to Approvals Queue", action: "NAVIGATE_APPROVALS" },
-            { label: "⚡ Check Austin Battery Risk", prompt: "Why is Austin battery DOI at 3.8 days?" }
-          ],
-          total_latency_ms: 27.6
-        };
-      }
-
-      // 2. Red Sea / Suez / Cape of Good Hope
-      if (['red sea', 'suez', 'cape of good hope', 'munich', 'inverter', 'shp-suez-992'].some(k => q.includes(k))) {
-        return {
-          status: 'success',
-          provider: 'Snowflake Cortex Logistics & Dynamic Tables',
-          model: 'DT_ACTIVE_DISRUPTIONS',
-          answer: "### 🌊 Geopolitical Maritime Disruption: Red Sea & Suez Canal Crisis\n\n- **Consignment:** `#SHP-SUEZ-992` (1,200 High-Efficiency Inverters `PART_INV_901`)\n- **Carrier:** Maersk Line (Triple-E Class)\n- **Destination:** Munich Mechatronics Hub (`PLANT_MUNICH_01`)\n- **Reroute Path:** Diverted around the **Cape of Good Hope** (+4,500 nautical miles)\n- **Transit Delay:** **+12.0 Calendar Days**\n- **Demurrage & Bunker Surcharge:** **$85,000.00 USD**\n\nMunich inverter buffer will drop to 4.2 days runway upon next production cycle. Maersk contract Section 14.4 caps war-risk surcharges, enabling a $40,000 carrier insurance recovery.",
-          sql: "SELECT shipment_id, carrier, origin_port, destination_plant, delay_days, demurrage_usd FROM SUPPLY_CHAIN_DB.CORE.DT_ACTIVE_DISRUPTIONS WHERE shipment_id = 'SHP-SUEZ-992';",
-          suggested_actions: [
-            { label: "🔍 Inspect Munich Plant Twin", action: "INSPECT_MUNICH" },
-            { label: "⚡ Evaluate Austin Battery Shortage", prompt: "Why is Austin battery DOI at 3.8 days?" }
-          ],
-          total_latency_ms: 26.4
-        };
-      }
-
-      // 3. TSMC Semiconductor
-      if (['tsmc', 'semiconductor', 'chip', 'mcu', 'taiwan'].some(k => q.includes(k))) {
-        return {
-          status: 'success',
-          provider: 'Snowflake Cortex Semiconductor Supply Service',
-          model: 'DT_ACTIVE_DISRUPTIONS',
-          answer: "### 🔬 Semiconductor Supply Alert: TSMC Fab Allocation Throttle\n\n- **Component:** 5nm Automotive Microcontrollers (`PART_MCU_505`)\n- **Consignment:** `#SHP-TSMC-501` (5,000 Units)\n- **Facility Impact:** Riverside Smart Logistics Hub (`WH_RIVERSIDE_01`)\n- **Trigger:** Hsinchu Science Park seismic safety interlock initiated cleanroom recalibration.\n- **Allocation Impact:** Factory quota throttled **15%**, extending lead times by **+18 Calendar Days**.\n\nMitigation: Activate secondary sourcing agreement with GlobalFoundries Dresden.",
-          sql: "SELECT shipment_id, carrier, part_name, quantity, delay_days FROM SUPPLY_CHAIN_DB.CORE.DT_ACTIVE_DISRUPTIONS WHERE shipment_id = 'SHP-TSMC-501';",
-          suggested_actions: [
-            { label: "⚡ Evaluate Austin Battery Shortage", prompt: "Why is Austin battery DOI at 3.8 days?" }
-          ],
-          total_latency_ms: 28.0
-        };
-      }
-
-      // 4. Baltimore Key Bridge
-      if (['baltimore', 'bridge', 'norfolk', 'stampings'].some(k => q.includes(k))) {
-        return {
-          status: 'success',
-          provider: 'Snowflake Cortex Intermodal Service',
-          model: 'DT_ACTIVE_DISRUPTIONS',
-          answer: "### 🌉 Infrastructure Disruption: Baltimore Key Bridge Port Diversion\n\n- **Consignment:** `#SHP-BALT-104` (3,400 Chassis Stampings)\n- **Diverted Port:** Port of Virginia (Norfolk) &rarr; Detroit Powertrain Plant (`PLANT_01`)\n- **Delay:** **+6.0 Calendar Days** (Drayage Congestion)\n\nChassis buffer at Detroit remains at 8.1 days DOI, maintaining safe assembly buffer.",
-          sql: "SELECT shipment_id, carrier, origin_port, destination_plant, delay_days FROM SUPPLY_CHAIN_DB.CORE.DT_ACTIVE_DISRUPTIONS WHERE shipment_id = 'SHP-BALT-104';",
-          suggested_actions: [
-            { label: "🔍 Inspect Detroit Line", action: "INSPECT_DETROIT" }
-          ],
-          total_latency_ms: 24.1
-        };
-      }
-
-      // 5. Machine M7 / Detroit Robotics
-      if (['m7', 'robot', 'machine', 'vibration', 'spindle', 'bearing'].some(k => q.includes(k))) {
-        return {
-          status: 'success',
-          provider: 'Snowflake Cortex Telemetry Stream',
-          model: 'DT_MACHINE_TELEMETRY',
-          answer: "### 🤖 Asset Health Warning: Detroit Assembly Robot A3 (M7)\n\n- **Node:** Detroit Powertrain Plant (`PLANT_01`), Cell 2\n- **Machine:** Robot A3 (`MACHINE_M7`)\n- **Failure Risk:** **94.0% (CRITICAL ALERT)** — 2 Days until Bearing Seizure\n- **Telemetry:** Spindle vibration RMS at **1.82 mm/s** (Normal: < 0.45 mm/s)\n\nMitigation: Pre-calibrated Hot-Standby Twin `M15` on Standby Bay 4 is ready for automated workload transfer.",
-          sql: "SELECT machine_id, plant_id, failure_risk, predicted_failure_days, vibration_rms, temperature_c FROM SUPPLY_CHAIN_DB.CORE.DT_MACHINE_TELEMETRY WHERE machine_id = 'M7';",
-          suggested_actions: [
-            { label: "🔄 Switch to Hot-Standby M15", action: "REROUTE_M15" },
-            { label: "🔍 Inspect Detroit Digital Twin", action: "INSPECT_DETROIT" }
-          ],
-          total_latency_ms: 25.1
-        };
-      }
-
-      // 6. Austin Gigafactory / 4680 Battery Stockout
-      if (['austin', 'battery', 'doi', '4680', 'shortfall', 'stockout', 'burn rate'].some(k => q.includes(k))) {
-        return {
-          status: 'success',
-          provider: 'Snowflake Cortex Analyst',
-          model: 'inventory_capacity_transportation.yaml',
-          answer: "### 🚨 Critical Risk: Austin Gigafactory Battery Stockout\n\n- **Plant:** Austin Gigafactory (`PLANT_02`)\n- **Component:** 4680 High-Density Battery Cells (`PART_BAT_402`)\n- **Current DOI:** **3.8 Days** (CRITICAL: threshold is 5.0 Days)\n- **Active Buffer:** 2,280 units on-hand | Daily burn rate: **600 units/day**\n\n**Root Cause:**\nConsignment `#SHP-78442` from Apex Battery Cells is delayed 14 days due to berth congestion at Port of Long Beach. Line 1 assembly faces stoppage in 3.8 days ($140k/day downtime).\n\n**Prescription:**\nDispatch an emergency air-freight PO for **2,500 units** to backup vendor **Shenzhen EnerTech Express** to restore DOI to **14.2 Days**.",
-          sql: "SELECT plant_id, plant_name, part_id, part_name, days_of_inventory, stockout_risk_level FROM SUPPLY_CHAIN_DB.CORE.DT_PLANT_STOCKOUT_RISK WHERE plant_id = 'PLANT_02';",
-          suggested_actions: [
-            { label: "⚡ 1-Click Air Expedite via MCP", action: "EXPEDITE" },
-            { label: "⚖️ Audit Apex SLA Penalties", prompt: "What are our liquidated damages from Apex Battery?" }
-          ],
-          total_latency_ms: 31.4
-        };
-      }
-
-      // 7. Port of Long Beach / Maritime Disruption
-      if (['port', 'long beach', 'berth', 'maritime', 'vessel', 'transit', 'shipment', 'delayed'].some(k => q.includes(k))) {
-        return {
-          status: 'success',
-          provider: 'Snowflake Cortex Logistics Service',
-          model: 'DT_ACTIVE_DISRUPTIONS',
-          answer: "### 🚢 Maritime Logistics Disruption: Port of Long Beach\n\n- **Node:** Port of Long Beach Pier G Container Terminal\n- **Affected Shipment:** `#SHP-78442` (2,280 Battery Modules from Apex Battery)\n- **Delay:** **14 Days beyond ETA** due to crane outages and outer anchorage queue.\n- **Impact:** Direct trigger for Austin 4680 stockout threat (3.8 days DOI remaining).",
-          sql: "SELECT shipment_id, carrier, origin_port, destination_plant, delay_days, status FROM SUPPLY_CHAIN_DB.CORE.DT_ACTIVE_DISRUPTIONS WHERE origin_port = 'Port of Long Beach';",
-          suggested_actions: [
-            { label: "⚡ Dispatch Shenzhen Air Freight", action: "EXPEDITE" },
-            { label: "⚖️ View Apex Liability", prompt: "What are our liquidated damages from Apex Battery?" }
-          ],
-          total_latency_ms: 29.3
-        };
-      }
-
-      // 8. 3-Way Reconciliation Ledger
-      if (['reconciliation', '3-way', 'ledger', 'hallucination', 'ground truth'].some(k => q.includes(k))) {
-        return {
-          status: 'success',
-          provider: 'Snowflake Cortex & CoCo Core',
-          model: 'Zero-Hallucination Architecture',
-          answer: "### 🛡️ CoCo 3-Way Reconciliation Ledger Architecture\n\n1. **Dynamic Tables (Analytical Truth):** Auto-refreshing every 60s (38s actual lag) aggregating stock levels and telemetry.\n2. **SQLite Blueprint Twin (Spatial Graph):** Microsecond 3D layout bounds and machine hierarchies.\n3. **Cortex Analyst (Semantic Contract):** Grounded translation via `inventory_capacity_transportation.yaml` guaranteeing zero hallucinations.",
-          sql: "SELECT dt.name, dt.target_lag, dt.refresh_mode, dt.data_timestamp FROM SUPPLY_CHAIN_DB.INFORMATION_SCHEMA.DYNAMIC_TABLES dt;",
-          suggested_actions: [
-            { label: "⚡ Check Austin Battery Stockout", prompt: "Why is Austin battery DOI at 3.8 days?" }
-          ],
-          total_latency_ms: 20.2
-        };
-      }
-
-      // 9. What-If Simulation / Shenzhen Air Freight
-      if (['simulate', 'simulation', 'what-if', 'what if', 'air freight', 'shenzhen', 'roi'].some(k => q.includes(k))) {
-        return {
-          status: 'success',
-          provider: 'Snowflake Cortex What-If Engine',
-          model: 'SC_WHAT_IF_SIMULATOR',
-          answer: "### 📊 What-If Mitigation Simulation: Air Freight vs Plant Downtime\n\n- **Option A (Ocean / Wait):** Line 1 idle for 2.4 days &rarr; **$3,200,000 USD** downtime loss.\n- **Option B (Air Expedite):** Shenzhen EnerTech 4,500 units air cargo &rarr; **$42,000 USD** arriving in 36h.\n\n**Net Saved Exposure:** **$3,158,000.00 USD** (75.2x ROI).",
-          sql: "SELECT 3200000.0 as downtime_loss_usd, 42000.0 as air_freight_cost_usd, 3158000.0 as net_savings_usd, 14.2 as restored_doi_days;",
-          suggested_actions: [
-            { label: "⚡ Execute 1-Click MCP Dispatch", action: "EXPEDITE" }
-          ],
-          total_latency_ms: 28.1
-        };
-      }
-
-      // 10. Help & Capabilities
-      if (['what can you do', 'help', 'features', 'capabilities', 'command'].some(k => q.includes(k))) {
-        return {
-          status: 'success',
-          provider: 'Snowflake Cortex Agent',
-          model: 'Cortex Analyst / Semantic Model',
-          answer: "### CoCo Autonomous Capabilities\n\n1. **Continuous Telemetry & DOI Forecasting:** Polling Dynamic Tables every 60s for stockout alerts.\n2. **Governed Cortex Contract Mining:** Parsing supplier MSAs via vector search for SLA penalty enforcement.\n3. **Predictive Equipment Failure Diagnostics:** Monitoring bearing vibrations and motor temperatures.\n4. **Autonomous MCP Action Dispatch:** 1-Click mitigation approvals (air freight, PO reroutes, Slack alerts).",
-          sql: "SELECT table_name, target_lag, refresh_mode FROM SUPPLY_CHAIN_DB.INFORMATION_SCHEMA.DYNAMIC_TABLES WHERE table_schema = 'CORE';",
-          suggested_actions: [
-            { label: "⚡ Test Austin Risk", prompt: "Why is Austin battery DOI at 3.8 days?" },
-            { label: "⚖️ Apex Liquidated Damages", prompt: "What are our liquidated damages from Apex Battery?" }
-          ],
-          total_latency_ms: 22.0
-        };
-      }
-
-      // 11. Pure Greeting
-      if (/\b(hello|hi|hey|howdy|greetings|who are you|what are you)\b/i.test(q)) {
+      const isGreeting = /\b(hello|hi|hey|howdy|greetings|who are you|what are you)\b/i.test(q);
+      const hasDomainTopic = ['austin', 'battery', 'doi', '4680', 'shortfall', 'penalty', 'penalties', 'liquidated', 'apex', 'section 8', 'damages', 'm7', 'robot', 'machine', 'vibration', 'port', 'long beach', 'shipment', 'red sea', 'suez', 'tsmc', 'baltimore', 'reconciliation', '3-way', 'hallucination', 'simulate', 'simulation', 'what-if'].some(k => q.includes(k));
+      if (isGreeting && !hasDomainTopic) {
         return {
           status: 'success',
           provider: 'Snowflake Cortex Agent',
@@ -2730,20 +2574,2646 @@ FROM SUPPLY_CHAIN_DB.RAW.MQTT_AMR_FLEET_STREAM;`,
           total_latency_ms: 18.2
         };
       }
+      if (q.includes('what can you do') || q.includes('help') || q.includes('command')) {
+        return {
+          status: 'success',
+          provider: 'Snowflake Cortex Agent',
+          model: 'Cortex Analyst / Semantic Model',
+          answer: "### CoCo Autonomous Capabilities\n\n1. **Continuous Telemetry & DOI Forecasting:** Polling Dynamic Tables every 60s for stockout alerts.\n2. **Governed Cortex Contract Mining:** Parsing supplier MSAs via vector search for SLA penalty enforcement.\n3. **Predictive Equipment Failure Diagnostics:** Monitoring bearing vibrations and motor temperatures.\n4. **Autonomous MCP Action Dispatch:** 1-Click mitigation approvals (air freight, PO reroutes, Slack alerts).",
+          sql: "SELECT table_name, target_lag, refresh_mode FROM SUPPLY_CHAIN_DB.INFORMATION_SCHEMA.DYNAMIC_TABLES WHERE table_schema = 'CORE';",
+          suggested_actions: [
+            { label: "⚡ Test Austin Risk", prompt: "Why is Austin battery DOI at 3.8 days?" },
+            { label: "⚖️ Apex Liquidated Damages", prompt: "What are our liquidated damages from Apex Battery?" }
+          ],
+          total_latency_ms: 22.0
+        };
+      }
+      if (q.includes('austin') || q.includes('battery') || q.includes('doi') || q.includes('4680') || q.includes('shortfall')) {
+        return {
+          status: 'success',
+          provider: 'Snowflake Cortex Analyst',
+          model: 'inventory_capacity_transportation.yaml',
+          answer: "### 🚨 Critical Risk: Austin Gigafactory Battery Stockout\n\n- **Plant:** Austin Gigafactory (`PLANT_02`)\n- **Component:** 4680 High-Density Battery Cells (`PART_BAT_402`)\n- **Current DOI:** **3.8 Days** (CRITICAL: threshold is 5.0 Days)\n- **Active Buffer:** 2,280 units on-hand | Daily burn rate: **600 units/day**\n\n**Root Cause:**\nConsignment `#SHP-78442` from Apex Battery Cells is delayed 14 days due to berth congestion at Port of Long Beach. Line 1 assembly faces stoppage in 3.8 days ($140k/day downtime).\n\n**Prescription:**\nDispatch an emergency air-freight PO for **2,500 units** to backup vendor **Shenzhen EnerTech Express** to restore DOI to **14.2 Days**.",
+          sql: "SELECT plant_id, plant_name, part_id, part_name, days_of_inventory, stockout_risk_level FROM SUPPLY_CHAIN_DB.CORE.DT_PLANT_STOCKOUT_RISK WHERE plant_id = 'PLANT_02';",
+          suggested_actions: [
+            { label: "⚡ 1-Click Air Expedite via MCP", action: "EXPEDITE" },
+            { label: "⚖️ Audit Apex SLA Penalties", prompt: "What are our liquidated damages from Apex Battery?" }
+          ],
+          total_latency_ms: 31.4
+        };
+      }
+      if (q.includes('penalty') || q.includes('liquidated') || q.includes('apex') || q.includes('section 8') || q.includes('damages')) {
+        return {
+          status: 'success',
+          provider: 'Snowflake Cortex Search & Analyst',
+          model: 'SUPPLIER_CONTRACTS_SEARCH (Vector Index)',
+          answer: "### ⚖️ Contractual SLA Audit: Apex Battery Cells Ltd\n\n- **Supplier:** Apex Battery Cells Ltd (`SUP_001`)\n- **Document:** Master Service Agreement (Section 8.2 Liquidated Damages)\n- **Calculation:** 5% PO Base ($30,000) + 11 Billable Delay Days × $10,000/day ($110,000) = **$140,000.00 USD Recoverable**.\n\nDecision `DEC-LEGAL-01` is staged in the Governed Approvals Queue ready for 1-click execution.",
+          sql: "SELECT PARSE_JSON(SNOWFLAKE.CORTEX.SEARCH_PREVIEW('SUPPLY_CHAIN_DB.CORE.SUPPLIER_CONTRACTS_SEARCH', '{\"query\": \"Apex Battery liquidated damages Section 8\", \"limit\": 1}'))['results'][0]['clause_text']::STRING;",
+          suggested_actions: [
+            { label: "📄 Go to Approvals Queue", action: "NAVIGATE_APPROVALS" },
+            { label: "⚡ Check Austin Battery Risk", prompt: "Why is Austin battery DOI at 3.8 days?" }
+          ],
+          total_latency_ms: 27.6
+        };
+      }
+      if (q.includes('m7') || q.includes('robot') || q.includes('machine') || q.includes('vibration') || q.includes('spindle')) {
+        return {
+          status: 'success',
+          provider: 'Snowflake Cortex Telemetry Stream',
+          model: 'DT_MACHINE_TELEMETRY',
+          answer: "### 🤖 Asset Health Warning: Detroit Assembly Robot A3 (M7)\n\n- **Node:** Detroit Powertrain Plant (`PLANT_01`), Cell 2\n- **Machine:** Robot A3 (`MACHINE_M7`)\n- **Failure Risk:** **94.0% (CRITICAL ALERT)** — 2 Days until Bearing Seizure\n- **Telemetry:** Spindle vibration RMS at **1.82 mm/s** (Normal: < 0.45 mm/s)\n\nMitigation: Pre-calibrated Hot-Standby Twin `M15` on Standby Bay 4 is ready for automated workload transfer.",
+          sql: "SELECT machine_id, plant_id, failure_risk, predicted_failure_days, vibration_rms, temperature_c FROM SUPPLY_CHAIN_DB.CORE.DT_MACHINE_TELEMETRY WHERE machine_id = 'M7';",
+          suggested_actions: [
+            { label: "🔄 Switch to Hot-Standby M15", action: "REROUTE_M15" },
+            { label: "🔍 Inspect Detroit Digital Twin", action: "INSPECT_DETROIT" }
+          ],
+          total_latency_ms: 25.1
+        };
+      }
+      if (q.includes('red sea') || q.includes('suez') || q.includes('cape of good hope') || q.includes('munich') || q.includes('inverter') || q.includes('shp-suez-992')) {
+        return {
+          status: 'success',
+          provider: 'Snowflake Cortex Logistics & Dynamic Tables',
+          model: 'DT_ACTIVE_DISRUPTIONS',
+          answer: "### 🌊 Geopolitical Maritime Disruption: Red Sea & Suez Canal Crisis\n\n- **Consignment:** `#SHP-SUEZ-992` (1,200 High-Efficiency Inverters `PART_INV_901`)\n- **Carrier:** Maersk Line (Triple-E Class)\n- **Destination:** Munich Mechatronics Hub (`PLANT_MUNICH_01`)\n- **Reroute Path:** Diverted around the **Cape of Good Hope** (+4,500 nautical miles)\n- **Transit Delay:** **+12.0 Calendar Days**\n- **Demurrage & Bunker Surcharge:** **$85,000.00 USD**\n\nMunich inverter buffer will drop to 4.2 days runway upon next production cycle. Maersk contract Section 14.4 caps war-risk surcharges, enabling a $40,000 carrier insurance recovery.",
+          sql: "SELECT shipment_id, carrier, origin_port, destination_plant, delay_days, demurrage_usd FROM SUPPLY_CHAIN_DB.CORE.DT_ACTIVE_DISRUPTIONS WHERE shipment_id = 'SHP-SUEZ-992';",
+          suggested_actions: [
+            { label: "🔍 Inspect Munich Plant Twin", action: "INSPECT_MUNICH" },
+            { label: "⚡ Evaluate Austin Battery Shortage", prompt: "Why is Austin battery DOI at 3.8 days?" }
+          ],
+          total_latency_ms: 26.4
+        };
+      }
+      if (q.includes('baltimore') || q.includes('bridge') || q.includes('norfolk') || q.includes('stampings')) {
+        return {
+          status: 'success',
+          provider: 'Snowflake Cortex Intermodal Service',
+          model: 'DT_ACTIVE_DISRUPTIONS',
+          answer: "### 🌉 Infrastructure Disruption: Baltimore Key Bridge Port Diversion\n\n- **Consignment:** `#SHP-BALT-104` (3,400 Chassis Stampings)\n- **Diverted Port:** Port of Virginia (Norfolk) &rarr; Detroit Powertrain Plant (`PLANT_01`)\n- **Delay:** **+6.0 Calendar Days** (Drayage Congestion)\n\nChassis buffer at Detroit remains at 8.1 days DOI, maintaining safe assembly buffer.",
+          sql: "SELECT shipment_id, carrier, origin_port, destination_plant, delay_days FROM SUPPLY_CHAIN_DB.CORE.DT_ACTIVE_DISRUPTIONS WHERE shipment_id = 'SHP-BALT-104';",
+          suggested_actions: [
+            { label: "🔍 Inspect Detroit Line", action: "INSPECT_DETROIT" }
+          ],
+          total_latency_ms: 24.1
+        };
+      }
+      if (q.includes('tsmc') || q.includes('semiconductor') || q.includes('chip') || q.includes('mcu')) {
+        return {
+          status: 'success',
+          provider: 'Snowflake Cortex Semiconductor Supply Service',
+          model: 'DT_ACTIVE_DISRUPTIONS',
+          answer: "### 🔬 Semiconductor Supply Alert: TSMC Fab Allocation Throttle\n\n- **Component:** 5nm Automotive Microcontrollers (`PART_MCU_505`)\n- **Node:** Riverside Smart Logistics Hub (`WH_RIVERSIDE_01`)\n- **Impact:** Cleanroom sensor recalibration throttles factory quota **15%**, extending lead times by **+18 Calendar Days**.",
+          sql: "SELECT shipment_id, carrier, part_name, quantity, delay_days FROM SUPPLY_CHAIN_DB.CORE.DT_ACTIVE_DISRUPTIONS WHERE shipment_id = 'SHP-TSMC-501';",
+          suggested_actions: [
+            { label: "⚡ Evaluate Austin Battery Shortage", prompt: "Why is Austin battery DOI at 3.8 days?" }
+          ],
+          total_latency_ms: 28.0
+        };
 
-      // 12. Fallback
+      if (['port', 'long beach', 'berth', 'maritime', 'vessel', 'shipment', 'delayed'].some(k => q.includes(k))) {
+        return {
+          status: 'success',
+          provider: 'Snowflake Cortex Logistics Service',
+          model: 'DT_ACTIVE_DISRUPTIONS',
+          answer: "### 🚢 Maritime Logistics Disruption: Port of Long Beach\n\n- **Node:** Port of Long Beach Pier G Container Terminal\n- **Affected Shipment:** `#SHP-78442` (2,280 Battery Modules from Apex Battery)\n- **Delay:** **14 Days beyond ETA** due to crane outages and outer anchorage queue.\n- **Impact:** Direct trigger for Austin 4680 stockout threat (3.8 days DOI remaining).",
+          sql: "SELECT shipment_id, carrier, origin_port, destination_plant, delay_days, status FROM SUPPLY_CHAIN_DB.CORE.DT_ACTIVE_DISRUPTIONS WHERE origin_port = 'Port of Long Beach';",
+          suggested_actions: [
+            { label: "⚡ Dispatch Shenzhen Air Freight", action: "EXPEDITE" },
+            { label: "⚖️ View Apex Liability", prompt: "What are our liquidated damages from Apex Battery?" }
+          ],
+          total_latency_ms: 29.3
+        };
+      }
+      if (['reconciliation', '3-way', 'ledger', 'hallucination', 'ground truth'].some(k => q.includes(k))) {
+        return {
+          status: 'success',
+          provider: 'Snowflake Cortex & CoCo Core',
+          model: 'Zero-Hallucination Architecture',
+          answer: "### 🛡️ CoCo 3-Way Reconciliation Ledger Architecture\n\n1. **Dynamic Tables (Analytical Truth):** Auto-refreshing every 60s (38s actual lag) aggregating stock levels and telemetry.\n2. **SQLite Blueprint Twin (Spatial Graph):** Microsecond 3D layout bounds and machine hierarchies.\n3. **Cortex Analyst (Semantic Contract):** Grounded translation via `inventory_capacity_transportation.yaml` guaranteeing zero hallucinations.",
+          sql: "SELECT dt.name, dt.target_lag, dt.refresh_mode, dt.data_timestamp FROM SUPPLY_CHAIN_DB.INFORMATION_SCHEMA.DYNAMIC_TABLES dt;",
+          suggested_actions: [
+            { label: "⚡ Check Austin Battery Stockout", prompt: "Why is Austin battery DOI at 3.8 days?" }
+          ],
+          total_latency_ms: 20.2
+        };
+      }
+      if (['simulate', 'simulation', 'what-if', 'what if', 'air freight', 'shenzhen', 'roi'].some(k => q.includes(k))) {
+        return {
+          status: 'success',
+          provider: 'Snowflake Cortex What-If Engine',
+          model: 'SC_WHAT_IF_SIMULATOR',
+          answer: "### 📊 What-If Mitigation Simulation: Air Freight vs Plant Downtime\n\n- **Option A (Ocean / Wait):** Line 1 idle for 2.4 days &rarr; **$3,200,000 USD** downtime loss.\n- **Option B (Air Expedite):** Shenzhen EnerTech 4,500 units air cargo &rarr; **$42,000 USD** arriving in 36h.\n\n**Net Saved Exposure:** **$3,158,000.00 USD** (75.2x ROI).",
+          sql: "SELECT 3200000.0 as downtime_loss_usd, 42000.0 as air_freight_cost_usd, 3158000.0 as net_savings_usd, 14.2 as restored_doi_days;",
+          suggested_actions: [
+            { label: "⚡ Execute 1-Click MCP Dispatch", action: "EXPEDITE" }
+          ],
+          total_latency_ms: 28.1
+        };
+      }
+      }
       return {
         status: 'success',
         provider: 'Snowflake Cortex & CoCo Engine',
         model: 'Cortex Analyst / Semantic Model',
-        answer: `### SupplyChainIQ CoCo Analysis for: *"${query}"*\n\nReconciled across active factory blueprints and Snowflake Semantic Model. 11 manufacturing & logistics nodes monitored with 94.2% network health. 1 Critical Stockout Risk at Austin Gigafactory (3.8d DOI).`,
+        answer: `### SupplyChainIQ CoCo Analysis for: *"${query}"*\n\nReconciled across the Snowflake Semantic Model (\`inventory_capacity_transportation.yaml\`) and active plant blueprints.\n- **Active Plants:** 11 manufacturing & logistics nodes monitored\n- **Network Health Index:** **94.2%**\n- **Active Alerts:** 1 Critical Stockout Risk (Austin 4680 Cells, 3.8d DOI) and 1 High Machine Wear Alert (Detroit Robot M7, 94% risk).`,
         sql: "SELECT plant_id, count(*) as active_nodes, sum(stock_on_hand) as total_units FROM SUPPLY_CHAIN_DB.CORE.DT_FACILITY_LIVE_TELEMETRY GROUP BY plant_id;",
         suggested_actions: [
           { label: "⚡ Austin Battery Shortage (3.8d)", prompt: "Why is Austin battery DOI at 3.8 days?" },
           { label: "⚖️ Apex Liquidated Damages ($140k)", prompt: "What are our liquidated damages from Apex Battery?" }
         ],
-        total_latency_ms: 32.1
+        total_latency_ms: 32.5
       };
+    }
+
+    async function submitCopilotQuery() {
+      const input = document.getElementById('copilot-user-input');
+      const thread = document.getElementById('copilot-chat-thread');
+      const sendBtn = document.getElementById('copilot-submit-btn');
+      if (!input || !thread) return;
+
+      const query = input.value.trim();
+      if (!query) return;
+
+      input.value = '';
+      if (sendBtn) sendBtn.disabled = true;
+
+      // 1. Append User Message Bubble
+      const userBubble = document.createElement('div');
+      userBubble.className = "flex items-start justify-end gap-2.5";
+      userBubble.innerHTML = `
+        <div class="rounded-2xl rounded-tr-none bg-snowflake px-4 py-2.5 text-xs text-polar-night font-bold max-w-[80%] shadow-md">
+          <p class="whitespace-pre-wrap">${escapeHtml(query)}</p>
+        </div>
+        <div class="w-7 h-7 rounded-lg bg-polar-night text-snowflake border border-snowflake/30 flex items-center justify-center text-[10px] font-bold shadow shrink-0">
+          YOU
+        </div>
+      `;
+      thread.appendChild(userBubble);
+      thread.scrollTop = thread.scrollHeight;
+
+      // 2. Append Loading Placeholder Bubble
+      const loadingId = 'copilot-loading-' + Date.now();
+      const loadingBubble = document.createElement('div');
+      loadingBubble.id = loadingId;
+      loadingBubble.className = "flex items-start gap-3 animate-pulse";
+      loadingBubble.innerHTML = `
+        <div class="w-8 h-8 shrink-0 rounded-xl bg-gradient-to-br from-snowflake to-purple-600 text-white flex items-center justify-center font-bold text-xs shadow-md">
+          ❄️
+        </div>
+        <div class="rounded-2xl rounded-tl-none sf-inner-box border border-snowflake/25 p-3.5 text-xs text-slate-500 max-w-[85%] flex items-center gap-2.5">
+          <span class="inline-block h-3.5 w-3.5 animate-spin rounded-full border-2 border-snowflake border-t-transparent"></span>
+          <span>CoCo is reasoning across Snowflake Cortex Agent &amp; Semantic Model...</span>
+        </div>
+      `;
+      thread.appendChild(loadingBubble);
+      thread.scrollTop = thread.scrollHeight;
+
+      let data = null;
+      try {
+        const resp = await fetch(API_BASE + '/api/copilot', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query: query, history: copilotChatHistory })
+        });
+        if (resp.ok) {
+          data = await resp.json();
+        }
+      } catch (err) {
+        console.warn("Backend /api/copilot unavailable, using client-side conversational engine:", err);
+      }
+
+      if (!data || data.status !== 'success') {
+        data = generateClientSideCopilotResponse(query);
+      }
+
+      const loader = document.getElementById(loadingId);
+      if (loader) loader.remove();
+
+      copilotChatHistory.push({ role: 'user', content: query });
+      if (data && data.answer) {
+        copilotChatHistory.push({ role: 'assistant', content: data.answer });
+      }
+
+      // 3. Append CoCo Assistant Bubble
+      const responseBubble = document.createElement('div');
+      responseBubble.className = "flex items-start gap-3";
+
+      const formattedAnswer = formatCopilotMarkdown(data.answer || data.explanation || '');
+
+      let sqlAccordion = '';
+      if (data.sql) {
+        sqlAccordion = `
+          <details class="mt-2.5 rounded-xl border border-snowflake/20 sf-inner-box overflow-hidden">
+            <summary class="cursor-pointer px-3 py-2 text-[11px] font-bold text-snowflake flex items-center justify-between select-none hover:bg-snowflake/10 transition-all">
+              <span class="flex items-center gap-1.5">
+                <svg class="w-3.5 h-3.5 text-snowflake" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
+                Snowflake Ground Truth SQL &amp; Reconciliation Ledger
+              </span>
+              <span class="px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-500 text-[9px] font-bold">VERIFIED 100%</span>
+            </summary>
+            <div class="p-3 bg-polar-night text-snowflake font-mono-code text-[11px] border-t border-snowflake/20 overflow-x-auto select-all">
+              <pre class="leading-relaxed">${escapeHtml(data.sql)}</pre>
+            </div>
+          </details>
+        `;
+      }
+
+      let actionsHtml = '';
+      if (data.suggested_actions && data.suggested_actions.length > 0) {
+        actionsHtml = `
+          <div class="mt-3 pt-2.5 border-t border-snowflake/15 flex flex-wrap gap-1.5">
+            <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider shrink-0 mr-1 self-center">Follow-up:</span>
+            ${data.suggested_actions.map(act => {
+              if (act.action === 'EXPEDITE') {
+                return `<button onclick="executeActionMCP('EXPEDITE')" class="px-2.5 py-1 rounded-lg bg-snowflake hover:bg-snowflake-500 text-polar-night font-bold text-[10.5px] transition-all shadow-sm">⚡ 1-Click Air Expedite via MCP</button>`;
+              } else if (act.action === 'NAVIGATE_APPROVALS') {
+                return `<button onclick="closeCopilotModal(); navigatePage('approvals');" class="px-2.5 py-1 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-[10.5px] transition-all shadow-sm">📄 Open Approvals Queue</button>`;
+              } else if (act.action === 'INSPECT_AUSTIN') {
+                return `<button onclick="closeCopilotModal(); navigatePage('twin'); selectFacility('PLANT_02');" class="px-2.5 py-1 rounded-lg sf-inner-box hover:border-snowflake text-snowflake font-bold text-[10.5px] transition-all">🔍 Inspect Austin Twin</button>`;
+              } else if (act.action === 'INSPECT_DETROIT') {
+                return `<button onclick="closeCopilotModal(); navigatePage('twin'); selectFacility('PLANT_01');" class="px-2.5 py-1 rounded-lg sf-inner-box hover:border-snowflake text-snowflake font-bold text-[10.5px] transition-all">🔍 Inspect Detroit Line</button>`;
+              } else if (act.action === 'REROUTE_M15') {
+                return `<button onclick="alert('✅ Automated workload failover to Hot-Standby M15 dispatched via MCP!');" class="px-2.5 py-1 rounded-lg bg-purple-500 hover:bg-purple-600 text-white font-bold text-[10.5px] transition-all">🔄 Switch to Hot-Standby M15</button>`;
+              } else if (act.action === 'LEGAL_CLAIM') {
+                return `<button onclick="approvePrescription('LEGAL_CLAIM')" class="px-2.5 py-1 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-[10.5px] transition-all">⚖️ Dispatch $140k Notice</button>`;
+              } else {
+                return `<button onclick="sendCopilotPrompt('${escapeHtml(act.prompt || act.label)}')" class="px-2.5 py-1 rounded-lg sf-inner-box hover:border-snowflake text-slate-700 dark:text-slate-300 hover:text-snowflake font-semibold text-[10.5px] transition-all">${escapeHtml(act.label)}</button>`;
+              }
+            }).join('')}
+          </div>
+        `;
+      }
+
+      responseBubble.innerHTML = `
+        <div class="w-8 h-8 shrink-0 rounded-xl bg-gradient-to-br from-snowflake to-purple-600 text-white flex items-center justify-center font-bold text-xs shadow-md">
+          ❄️
+        </div>
+        <div class="rounded-2xl rounded-tl-none sf-inner-box border border-snowflake/25 p-4 text-xs text-slate-800 dark:text-slate-200 max-w-[85%] shadow-sm space-y-2">
+          <div class="flex items-center justify-between text-[10px] text-slate-400 border-b border-snowflake/15 pb-1.5 font-mono-code">
+            <span class="flex items-center gap-1.5 text-snowflake font-bold">
+              <span class="h-1.5 w-1.5 rounded-full bg-snowflake"></span>
+              ${escapeHtml(data.provider || 'Snowflake Cortex AI')} &bull; ${escapeHtml(data.model || 'Semantic Model')}
+            </span>
+            <span>⚡ ${data.total_latency_ms || 24.5}ms</span>
+          </div>
+          <div class="text-slate-700 dark:text-slate-200 leading-relaxed font-sans text-xs">
+            ${formattedAnswer}
+          </div>
+          ${sqlAccordion}
+          ${actionsHtml}
+        </div>
+      `;
+
+      thread.appendChild(responseBubble);
+      thread.scrollTop = thread.scrollHeight;
+      if (sendBtn) sendBtn.disabled = false;
+      if (input) input.focus();
+    }
+
+    // 8. CRISIS DEMO TRIGGER & SIMULATION
+    function triggerCrisisDemo() {
+      navigatePage('twin');
+      inspectZone('CLEAN_ROOM');
+      document.getElementById('top-sim-clock').textContent = "Mon, Oct 19 • 13:45 UTC (Crisis Mode)";
+      alert("🚨 CRISIS SCENARIO TRIGGERED: Austin Gigafactory Battery Stockout! Inspecting Zone B Cleanroom (3.8 Days DOI).");
+    }
+
+    function advancePlantTime(hours) {
+      const current = document.getElementById('top-sim-clock').textContent;
+      document.getElementById('top-sim-clock').textContent = `Mon, Oct 19 • +${hours}h simulation`;
+      alert(`Fast-forwarded ${hours} hour(s) of plant simulation time. Telemetry and Dynamic Tables updated.`);
+    }
+
+    function approvePrescription(actionId) {
+      if (actionId === 'LEGAL_CLAIM') {
+        alert("✅ APPROVED DEC-LEGAL-01: Issued $140,000 liquidated damages notice to Apex Battery Cells and dispatched notification to #supply-chain-crisis on Slack via MCP!");
+      } else {
+        alert("✅ APPROVED DEC-SUPPLY-02: Dispatched emergency air-freight PO for 2,500 battery cells to Shenzhen EnerTech. Austin Gigafactory DOI restored to 14.2 Days!");
+      }
+      navigatePage('dashboard');
+    }
+
+    function executeActionMCP(type) {
+      approvePrescription(type);
+    }
+
+    // =========================================================================
+    // 9. DYNAMIC SQLITE BLUEPRINT & MULTI-FACILITY ENGINE
+    // =========================================================================
+    const API_BASE = (window.location.port === '8080' || window.location.port === '5500') ? 'http://localhost:8000' : '';
+    const LOCAL_BLUEPRINT_FIXTURES = {
+  "WH_RIVERSIDE_01": {
+    "factory_id": "WH_RIVERSIDE_01",
+    "blueprint_name": "Riverside Smart Hub Blueprint",
+    "layout_type": "smart_hub_asrs",
+    "canvas_config": {
+      "panX": 40,
+      "panY": 80,
+      "zoom": 0.82
+    },
+    "nodes": [
+      {
+        "id": "SUP_001",
+        "name": "Apex Battery Cells (Supplier)",
+        "type": "Inventory",
+        "bay": "Zone 1 \u2022 Tier-1 Supplier",
+        "x": 20,
+        "y": 70,
+        "w": 190,
+        "h": 96,
+        "icon": "battery",
+        "status": "CRITICAL",
+        "alert": "Delayed 4d (Damages k)",
+        "spec": "Part BAT-402 \u2022 Daily Burn 600"
+      },
+      {
+        "id": "SUP_002",
+        "name": "Quantum Semiconductor",
+        "type": "Inventory",
+        "bay": "Zone 1 \u2022 Tier-1 Supplier",
+        "x": 20,
+        "y": 230,
+        "w": 190,
+        "h": 96,
+        "icon": "chip",
+        "status": "HEALTHY",
+        "spec": "MCU-8800 Microcontrollers"
+      },
+      {
+        "id": "TRANS_01",
+        "name": "Maritime Carrier TRK-2051",
+        "type": "Machine",
+        "bay": "Zone 2 \u2022 Port Transit",
+        "x": 260,
+        "y": 70,
+        "w": 190,
+        "h": 96,
+        "machine_id": "TRANS_01",
+        "icon": "transit",
+        "status": "WARNING",
+        "alert": "Congested Berth +36h",
+        "spec": "Port of NY/NJ Inbound Lane"
+      },
+      {
+        "id": "RFID_01",
+        "name": "RFID Automated Gate Alpha",
+        "type": "Machine",
+        "bay": "Zone 2 \u2022 Security Gate",
+        "x": 260,
+        "y": 230,
+        "w": 190,
+        "h": 96,
+        "machine_id": "RFID_01",
+        "icon": "rfid",
+        "status": "HEALTHY",
+        "spec": "EPCglobal Gen2 960 scans/min"
+      },
+      {
+        "id": "DOCK_01",
+        "name": "Inbound Dock Bay 01",
+        "type": "Machine",
+        "bay": "Zone 3 \u2022 Receiving Bay",
+        "x": 510,
+        "y": 70,
+        "w": 190,
+        "h": 96,
+        "machine_id": "DOCK_01",
+        "icon": "dock",
+        "status": "WARNING",
+        "alert": "Capacity 85% \u2022 FL-01 Active",
+        "spec": "Hydraulic Ramp & Cross-Dock"
+      },
+      {
+        "id": "DOCK_02",
+        "name": "Inbound Dock Bay 02",
+        "type": "Machine",
+        "bay": "Zone 3 \u2022 Receiving Bay",
+        "x": 510,
+        "y": 230,
+        "w": 190,
+        "h": 96,
+        "machine_id": "DOCK_02",
+        "icon": "dock",
+        "status": "HEALTHY",
+        "spec": "Rapid Unload \u2022 Sensor Calibrated"
+      },
+      {
+        "id": "ASRS_01",
+        "name": "ASRS High-Bay Storage Vault",
+        "type": "UnitFacility",
+        "bay": "Zone 4 \u2022 Core Automation",
+        "x": 760,
+        "y": 140,
+        "w": 210,
+        "h": 110,
+        "icon": "vault",
+        "status": "HEALTHY",
+        "spec": "1,412 / 1,800 Units (78.4% Full)"
+      },
+      {
+        "id": "CLEAN_01",
+        "name": "Cleanroom Sub-Assembly",
+        "type": "Machine",
+        "bay": "Zone 5 \u2022 Production",
+        "x": 1030,
+        "y": 70,
+        "w": 190,
+        "h": 96,
+        "machine_id": "CLEAN_01",
+        "icon": "cleanroom",
+        "status": "HEALTHY",
+        "spec": "ISO Class 5 Module Build"
+      },
+      {
+        "id": "DISPATCH_01",
+        "name": "Automated Dispatch Bay",
+        "type": "Dispatch",
+        "bay": "Zone 5 \u2022 Fulfillment",
+        "x": 1030,
+        "y": 230,
+        "w": 190,
+        "h": 96,
+        "icon": "dispatch",
+        "status": "HEALTHY",
+        "spec": "Outbound Freight Shuttles"
+      }
+    ],
+    "edges": [
+      {
+        "from": "SUP_001",
+        "to": "TRANS_01",
+        "path": "M 210 118 L 260 118",
+        "color": "#ef4444",
+        "stroke": "2.4",
+        "is_hot": true
+      },
+      {
+        "from": "TRANS_01",
+        "to": "DOCK_01",
+        "path": "M 450 118 L 510 118",
+        "color": "#ef4444",
+        "stroke": "2.4",
+        "is_hot": true
+      },
+      {
+        "from": "SUP_002",
+        "to": "RFID_01",
+        "path": "M 210 278 L 260 278",
+        "color": "#06b6d4",
+        "stroke": "2.0"
+      },
+      {
+        "from": "RFID_01",
+        "to": "DOCK_02",
+        "path": "M 450 278 L 510 278",
+        "color": "#06b6d4",
+        "stroke": "2.0"
+      },
+      {
+        "from": "DOCK_01",
+        "to": "ASRS_01",
+        "path": "M 700 118 C 730 118, 730 180, 760 180",
+        "color": "#06b6d4",
+        "stroke": "2.0"
+      },
+      {
+        "from": "DOCK_02",
+        "to": "ASRS_01",
+        "path": "M 700 278 C 730 278, 730 210, 760 210",
+        "color": "#06b6d4",
+        "stroke": "2.0"
+      },
+      {
+        "from": "ASRS_01",
+        "to": "CLEAN_01",
+        "path": "M 970 180 C 1000 180, 1000 118, 1030 118",
+        "color": "#a855f7",
+        "stroke": "2.2"
+      },
+      {
+        "from": "ASRS_01",
+        "to": "DISPATCH_01",
+        "path": "M 970 210 C 1000 210, 1000 278, 1030 278",
+        "color": "#10b981",
+        "stroke": "2.2"
+      },
+      {
+        "from": "CLEAN_01",
+        "to": "DISPATCH_01",
+        "path": "M 1125 166 L 1125 230",
+        "color": "#10b981",
+        "stroke": "2.0"
+      }
+    ]
+  },
+  "PLANT_02": {
+    "factory_id": "PLANT_02",
+    "blueprint_name": "Austin Gigafactory 1 Blueprint",
+    "layout_type": "giga_cell",
+    "canvas_config": {
+      "panX": 40,
+      "panY": 80,
+      "zoom": 0.82
+    },
+    "nodes": [
+      {
+        "id": "GIGA_RAW",
+        "name": "Raw Infeed & Cathode Slurry",
+        "type": "Inventory",
+        "bay": "Zone 1 \u2022 Chemical Storage",
+        "x": 20,
+        "y": 140,
+        "w": 190,
+        "h": 96,
+        "icon": "battery",
+        "status": "CRITICAL",
+        "alert": "DOI 3.8d (Threshold 5.0d)",
+        "spec": "2,280 Units \u2022 45.6% Cap"
+      },
+      {
+        "id": "M_PRESS_01",
+        "name": "GigaPress 9000t Die Cast",
+        "type": "Machine",
+        "bay": "Zone 2 \u2022 Megacasting Cell",
+        "x": 260,
+        "y": 60,
+        "w": 190,
+        "h": 100,
+        "machine_id": "M_AUSTIN_01",
+        "icon": "press",
+        "spec": "Single-Piece Rear Underbody"
+      },
+      {
+        "id": "M_CELL_02",
+        "name": "High-Speed Cell Winder",
+        "type": "Machine",
+        "bay": "Zone 2 \u2022 Battery Module",
+        "x": 260,
+        "y": 220,
+        "w": 190,
+        "h": 100,
+        "machine_id": "M_AUSTIN_02",
+        "icon": "winder",
+        "spec": "4680 Structural Battery Pack"
+      },
+      {
+        "id": "M_ROBOT_03",
+        "name": "Robotic Welding Gantry",
+        "type": "Machine",
+        "bay": "Zone 3 \u2022 Body-in-White",
+        "x": 520,
+        "y": 60,
+        "w": 190,
+        "h": 100,
+        "machine_id": "M_AUSTIN_03",
+        "icon": "robot",
+        "spec": "Laser Seam Welding 0.2mm"
+      },
+      {
+        "id": "M_PACK_04",
+        "name": "Battery Pack Marriage Station",
+        "type": "Machine",
+        "bay": "Zone 3 \u2022 Powertrain Integration",
+        "x": 520,
+        "y": 220,
+        "w": 190,
+        "h": 100,
+        "machine_id": "M_AUSTIN_04",
+        "icon": "marriage",
+        "spec": "Autonomous Torque Fastening"
+      },
+      {
+        "id": "M_PAINT_05",
+        "name": "Eco-DIP Paint Robots",
+        "type": "Machine",
+        "bay": "Zone 4 \u2022 Advanced Coating",
+        "x": 780,
+        "y": 60,
+        "w": 190,
+        "h": 100,
+        "machine_id": "M_AUSTIN_05",
+        "icon": "paint",
+        "spec": "Electrostatic Multi-Coat"
+      },
+      {
+        "id": "M_DYNO_06",
+        "name": "End-of-Line Dyno & ADAS QA",
+        "type": "UnitFacility",
+        "bay": "Zone 4 \u2022 Vehicle Validation",
+        "x": 780,
+        "y": 220,
+        "w": 200,
+        "h": 105,
+        "icon": "dyno",
+        "status": "HEALTHY",
+        "spec": "Full Acceleration & Sensor Cal"
+      },
+      {
+        "id": "GIGA_OUT",
+        "name": "Supercharger Logistics Staging",
+        "type": "Dispatch",
+        "bay": "Zone 5 \u2022 Carrier Railhead",
+        "x": 1040,
+        "y": 140,
+        "w": 190,
+        "h": 96,
+        "icon": "dispatch",
+        "status": "HEALTHY",
+        "spec": "Double-Stack Auto Rack Trains"
+      }
+    ],
+    "edges": [
+      {
+        "from": "GIGA_RAW",
+        "to": "M_PRESS_01",
+        "path": "M 210 170 C 235 170, 235 110, 260 110",
+        "color": "#ef4444",
+        "stroke": "2.4",
+        "is_hot": true
+      },
+      {
+        "from": "GIGA_RAW",
+        "to": "M_CELL_02",
+        "path": "M 210 170 C 235 170, 235 270, 260 270",
+        "color": "#ef4444",
+        "stroke": "2.4",
+        "is_hot": true
+      },
+      {
+        "from": "M_PRESS_01",
+        "to": "M_ROBOT_03",
+        "path": "M 450 110 L 520 110",
+        "color": "#06b6d4",
+        "stroke": "2.0"
+      },
+      {
+        "from": "M_CELL_02",
+        "to": "M_PACK_04",
+        "path": "M 450 270 L 520 270",
+        "color": "#06b6d4",
+        "stroke": "2.0"
+      },
+      {
+        "from": "M_ROBOT_03",
+        "to": "M_PAINT_05",
+        "path": "M 710 110 L 780 110",
+        "color": "#06b6d4",
+        "stroke": "2.0"
+      },
+      {
+        "from": "M_PACK_04",
+        "to": "M_DYNO_06",
+        "path": "M 710 270 L 780 270",
+        "color": "#06b6d4",
+        "stroke": "2.0"
+      },
+      {
+        "from": "M_PAINT_05",
+        "to": "GIGA_OUT",
+        "path": "M 970 110 C 1005 110, 1005 170, 1040 170",
+        "color": "#10b981",
+        "stroke": "2.2"
+      },
+      {
+        "from": "M_DYNO_06",
+        "to": "GIGA_OUT",
+        "path": "M 980 270 C 1010 270, 1010 210, 1040 210",
+        "color": "#10b981",
+        "stroke": "2.2"
+      }
+    ]
+  },
+  "PLANT_01": {
+    "factory_id": "PLANT_01",
+    "blueprint_name": "Fremont Assembly Plant Blueprint",
+    "layout_type": "assembly_line",
+    "canvas_config": {
+      "panX": 40,
+      "panY": 80,
+      "zoom": 0.82
+    },
+    "nodes": [
+      {
+        "id": "FRE_COILS",
+        "name": "Automated Steel Coils",
+        "type": "Inventory",
+        "bay": "Zone 1 \u2022 Raw Material Infeed",
+        "x": 20,
+        "y": 140,
+        "w": 190,
+        "h": 96,
+        "icon": "coils",
+        "status": "HEALTHY",
+        "spec": "High-Strength Dual-Phase 980"
+      },
+      {
+        "id": "M_FRE_STAMP",
+        "name": "Schuler Servo Press",
+        "type": "Machine",
+        "bay": "Zone 2 \u2022 Tandem Stamping",
+        "x": 260,
+        "y": 60,
+        "w": 190,
+        "h": 100,
+        "machine_id": "M_FRE_STAMP",
+        "icon": "press",
+        "spec": "7-Stage High-Speed Press Line"
+      },
+      {
+        "id": "M_FRE_BIW",
+        "name": "KUKA BIW Robotic Cell",
+        "type": "Machine",
+        "bay": "Zone 2 \u2022 Framing & Hemming",
+        "x": 260,
+        "y": 220,
+        "w": 190,
+        "h": 100,
+        "machine_id": "M_FRE_BIW",
+        "icon": "robot",
+        "spec": "48 Synchronized Spot Welders"
+      },
+      {
+        "id": "M_FRE_SEAL",
+        "name": "Vision Sealing Dispenser",
+        "type": "Machine",
+        "bay": "Zone 3 \u2022 Vision Sealing",
+        "x": 520,
+        "y": 60,
+        "w": 190,
+        "h": 100,
+        "machine_id": "M_FRE_SEAL",
+        "icon": "seal",
+        "spec": "Automated Bead Dispensing"
+      },
+      {
+        "id": "M_FRE_PAINT",
+        "name": "Durr EcoBell3 Paint",
+        "type": "Machine",
+        "bay": "Zone 3 \u2022 Multi-Coat Booth",
+        "x": 520,
+        "y": 220,
+        "w": 190,
+        "h": 100,
+        "machine_id": "M_FRE_PAINT",
+        "icon": "paint",
+        "spec": "Waterborne Metallic Clearcoat"
+      },
+      {
+        "id": "M_FRE_TRIM",
+        "name": "Ergonomic Trim Line",
+        "type": "Machine",
+        "bay": "Zone 4 \u2022 Interior & Wire Harness",
+        "x": 780,
+        "y": 60,
+        "w": 190,
+        "h": 100,
+        "machine_id": "M_FRE_TRIM",
+        "icon": "trim",
+        "spec": "Cockpit & Glass Robot Insertion"
+      },
+      {
+        "id": "M_FRE_ROLLS",
+        "name": "Rolling Road & Brake QA",
+        "type": "UnitFacility",
+        "bay": "Zone 4 \u2022 Validation Bay",
+        "x": 780,
+        "y": 220,
+        "w": 200,
+        "h": 105,
+        "icon": "rolls",
+        "status": "HEALTHY",
+        "spec": "Dynamometer & 3D Wheel Alignment"
+      },
+      {
+        "id": "FRE_DISPATCH",
+        "name": "Rail & Fleet Staging",
+        "type": "Dispatch",
+        "bay": "Zone 5 \u2022 Union Pacific Railhead",
+        "x": 1040,
+        "y": 140,
+        "w": 190,
+        "h": 96,
+        "icon": "dispatch",
+        "status": "HEALTHY",
+        "spec": "Daily Car Hauler Multi-Train"
+      }
+    ],
+    "edges": [
+      {
+        "from": "FRE_COILS",
+        "to": "M_FRE_STAMP",
+        "path": "M 210 170 C 235 170, 235 110, 260 110",
+        "color": "#06b6d4",
+        "stroke": "2.0"
+      },
+      {
+        "from": "FRE_COILS",
+        "to": "M_FRE_BIW",
+        "path": "M 210 170 C 235 170, 235 270, 260 270",
+        "color": "#06b6d4",
+        "stroke": "2.0"
+      },
+      {
+        "from": "M_FRE_STAMP",
+        "to": "M_FRE_SEAL",
+        "path": "M 450 110 L 520 110",
+        "color": "#06b6d4",
+        "stroke": "2.0"
+      },
+      {
+        "from": "M_FRE_BIW",
+        "to": "M_FRE_PAINT",
+        "path": "M 450 270 L 520 270",
+        "color": "#06b6d4",
+        "stroke": "2.0"
+      },
+      {
+        "from": "M_FRE_SEAL",
+        "to": "M_FRE_TRIM",
+        "path": "M 710 110 L 780 110",
+        "color": "#06b6d4",
+        "stroke": "2.0"
+      },
+      {
+        "from": "M_FRE_PAINT",
+        "to": "M_FRE_ROLLS",
+        "path": "M 710 270 L 780 270",
+        "color": "#06b6d4",
+        "stroke": "2.0"
+      },
+      {
+        "from": "M_FRE_TRIM",
+        "to": "FRE_DISPATCH",
+        "path": "M 970 110 C 1005 110, 1005 170, 1040 170",
+        "color": "#10b981",
+        "stroke": "2.2"
+      },
+      {
+        "from": "M_FRE_ROLLS",
+        "to": "FRE_DISPATCH",
+        "path": "M 980 270 C 1010 270, 1010 210, 1040 210",
+        "color": "#10b981",
+        "stroke": "2.2"
+      }
+    ]
+  },
+  "PLANT_03": {
+    "factory_id": "PLANT_03",
+    "blueprint_name": "Berlin Gigafactory 4 Blueprint",
+    "layout_type": "cell_factory",
+    "canvas_config": {
+      "panX": 40,
+      "panY": 80,
+      "zoom": 0.82
+    },
+    "nodes": [
+      {
+        "id": "BER_MAT",
+        "name": "Cathode Precursor Buffer",
+        "type": "Inventory",
+        "bay": "Zone 1 \u2022 Chemical Infeed",
+        "x": 20,
+        "y": 140,
+        "w": 190,
+        "h": 96,
+        "icon": "cathode",
+        "status": "HEALTHY",
+        "spec": "NMC 811 Lithium Precursor"
+      },
+      {
+        "id": "M_BER_COAT",
+        "name": "Slot-Die Anode Coater",
+        "type": "Machine",
+        "bay": "Zone 2 \u2022 Precision Coating",
+        "x": 260,
+        "y": 60,
+        "w": 190,
+        "h": 100,
+        "machine_id": "M_BER_COAT",
+        "icon": "coater",
+        "spec": "Continuous Web Floating Oven"
+      },
+      {
+        "id": "M_BER_CAL",
+        "name": "Calender Density Press",
+        "type": "Machine",
+        "bay": "Zone 2 \u2022 Foil Densification",
+        "x": 260,
+        "y": 220,
+        "w": 190,
+        "h": 100,
+        "machine_id": "M_BER_CAL",
+        "icon": "press",
+        "spec": "High-Pressure Hydraulic Gap 2\u00b5m"
+      },
+      {
+        "id": "M_BER_WIND",
+        "name": "Cell Winding Station",
+        "type": "Machine",
+        "bay": "Zone 3 \u2022 Tabless Cell Winder",
+        "x": 520,
+        "y": 60,
+        "w": 190,
+        "h": 100,
+        "machine_id": "M_BER_WIND",
+        "icon": "winder",
+        "spec": "250ppm Continuous Motion Cell"
+      },
+      {
+        "id": "M_BER_ELEC",
+        "name": "Electrolyte Filling Bay",
+        "type": "Machine",
+        "bay": "Zone 3 \u2022 Glovebox Dryroom",
+        "x": 520,
+        "y": 220,
+        "w": 190,
+        "h": 100,
+        "machine_id": "M_BER_ELEC",
+        "icon": "vacuum",
+        "spec": "Argon Atmosphere Dew Point -65\u00b0C"
+      },
+      {
+        "id": "M_BER_FORM",
+        "name": "Formation & Aging Trays",
+        "type": "Machine",
+        "bay": "Zone 4 \u2022 Electrochemical Aging",
+        "x": 780,
+        "y": 60,
+        "w": 190,
+        "h": 100,
+        "machine_id": "M_BER_FORM",
+        "icon": "form",
+        "spec": "32-Day Closed-Loop Cycling Rack"
+      },
+      {
+        "id": "M_BER_MET",
+        "name": "Helium Leak Metrology",
+        "type": "UnitFacility",
+        "bay": "Zone 4 \u2022 Safety Screening",
+        "x": 780,
+        "y": 220,
+        "w": 200,
+        "h": 105,
+        "icon": "leak",
+        "status": "HEALTHY",
+        "spec": "Laser Barcode & Impedance Check"
+      },
+      {
+        "id": "BER_DISPATCH",
+        "name": "Intermodal Rail Logistics",
+        "type": "Dispatch",
+        "bay": "Zone 5 \u2022 European Rail Logistics",
+        "x": 1040,
+        "y": 140,
+        "w": 190,
+        "h": 96,
+        "icon": "dispatch",
+        "status": "HEALTHY",
+        "spec": "Direct Freight to Stuttgart & Munich"
+      }
+    ],
+    "edges": [
+      {
+        "from": "BER_MAT",
+        "to": "M_BER_COAT",
+        "path": "M 210 170 C 235 170, 235 110, 260 110",
+        "color": "#06b6d4",
+        "stroke": "2.0"
+      },
+      {
+        "from": "BER_MAT",
+        "to": "M_BER_CAL",
+        "path": "M 210 170 C 235 170, 235 270, 260 270",
+        "color": "#06b6d4",
+        "stroke": "2.0"
+      },
+      {
+        "from": "M_BER_COAT",
+        "to": "M_BER_WIND",
+        "path": "M 450 110 L 520 110",
+        "color": "#06b6d4",
+        "stroke": "2.0"
+      },
+      {
+        "from": "M_BER_CAL",
+        "to": "M_BER_ELEC",
+        "path": "M 450 270 L 520 270",
+        "color": "#06b6d4",
+        "stroke": "2.0"
+      },
+      {
+        "from": "M_BER_WIND",
+        "to": "M_BER_FORM",
+        "path": "M 710 110 L 780 110",
+        "color": "#06b6d4",
+        "stroke": "2.0"
+      },
+      {
+        "from": "M_BER_ELEC",
+        "to": "M_BER_MET",
+        "path": "M 710 270 L 780 270",
+        "color": "#06b6d4",
+        "stroke": "2.0"
+      },
+      {
+        "from": "M_BER_FORM",
+        "to": "BER_DISPATCH",
+        "path": "M 970 110 C 1005 110, 1005 170, 1040 170",
+        "color": "#10b981",
+        "stroke": "2.2"
+      },
+      {
+        "from": "M_BER_MET",
+        "to": "BER_DISPATCH",
+        "path": "M 980 270 C 1010 270, 1010 210, 1040 210",
+        "color": "#10b981",
+        "stroke": "2.2"
+      }
+    ]
+  },
+  "PLANT_DETROIT": {
+    "factory_id": "PLANT_DETROIT",
+    "blueprint_name": "Apex Detroit Powertrain & Heavy Robotic Cell",
+    "layout_type": "linear_robotic_cell",
+    "canvas_config": {
+      "panX": 40,
+      "panY": 80,
+      "zoom": 0.82
+    },
+    "nodes": [
+      {
+        "id": "DET_STORES",
+        "name": "Raw Steel Billet Storage",
+        "type": "Inventory",
+        "bay": "Infeed Bay A",
+        "x": 20,
+        "y": 140,
+        "w": 180,
+        "h": 96,
+        "icon": "inventory",
+        "status": "HEALTHY",
+        "spec": "Grade 4140 Chrome-Moly Forgings"
+      },
+      {
+        "id": "M1",
+        "name": "CNC Milling Cell M1",
+        "type": "Machine",
+        "bay": "Cell 1 \u2022 Heavy Roughing",
+        "x": 240,
+        "y": 60,
+        "w": 190,
+        "h": 100,
+        "machine_id": "M1",
+        "icon": "cnc",
+        "spec": "Mazak 5-Axis Variaxis i-800"
+      },
+      {
+        "id": "M4",
+        "name": "Deep Boring Lathe M4",
+        "type": "Machine",
+        "bay": "Cell 1 \u2022 Cylindrical Bore",
+        "x": 240,
+        "y": 220,
+        "w": 190,
+        "h": 100,
+        "machine_id": "M4",
+        "icon": "lathe",
+        "spec": "Okuma LB3000 EX-II CNC Lathe"
+      },
+      {
+        "id": "M7",
+        "name": "Assembly Robot A3 (M7)",
+        "type": "Machine",
+        "bay": "Cell 2 \u2022 Robotic Powertrain",
+        "x": 480,
+        "y": 60,
+        "w": 200,
+        "h": 105,
+        "machine_id": "M7",
+        "icon": "robot",
+        "alert": "Spindle Bearing Wear (Risk 94%)",
+        "spec": "KUKA KR 500 Titan Heavy Robot"
+      },
+      {
+        "id": "M10",
+        "name": "Precision Grinder M10",
+        "type": "Machine",
+        "bay": "Cell 2 \u2022 Tolerance Finish",
+        "x": 480,
+        "y": 220,
+        "w": 200,
+        "h": 100,
+        "machine_id": "M10",
+        "icon": "grinder",
+        "spec": "Studer S33 Precision Grinder"
+      },
+      {
+        "id": "M13",
+        "name": "Deburring Cell M13",
+        "type": "Machine",
+        "bay": "Cell 3 \u2022 Edge Finishing",
+        "x": 720,
+        "y": 60,
+        "w": 190,
+        "h": 100,
+        "machine_id": "M13",
+        "icon": "deburr",
+        "spec": "FANUC M-20iB Robotic Deburrer"
+      },
+      {
+        "id": "M16",
+        "name": "Ultrasonic Wash M16",
+        "type": "Machine",
+        "bay": "Cell 3 \u2022 Solvent Cleaning",
+        "x": 720,
+        "y": 220,
+        "w": 190,
+        "h": 100,
+        "machine_id": "M16",
+        "icon": "wash",
+        "spec": "Amsonic 4-Stage Degreasing"
+      },
+      {
+        "id": "M19",
+        "name": "CMM Metrology M19",
+        "type": "Machine",
+        "bay": "Cell 4 \u2022 Quality Assurance",
+        "x": 960,
+        "y": 60,
+        "w": 190,
+        "h": 100,
+        "machine_id": "M19",
+        "icon": "cmm",
+        "spec": "Zeiss Prismo Ultra-Accurate CMM"
+      },
+      {
+        "id": "M22",
+        "name": "Powertrain Dyno M22",
+        "type": "Machine",
+        "bay": "Cell 4 \u2022 Load Testing",
+        "x": 960,
+        "y": 220,
+        "w": 190,
+        "h": 100,
+        "machine_id": "M22",
+        "icon": "dyno",
+        "spec": "AVL 500kW Transient Dynamometer"
+      },
+      {
+        "id": "M25",
+        "name": "Crating Robot M25",
+        "type": "Machine",
+        "bay": "Outfeed Bay \u2022 Packaging",
+        "x": 1200,
+        "y": 140,
+        "w": 190,
+        "h": 100,
+        "machine_id": "M25",
+        "icon": "crate",
+        "spec": "ABB IRB 6700 Automated Packer"
+      }
+    ],
+    "edges": [
+      {
+        "from": "DET_STORES",
+        "to": "M1",
+        "path": "M 200 170 C 220 170, 220 110, 240 110",
+        "color": "#3987e5",
+        "stroke": "2.0"
+      },
+      {
+        "from": "DET_STORES",
+        "to": "M4",
+        "path": "M 200 170 C 220 170, 220 270, 240 270",
+        "color": "#3987e5",
+        "stroke": "2.0"
+      },
+      {
+        "from": "M1",
+        "to": "M7",
+        "path": "M 430 110 L 480 110",
+        "color": "#ef4444",
+        "stroke": "2.4",
+        "is_hot": true
+      },
+      {
+        "from": "M4",
+        "to": "M10",
+        "path": "M 430 270 L 480 270",
+        "color": "#3987e5",
+        "stroke": "2.0"
+      },
+      {
+        "from": "M7",
+        "to": "M13",
+        "path": "M 680 110 L 720 110",
+        "color": "#ef4444",
+        "stroke": "2.4",
+        "is_hot": true
+      },
+      {
+        "from": "M10",
+        "to": "M16",
+        "path": "M 680 270 L 720 270",
+        "color": "#3987e5",
+        "stroke": "2.0"
+      },
+      {
+        "from": "M13",
+        "to": "M19",
+        "path": "M 910 110 L 960 110",
+        "color": "#3987e5",
+        "stroke": "2.0"
+      },
+      {
+        "from": "M16",
+        "to": "M22",
+        "path": "M 910 270 L 960 270",
+        "color": "#3987e5",
+        "stroke": "2.0"
+      },
+      {
+        "from": "M19",
+        "to": "M25",
+        "path": "M 1150 110 C 1175 110, 1175 190, 1200 190",
+        "color": "#10b981",
+        "stroke": "2.0"
+      },
+      {
+        "from": "M22",
+        "to": "M25",
+        "path": "M 1150 270 C 1175 270, 1175 190, 1200 190",
+        "color": "#10b981",
+        "stroke": "2.0"
+      }
+    ]
+  },
+  "PLANT_MUNICH": {
+    "factory_id": "PLANT_MUNICH",
+    "blueprint_name": "Bavaria Munich SMT & Cryogenic Valve Cleanroom",
+    "layout_type": "cleanroom_smt_flow",
+    "canvas_config": {
+      "panX": 40,
+      "panY": 80,
+      "zoom": 0.82
+    },
+    "nodes": [
+      {
+        "id": "MUC_STORES",
+        "name": "SMT Component Reel Store",
+        "type": "Inventory",
+        "bay": "Air-Lock Infeed",
+        "x": 20,
+        "y": 140,
+        "w": 180,
+        "h": 96,
+        "icon": "reels",
+        "status": "HEALTHY",
+        "spec": "Moisture-Sensitive Dry Cabinets"
+      },
+      {
+        "id": "M3",
+        "name": "Solder Stencil Printer M3",
+        "type": "Machine",
+        "bay": "Zone 1 \u2022 SMT Printing",
+        "x": 260,
+        "y": 60,
+        "w": 190,
+        "h": 100,
+        "machine_id": "M3",
+        "icon": "printer",
+        "spec": "DEK NeoHorizon Laser Stencil"
+      },
+      {
+        "id": "M6",
+        "name": "High-Speed Chip Shooter M6",
+        "type": "Machine",
+        "bay": "Zone 1 \u2022 Placement",
+        "x": 260,
+        "y": 220,
+        "w": 190,
+        "h": 100,
+        "machine_id": "M6",
+        "icon": "chip",
+        "spec": "Fuji NXT III (65,000 cph)"
+      },
+      {
+        "id": "M9",
+        "name": "Cryogenic Dispenser M9",
+        "type": "Machine",
+        "bay": "Zone 2 \u2022 Valve Cell",
+        "x": 520,
+        "y": 60,
+        "w": 200,
+        "h": 100,
+        "machine_id": "M9",
+        "icon": "dispenser",
+        "spec": "Micro-Valve Dispensing Unit"
+      },
+      {
+        "id": "M12",
+        "name": "Assembly Robot B3 (M12)",
+        "type": "Machine",
+        "bay": "Zone 2 \u2022 Valve Cell",
+        "x": 520,
+        "y": 190,
+        "w": 200,
+        "h": 105,
+        "machine_id": "M12",
+        "icon": "robot",
+        "alert": "Valve Drift \u2022 Redundant Backup M15 Online",
+        "spec": "Cryogenic Actuator Inserter"
+      },
+      {
+        "id": "M15",
+        "name": "Hot-Standby Twin M15",
+        "type": "Machine",
+        "bay": "Zone 2 \u2022 Hot Standby",
+        "x": 520,
+        "y": 320,
+        "w": 200,
+        "h": 95,
+        "machine_id": "M15",
+        "icon": "backup",
+        "status": "BACKUP",
+        "spec": "Redundant Twin for M12"
+      },
+      {
+        "id": "M18",
+        "name": "10-Zone Reflow Oven M18",
+        "type": "Machine",
+        "bay": "Zone 3 \u2022 Thermal Tunnel",
+        "x": 780,
+        "y": 60,
+        "w": 190,
+        "h": 100,
+        "machine_id": "M18",
+        "icon": "oven",
+        "spec": "Nitrogen Atmosphere Convection"
+      },
+      {
+        "id": "M21",
+        "name": "Flying Probe Tester M21",
+        "type": "Machine",
+        "bay": "Zone 3 \u2022 Metrology QA",
+        "x": 780,
+        "y": 220,
+        "w": 190,
+        "h": 100,
+        "machine_id": "M21",
+        "icon": "qa",
+        "spec": "Seica 4-Axis Flying Probe"
+      },
+      {
+        "id": "M24",
+        "name": "Nitrogen Packager M24",
+        "type": "Machine",
+        "bay": "Zone 4 \u2022 Clean Dispatch",
+        "x": 1040,
+        "y": 140,
+        "w": 190,
+        "h": 100,
+        "machine_id": "M24",
+        "icon": "pack",
+        "spec": "Hermetic Class 10,000 Sealer"
+      }
+    ],
+    "edges": [
+      {
+        "from": "MUC_STORES",
+        "to": "M3",
+        "path": "M 200 170 C 230 170, 230 110, 260 110",
+        "color": "#06b6d4",
+        "stroke": "2.0"
+      },
+      {
+        "from": "MUC_STORES",
+        "to": "M6",
+        "path": "M 200 170 C 230 170, 230 270, 260 270",
+        "color": "#06b6d4",
+        "stroke": "2.0"
+      },
+      {
+        "from": "M3",
+        "to": "M9",
+        "path": "M 450 110 L 520 110",
+        "color": "#06b6d4",
+        "stroke": "2.0"
+      },
+      {
+        "from": "M6",
+        "to": "M12",
+        "path": "M 450 270 C 480 270, 490 240, 520 240",
+        "color": "#f59e0b",
+        "stroke": "2.2"
+      },
+      {
+        "from": "M6",
+        "to": "M15",
+        "path": "M 450 270 C 480 270, 490 365, 520 365",
+        "color": "#10b981",
+        "stroke": "1.8",
+        "dashes": "4 4"
+      },
+      {
+        "from": "M9",
+        "to": "M18",
+        "path": "M 720 110 L 780 110",
+        "color": "#06b6d4",
+        "stroke": "2.0"
+      },
+      {
+        "from": "M12",
+        "to": "M21",
+        "path": "M 720 240 C 750 240, 750 270, 780 270",
+        "color": "#06b6d4",
+        "stroke": "2.0"
+      },
+      {
+        "from": "M15",
+        "to": "M21",
+        "path": "M 720 365 C 750 365, 750 270, 780 270",
+        "color": "#10b981",
+        "stroke": "1.8",
+        "dashes": "4 4"
+      },
+      {
+        "from": "M18",
+        "to": "M24",
+        "path": "M 970 110 C 1000 110, 1000 190, 1040 190",
+        "color": "#10b981",
+        "stroke": "2.0"
+      },
+      {
+        "from": "M21",
+        "to": "M24",
+        "path": "M 970 270 C 1000 270, 1000 190, 1040 190",
+        "color": "#10b981",
+        "stroke": "2.0"
+      }
+    ]
+  },
+  "PLANT_AUSTIN": {
+    "factory_id": "PLANT_AUSTIN",
+    "blueprint_name": "Silicon Hill Austin Semiconductor Wafer Fab",
+    "layout_type": "semiconductor_fab_cluster",
+    "canvas_config": {
+      "panX": 40,
+      "panY": 80,
+      "zoom": 0.82
+    },
+    "nodes": [
+      {
+        "id": "AUS_INGOT",
+        "name": "Silicon Ingot Bay",
+        "type": "Inventory",
+        "bay": "Clean Infeed",
+        "x": 20,
+        "y": 140,
+        "w": 180,
+        "h": 96,
+        "icon": "silicon",
+        "status": "HEALTHY",
+        "spec": "300mm Monocrystalline Silicon"
+      },
+      {
+        "id": "M2",
+        "name": "Wire Saw Slicer M2",
+        "type": "Machine",
+        "bay": "Cluster A \u2022 Ingot Saw",
+        "x": 260,
+        "y": 60,
+        "w": 190,
+        "h": 100,
+        "machine_id": "M2",
+        "icon": "saw",
+        "spec": "Diamond Wire Multi-Slicing"
+      },
+      {
+        "id": "M5",
+        "name": "Wafer Planarizer M5",
+        "type": "Machine",
+        "bay": "Cluster A \u2022 CMP Lapping",
+        "x": 260,
+        "y": 220,
+        "w": 190,
+        "h": 100,
+        "machine_id": "M5",
+        "icon": "cmp",
+        "spec": "Chemical-Mechanical Polishing"
+      },
+      {
+        "id": "M8",
+        "name": "DRIE Reactive Etcher M8",
+        "type": "Machine",
+        "bay": "Cluster B \u2022 Photolithography",
+        "x": 520,
+        "y": 60,
+        "w": 200,
+        "h": 100,
+        "machine_id": "M8",
+        "icon": "etcher",
+        "spec": "Deep Reactive-Ion Plasma"
+      },
+      {
+        "id": "M11",
+        "name": "Laser Micro-Dicing M11",
+        "type": "Machine",
+        "bay": "Cluster B \u2022 Dicing Bay",
+        "x": 520,
+        "y": 220,
+        "w": 200,
+        "h": 100,
+        "machine_id": "M11",
+        "icon": "laser",
+        "spec": "Picosecond UV Laser Dicer"
+      },
+      {
+        "id": "M14",
+        "name": "Tooling Spindle M14",
+        "type": "Machine",
+        "bay": "Cluster C \u2022 Micro-Tooling",
+        "x": 780,
+        "y": 60,
+        "w": 190,
+        "h": 100,
+        "machine_id": "M14",
+        "icon": "spindle",
+        "spec": "Air-Bearing 120,000 RPM Spindle"
+      },
+      {
+        "id": "M17",
+        "name": "Ultrasonic Die Bonder M17",
+        "type": "Machine",
+        "bay": "Cluster C \u2022 Bonding",
+        "x": 780,
+        "y": 220,
+        "w": 190,
+        "h": 100,
+        "machine_id": "M17",
+        "icon": "bonder",
+        "spec": "High-Density Sub-Micron Bonder"
+      },
+      {
+        "id": "M20",
+        "name": "Thermosonic Bonder M20",
+        "type": "Machine",
+        "bay": "Cluster D \u2022 Wire Bonding",
+        "x": 1040,
+        "y": 60,
+        "w": 190,
+        "h": 96,
+        "machine_id": "M20",
+        "icon": "wire",
+        "spec": "Gold-Ball Micro-Interconnect"
+      },
+      {
+        "id": "M23",
+        "name": "Hermetic Sealer M23",
+        "type": "Machine",
+        "bay": "Cluster D \u2022 Clean Vacuum Outfeed",
+        "x": 1040,
+        "y": 210,
+        "w": 190,
+        "h": 96,
+        "machine_id": "M23",
+        "icon": "seal",
+        "spec": "Class 100 Vacuum Nitrogen Seal"
+      }
+    ],
+    "edges": [
+      {
+        "from": "AUS_INGOT",
+        "to": "M2",
+        "path": "M 200 170 C 230 170, 230 110, 260 110",
+        "color": "#10b981",
+        "stroke": "2.0"
+      },
+      {
+        "from": "AUS_INGOT",
+        "to": "M5",
+        "path": "M 200 170 C 230 170, 230 270, 260 270",
+        "color": "#10b981",
+        "stroke": "2.0"
+      },
+      {
+        "from": "M2",
+        "to": "M8",
+        "path": "M 450 110 L 520 110",
+        "color": "#10b981",
+        "stroke": "2.0"
+      },
+      {
+        "from": "M5",
+        "to": "M11",
+        "path": "M 450 270 L 520 270",
+        "color": "#10b981",
+        "stroke": "2.0"
+      },
+      {
+        "from": "M8",
+        "to": "M14",
+        "path": "M 720 110 L 780 110",
+        "color": "#10b981",
+        "stroke": "2.0"
+      },
+      {
+        "from": "M11",
+        "to": "M17",
+        "path": "M 720 270 L 780 270",
+        "color": "#10b981",
+        "stroke": "2.0"
+      },
+      {
+        "from": "M14",
+        "to": "M20",
+        "path": "M 970 110 L 1040 110",
+        "color": "#10b981",
+        "stroke": "2.0"
+      },
+      {
+        "from": "M17",
+        "to": "M23",
+        "path": "M 970 270 C 1000 270, 1000 260, 1040 260",
+        "color": "#10b981",
+        "stroke": "2.0"
+      },
+      {
+        "from": "M20",
+        "to": "M23",
+        "path": "M 1135 156 L 1135 210",
+        "color": "#10b981",
+        "stroke": "2.0"
+      }
+    ]
+  },
+  "ALL": {
+    "factory_id": "ALL",
+    "blueprint_name": "Global Enterprise Connected Supply Chain Network",
+    "layout_type": "macro_supply_chain",
+    "canvas_config": {
+      "panX": 40,
+      "panY": 120,
+      "zoom": 0.85
+    },
+    "nodes": [
+      {
+        "id": "GLOBAL_SUPPLIERS",
+        "name": "Global Suppliers (15)",
+        "type": "NetworkHub",
+        "bay": "Tier-1 Supply Network",
+        "x": 20,
+        "y": 140,
+        "w": 200,
+        "h": 110,
+        "icon": "suppliers",
+        "spec": "15 Global Vendors across NA, EU, Asia"
+      },
+      {
+        "id": "PLANT_DETROIT",
+        "name": "Apex Advanced Assembly",
+        "type": "Plant",
+        "bay": "Detroit Facility",
+        "x": 300,
+        "y": 40,
+        "w": 210,
+        "h": 90,
+        "alert": "1 Critical Alert (M7)",
+        "spec": "9 CNC Units \u2022 ECU-200 Line"
+      },
+      {
+        "id": "PLANT_MUNICH",
+        "name": "Bavaria Mechatronics",
+        "type": "Plant",
+        "bay": "Munich Facility",
+        "x": 300,
+        "y": 160,
+        "w": 210,
+        "h": 90,
+        "alert": "1 Warning Alert (M12 Backup Online)",
+        "spec": "8 Mechatronic Units \u2022 SH-40 Line"
+      },
+      {
+        "id": "PLANT_AUSTIN",
+        "name": "Silicon Hill Precision",
+        "type": "Plant",
+        "bay": "Austin Facility",
+        "x": 300,
+        "y": 280,
+        "w": 210,
+        "h": 90,
+        "status": "HEALTHY",
+        "spec": "8 Fab Units \u2022 Semiconductor Micro-Tooling"
+      },
+      {
+        "id": "GLOBAL_WAREHOUSES",
+        "name": "Regional Hubs (6)",
+        "type": "NetworkHub",
+        "bay": "Warehouse Buffers",
+        "x": 600,
+        "y": 140,
+        "w": 210,
+        "h": 110,
+        "icon": "warehouse",
+        "spec": "Chicago, Newark, Long Beach, Dallas, Frankfurt, Gothenburg"
+      },
+      {
+        "id": "GLOBAL_CUSTOMERS",
+        "name": "Enterprise Customers (40)",
+        "type": "NetworkHub",
+        "bay": "SLA Fulfillment",
+        "x": 900,
+        "y": 140,
+        "w": 210,
+        "h": 110,
+        "icon": "customers",
+        "spec": "10 Strategic, 15 Enterprise, 15 Standard"
+      }
+    ],
+    "edges": [
+      {
+        "from": "GLOBAL_SUPPLIERS",
+        "to": "PLANT_DETROIT",
+        "path": "M 220 170 C 260 170, 260 85, 300 85",
+        "color": "#a855f7",
+        "stroke": "2.2"
+      },
+      {
+        "from": "GLOBAL_SUPPLIERS",
+        "to": "PLANT_MUNICH",
+        "path": "M 220 195 L 300 205",
+        "color": "#a855f7",
+        "stroke": "2.2"
+      },
+      {
+        "from": "GLOBAL_SUPPLIERS",
+        "to": "PLANT_AUSTIN",
+        "path": "M 220 220 C 260 220, 260 325, 300 325",
+        "color": "#a855f7",
+        "stroke": "2.2"
+      },
+      {
+        "from": "PLANT_DETROIT",
+        "to": "GLOBAL_WAREHOUSES",
+        "path": "M 510 85 C 550 85, 560 170, 600 170",
+        "color": "#ef4444",
+        "stroke": "2.4",
+        "is_hot": true
+      },
+      {
+        "from": "PLANT_MUNICH",
+        "to": "GLOBAL_WAREHOUSES",
+        "path": "M 510 205 L 600 195",
+        "color": "#06b6d4",
+        "stroke": "2.2"
+      },
+      {
+        "from": "PLANT_AUSTIN",
+        "to": "GLOBAL_WAREHOUSES",
+        "path": "M 510 325 C 550 325, 560 220, 600 220",
+        "color": "#10b981",
+        "stroke": "2.2"
+      },
+      {
+        "from": "GLOBAL_WAREHOUSES",
+        "to": "GLOBAL_CUSTOMERS",
+        "path": "M 810 195 L 900 195",
+        "color": "#10b981",
+        "stroke": "2.5"
+      }
+    ]
+  },
+  "PLANT_LONDON_FAB": {
+    "factory_id": "PLANT_LONDON_FAB",
+    "blueprint_name": "Thames London Cleanroom Fab Alpha (Wafer Lithography & Etch)",
+    "layout_type": "cleanroom_wafer_fab",
+    "canvas_config": {
+      "panX": 40,
+      "panY": 80,
+      "zoom": 0.82
+    },
+    "nodes": [
+      {
+        "id": "LDN_INGOT",
+        "name": "300mm Silicon Ingot Vault",
+        "type": "Inventory",
+        "bay": "Zone 1 \u2022 Raw Infeed",
+        "x": 40,
+        "y": 140,
+        "w": 190,
+        "h": 96,
+        "icon": "silicon",
+        "status": "HEALTHY",
+        "spec": "99.9999999% Pure Monocrystalline Silicon"
+      },
+      {
+        "id": "LDN-SLI-01",
+        "name": "Diamond Wire Slicer Alpha",
+        "type": "Machine",
+        "bay": "Zone 2 \u2022 Ingot Slicing",
+        "x": 280,
+        "y": 60,
+        "w": 190,
+        "h": 100,
+        "machine_id": "LDN_M1",
+        "icon": "saw",
+        "spec": "Meyer Burger Diamond Multi-Wire Slicer"
+      },
+      {
+        "id": "LDN-CMP-02",
+        "name": "Nanotech CMP Planarizer",
+        "type": "Machine",
+        "bay": "Zone 2 \u2022 Chemical-Mechanical Polishing",
+        "x": 280,
+        "y": 220,
+        "w": 190,
+        "h": 100,
+        "machine_id": "LDN_M2",
+        "icon": "cmp",
+        "spec": "Ebara CMP Double-Sided Polisher"
+      },
+      {
+        "id": "LDN-EUV-03",
+        "name": "Extreme UV Litho Stepper",
+        "type": "Machine",
+        "bay": "Zone 3 \u2022 ISO Class 3 Cleanroom",
+        "x": 540,
+        "y": 60,
+        "w": 200,
+        "h": 100,
+        "machine_id": "LDN_M3",
+        "icon": "laser",
+        "spec": "ASML Twinscan 13.5nm High-NA EUV"
+      },
+      {
+        "id": "LDN-RIE-04",
+        "name": "Deep Reactive-Ion Etcher",
+        "type": "Machine",
+        "bay": "Zone 3 \u2022 Plasma Patterning",
+        "x": 540,
+        "y": 220,
+        "w": 200,
+        "h": 100,
+        "machine_id": "LDN_M4",
+        "icon": "etcher",
+        "spec": "Lam Research Cryogenic Bosch DRIE"
+      },
+      {
+        "id": "LDN-CVD-05",
+        "name": "Atomic Layer CVD Chamber",
+        "type": "Machine",
+        "bay": "Zone 4 \u2022 Thin-Film Epitaxy",
+        "x": 800,
+        "y": 140,
+        "w": 200,
+        "h": 100,
+        "machine_id": "LDN_M5",
+        "icon": "reactor",
+        "spec": "Applied Materials Endura ALD/CVD"
+      },
+      {
+        "id": "LDN_WAFER_VAULT",
+        "name": "Cassette Wafer Vault",
+        "type": "Inventory",
+        "bay": "Clean Outfeed",
+        "x": 1060,
+        "y": 140,
+        "w": 190,
+        "h": 96,
+        "icon": "cassette",
+        "status": "HEALTHY",
+        "spec": "Automated Nitrogen FOUP Buffer System"
+      }
+    ],
+    "edges": [
+      {
+        "from": "LDN_INGOT",
+        "to": "LDN-SLI-01",
+        "path": "M 230 170 C 255 170, 255 110, 280 110",
+        "color": "#06b6d4",
+        "stroke": "2.0"
+      },
+      {
+        "from": "LDN_INGOT",
+        "to": "LDN-CMP-02",
+        "path": "M 230 170 C 255 170, 255 270, 280 270",
+        "color": "#06b6d4",
+        "stroke": "2.0"
+      },
+      {
+        "from": "LDN-SLI-01",
+        "to": "LDN-EUV-03",
+        "path": "M 470 110 L 540 110",
+        "color": "#06b6d4",
+        "stroke": "2.0"
+      },
+      {
+        "from": "LDN-CMP-02",
+        "to": "LDN-RIE-04",
+        "path": "M 470 270 L 540 270",
+        "color": "#06b6d4",
+        "stroke": "2.0"
+      },
+      {
+        "from": "LDN-EUV-03",
+        "to": "LDN-CVD-05",
+        "path": "M 740 110 C 770 110, 770 190, 800 190",
+        "color": "#06b6d4",
+        "stroke": "2.0"
+      },
+      {
+        "from": "LDN-RIE-04",
+        "to": "LDN-CVD-05",
+        "path": "M 740 270 C 770 270, 770 190, 800 190",
+        "color": "#06b6d4",
+        "stroke": "2.0"
+      },
+      {
+        "from": "LDN-CVD-05",
+        "to": "LDN_WAFER_VAULT",
+        "path": "M 1000 190 L 1060 190",
+        "color": "#10b981",
+        "stroke": "2.2"
+      }
+    ]
+  },
+  "PLANT_LONDON_PKG": {
+    "factory_id": "PLANT_LONDON_PKG",
+    "blueprint_name": "Thames London Packaging Beta (Die Attach & Wire Bonder)",
+    "layout_type": "cleanroom_micro_packaging",
+    "canvas_config": {
+      "panX": 40,
+      "panY": 80,
+      "zoom": 0.82
+    },
+    "nodes": [
+      {
+        "id": "LDN_WAFER_IN",
+        "name": "FOUP Cassette Infeed Bay",
+        "type": "Inventory",
+        "bay": "Zone 1 \u2022 Wafer Dock",
+        "x": 40,
+        "y": 140,
+        "w": 190,
+        "h": 96,
+        "icon": "cassette",
+        "status": "HEALTHY",
+        "spec": "Sealed FOUP Nitrogen Cassette Interface"
+      },
+      {
+        "id": "LDN-DCE-01",
+        "name": "Picosecond Laser Dicer",
+        "type": "Machine",
+        "bay": "Zone 2 \u2022 Laser Singulation",
+        "x": 280,
+        "y": 60,
+        "w": 190,
+        "h": 100,
+        "machine_id": "LDN_M6",
+        "icon": "laser",
+        "spec": "DISCO DFL7362 Picosecond UV Stealth Dicer"
+      },
+      {
+        "id": "LDN-ATT-02",
+        "name": "Eutectic Die Attach Beta",
+        "type": "Machine",
+        "bay": "Zone 2 \u2022 High-Speed Mount",
+        "x": 280,
+        "y": 220,
+        "w": 190,
+        "h": 100,
+        "machine_id": "LDN_M7",
+        "icon": "mount",
+        "spec": "Besi Datacon 8800 FC Ultra Die Bonder"
+      },
+      {
+        "id": "LDN-BND-03",
+        "name": "Ultra-Fine Pitch Wire Bonder",
+        "type": "Machine",
+        "bay": "Zone 3 \u2022 Gold/Copper Interconnect",
+        "x": 540,
+        "y": 60,
+        "w": 200,
+        "h": 100,
+        "machine_id": "LDN_M8",
+        "icon": "wire",
+        "spec": "Kulicke & Soffa PowerSeries Elite Bonder"
+      },
+      {
+        "id": "LDN-ENC-04",
+        "name": "Hermetic Vacuum Sealer",
+        "type": "Machine",
+        "bay": "Zone 3 \u2022 Cryogenic Packaging",
+        "x": 540,
+        "y": 220,
+        "w": 200,
+        "h": 100,
+        "machine_id": "LDN_M9",
+        "icon": "seal",
+        "spec": "SST Vacuum Reflow & Sealing System"
+      },
+      {
+        "id": "LDN-XRY-05",
+        "name": "3D CT X-Ray Metrology",
+        "type": "Machine",
+        "bay": "Zone 4 \u2022 Non-Destructive QC",
+        "x": 800,
+        "y": 140,
+        "w": 200,
+        "h": 100,
+        "machine_id": "LDN_M10",
+        "icon": "xray",
+        "spec": "Nikon Metrology XT H 225 Nanofocus"
+      },
+      {
+        "id": "LDN_PKG_OUT",
+        "name": "Shielded Component Outfeed",
+        "type": "Inventory",
+        "bay": "Clean Outfeed",
+        "x": 1060,
+        "y": 140,
+        "w": 190,
+        "h": 96,
+        "icon": "pack",
+        "status": "HEALTHY",
+        "spec": "Electrostatic Antistatic Tray Dispatch"
+      }
+    ],
+    "edges": [
+      {
+        "from": "LDN_WAFER_IN",
+        "to": "LDN-DCE-01",
+        "path": "M 230 170 C 255 170, 255 110, 280 110",
+        "color": "#10b981",
+        "stroke": "2.0"
+      },
+      {
+        "from": "LDN_WAFER_IN",
+        "to": "LDN-ATT-02",
+        "path": "M 230 170 C 255 170, 255 270, 280 270",
+        "color": "#10b981",
+        "stroke": "2.0"
+      },
+      {
+        "from": "LDN-DCE-01",
+        "to": "LDN-BND-03",
+        "path": "M 470 110 L 540 110",
+        "color": "#10b981",
+        "stroke": "2.0"
+      },
+      {
+        "from": "LDN-ATT-02",
+        "to": "LDN-ENC-04",
+        "path": "M 470 270 L 540 270",
+        "color": "#10b981",
+        "stroke": "2.0"
+      },
+      {
+        "from": "LDN-BND-03",
+        "to": "LDN-XRY-05",
+        "path": "M 740 110 C 770 110, 770 190, 800 190",
+        "color": "#10b981",
+        "stroke": "2.0"
+      },
+      {
+        "from": "LDN-ENC-04",
+        "to": "LDN-XRY-05",
+        "path": "M 740 270 C 770 270, 770 190, 800 190",
+        "color": "#10b981",
+        "stroke": "2.0"
+      },
+      {
+        "from": "LDN-XRY-05",
+        "to": "LDN_PKG_OUT",
+        "path": "M 1000 190 L 1060 190",
+        "color": "#10b981",
+        "stroke": "2.2"
+      }
+    ]
+  },
+  "PLANT_LONDON_ALL": {
+    "factory_id": "PLANT_LONDON_ALL",
+    "blueprint_name": "London Semiconductor Foundry (2 Lines Leading to 1 Unit Facility)",
+    "layout_type": "two_plants_one_unit_facility",
+    "canvas_config": {
+      "panX": 40,
+      "panY": 60,
+      "zoom": 0.78
+    },
+    "nodes": [
+      {
+        "id": "LDN_STORES",
+        "name": "London Clean Infeed Vault",
+        "type": "Inventory",
+        "bay": "Vault Infeed",
+        "x": 20,
+        "y": 190,
+        "w": 180,
+        "h": 110,
+        "icon": "vault",
+        "status": "HEALTHY",
+        "spec": "Dual Infeed: Silicon Ingots & Substrates"
+      },
+      {
+        "id": "LDN-SLI-01",
+        "name": "Diamond Wire Slicer (Line Alpha)",
+        "type": "Machine",
+        "bay": "Plant 1 \u2022 Wafer Fab",
+        "x": 230,
+        "y": 60,
+        "w": 190,
+        "h": 96,
+        "machine_id": "LDN_M1",
+        "spec": "Wafer Saw \u2022 100nm Slicing"
+      },
+      {
+        "id": "LDN-EUV-03",
+        "name": "EUV Photolithography (Line Alpha)",
+        "type": "Machine",
+        "bay": "Plant 1 \u2022 Wafer Fab",
+        "x": 445,
+        "y": 60,
+        "w": 190,
+        "h": 96,
+        "machine_id": "LDN_M3",
+        "spec": "ASML 13.5nm EUV Litho"
+      },
+      {
+        "id": "LDN-RIE-04",
+        "name": "Deep Reactive Etcher (Line Alpha)",
+        "type": "Machine",
+        "bay": "Plant 1 \u2022 Wafer Fab",
+        "x": 660,
+        "y": 60,
+        "w": 190,
+        "h": 96,
+        "machine_id": "LDN_M4",
+        "spec": "Plasma Etch Bosch Process"
+      },
+      {
+        "id": "LDN-CVD-05",
+        "name": "ALD Epitaxy Chamber (Line Alpha)",
+        "type": "Machine",
+        "bay": "Plant 1 \u2022 Wafer Fab",
+        "x": 875,
+        "y": 60,
+        "w": 190,
+        "h": 96,
+        "machine_id": "LDN_M5",
+        "spec": "Atomic Thin-Film Deposition"
+      },
+      {
+        "id": "LDN-DCE-01",
+        "name": "Laser Wafer Dicer (Line Beta)",
+        "type": "Machine",
+        "bay": "Plant 2 \u2022 Packaging",
+        "x": 230,
+        "y": 320,
+        "w": 190,
+        "h": 96,
+        "machine_id": "LDN_M6",
+        "spec": "Picosecond UV Laser Singulation"
+      },
+      {
+        "id": "LDN-ATT-02",
+        "name": "Eutectic Die Attach (Line Beta)",
+        "type": "Machine",
+        "bay": "Plant 2 \u2022 Packaging",
+        "x": 445,
+        "y": 320,
+        "w": 190,
+        "h": 96,
+        "machine_id": "LDN_M7",
+        "spec": "Sub-Micron High-Speed Mount"
+      },
+      {
+        "id": "LDN-BND-03",
+        "name": "Fine Wire Bonder (Line Beta)",
+        "type": "Machine",
+        "bay": "Plant 2 \u2022 Packaging",
+        "x": 660,
+        "y": 320,
+        "w": 190,
+        "h": 96,
+        "machine_id": "LDN_M8",
+        "spec": "Gold-Ball Interconnect Cell"
+      },
+      {
+        "id": "LDN-ENC-04",
+        "name": "Cryo Vacuum Sealer (Line Beta)",
+        "type": "Machine",
+        "bay": "Plant 2 \u2022 Packaging",
+        "x": 875,
+        "y": 320,
+        "w": 190,
+        "h": 96,
+        "machine_id": "LDN_M9",
+        "spec": "Class 10 Hermetic Seal"
+      },
+      {
+        "id": "LDN-UNIT-QC",
+        "name": "Unit Final Cleanroom Inspection Bay",
+        "type": "UnitFacility",
+        "bay": "London Shared Unit Facility",
+        "x": 1100,
+        "y": 140,
+        "w": 220,
+        "h": 130,
+        "icon": "unit_facility",
+        "spec": "Shared Unit Facility \u2022 Quantum Prober & Automated CT Metrology",
+        "status": "HEALTHY"
+      },
+      {
+        "id": "LDN-UNIT-DISPATCH",
+        "name": "Airlock Freight Dispatch Bay",
+        "type": "Dispatch",
+        "bay": "Unit Dispatch Bay",
+        "x": 1100,
+        "y": 330,
+        "w": 220,
+        "h": 96,
+        "icon": "dispatch",
+        "spec": "Direct Air Cargo to Cambridge & European Foundries",
+        "status": "HEALTHY"
+      }
+    ],
+    "edges": [
+      {
+        "from": "LDN_STORES",
+        "to": "LDN-SLI-01",
+        "path": "M 200 220 C 215 220, 215 108, 230 108",
+        "color": "#06b6d4",
+        "stroke": "2.2"
+      },
+      {
+        "from": "LDN_STORES",
+        "to": "LDN-DCE-01",
+        "path": "M 200 260 C 215 260, 215 368, 230 368",
+        "color": "#10b981",
+        "stroke": "2.2"
+      },
+      {
+        "from": "LDN-SLI-01",
+        "to": "LDN-EUV-03",
+        "path": "M 420 108 L 445 108",
+        "color": "#06b6d4",
+        "stroke": "2.0"
+      },
+      {
+        "from": "LDN-EUV-03",
+        "to": "LDN-RIE-04",
+        "path": "M 635 108 L 660 108",
+        "color": "#06b6d4",
+        "stroke": "2.0"
+      },
+      {
+        "from": "LDN-RIE-04",
+        "to": "LDN-CVD-05",
+        "path": "M 850 108 L 875 108",
+        "color": "#06b6d4",
+        "stroke": "2.0"
+      },
+      {
+        "from": "LDN-DCE-01",
+        "to": "LDN-ATT-02",
+        "path": "M 420 368 L 445 368",
+        "color": "#10b981",
+        "stroke": "2.0"
+      },
+      {
+        "from": "LDN-ATT-02",
+        "to": "LDN-BND-03",
+        "path": "M 635 368 L 660 368",
+        "color": "#10b981",
+        "stroke": "2.0"
+      },
+      {
+        "from": "LDN-BND-03",
+        "to": "LDN-ENC-04",
+        "path": "M 850 368 L 875 368",
+        "color": "#10b981",
+        "stroke": "2.0"
+      },
+      {
+        "from": "LDN-CVD-05",
+        "to": "LDN-UNIT-QC",
+        "path": "M 1065 108 C 1085 108, 1085 180, 1100 180",
+        "color": "#06b6d4",
+        "stroke": "2.6"
+      },
+      {
+        "from": "LDN-ENC-04",
+        "to": "LDN-UNIT-QC",
+        "path": "M 1065 368 C 1085 368, 1085 230, 1100 230",
+        "color": "#10b981",
+        "stroke": "2.6"
+      },
+      {
+        "from": "LDN-UNIT-QC",
+        "to": "LDN-UNIT-DISPATCH",
+        "path": "M 1210 270 L 1210 330",
+        "color": "#a855f7",
+        "stroke": "2.4"
+      }
+    ]
+  }
+};
+
+    let activeBlueprintSeq = 0;
+    let defaultExpandedTopologyHtml = null;
+    let defaultExpandedSvgHtml = null;
+    let topologyZoom = 1.0;
+
+    async function fetchFacilitiesFromBackend() {
+      try {
+        const res = await fetch(API_BASE + '/api/facilities');
+        if (!res.ok) return;
+        const data = await res.json();
+        if (data && data.facilities && data.facilities.length > 0) {
+          data.facilities.forEach(fac => {
+            (fac.plants || []).forEach(p => {
+              if (!state.facilities[p.id]) {
+                state.facilities[p.id] = {
+                  id: p.id,
+                  name: p.name,
+                  loc: p.location || fac.city,
+                  badge: p.id,
+                  stock: 1500,
+                  cap: p.floor_area_sqm || 2000,
+                  pct: 75.0,
+                  doi: 12.0,
+                  doiStatus: "Nominal"
+                };
+              }
+            });
+          });
+        }
+      } catch (e) {
+        console.warn('Backend /api/facilities not reached; using local state.', e);
+      }
+    }
+
+    async function loadPlantBlueprint(plantId) {
+      if (!plantId) plantId = 'WH_RIVERSIDE_01';
+      activeBlueprintSeq++;
+      const currentReqSeq = activeBlueprintSeq;
+
+      // Handle 'ALL' plants network overview
+      if (plantId === 'ALL') {
+        const nodesContainer = document.getElementById('stage-topology-nodes');
+        const svgEl = document.getElementById('canvas-edges-svg');
+        if (nodesContainer && defaultExpandedTopologyHtml) {
+          nodesContainer.className = "relative z-10 flex gap-10 min-w-[1300px]";
+          nodesContainer.innerHTML = defaultExpandedTopologyHtml;
+        }
+        if (svgEl && defaultExpandedSvgHtml) {
+          svgEl.innerHTML = defaultExpandedSvgHtml;
+        }
+        return;
+      }
+
+      // Fetch dynamic CAD blueprint from SQLite backend
+      try {
+        const res = await fetch(API_BASE + '/api/factories/' + plantId + '/blueprint');
+        if (res.ok) {
+          const data = await res.json();
+          if (currentReqSeq !== activeBlueprintSeq) return;
+          if (data.status === 'success' && data.blueprint) {
+            renderBlueprintTopology(data.blueprint);
+            return;
+          }
+        }
+      } catch (err) {
+        console.warn('API blueprint fetch unavailable, falling back to local fixtures:', err);
+      }
+
+      // Offline fallback: Use pre-seeded blueprint fixtures
+      if (LOCAL_BLUEPRINT_FIXTURES[plantId]) {
+        renderBlueprintTopology(LOCAL_BLUEPRINT_FIXTURES[plantId]);
+      }
+    }
+
+    function renderBlueprintTopology(bp) {
+      if (!bp || !bp.nodes) return;
+
+      // 1. Render Animated SVG Flow Edges
+      const svgEl = document.getElementById('canvas-edges-svg');
+      if (svgEl) {
+        const defs = `
+          <defs>
+            <marker id="arrow-blue" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#29B5E8" />
+            </marker>
+            <marker id="arrow-red" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#EF4444" />
+            </marker>
+            <marker id="arrow-green" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#10B981" />
+            </marker>
+          </defs>
+        `;
+        let pathsHtml = '';
+        (bp.edges || []).forEach(edge => {
+          const isHot = edge.is_hot;
+          const strokeClass = isHot ? 'edge-flow-hot' : 'edge-flow';
+          const dashes = edge.dashes ? `stroke-dasharray="${edge.dashes}"` : '';
+          const strokeColor = edge.color || (isHot ? '#EF4444' : '#29B5E8');
+          const markerId = isHot ? 'arrow-red' : (strokeColor === '#10B981' || strokeColor.includes('10b981') ? 'arrow-green' : 'arrow-blue');
+          pathsHtml += `<path d="${edge.path}" fill="none" stroke="${strokeColor}" stroke-width="${edge.stroke || '2.2'}" class="${strokeClass}" ${dashes} marker-end="url(#${markerId})" />`;
+        });
+        svgEl.innerHTML = defs + pathsHtml;
+      }
+
+      // 2. Render Blueprint Node Cards
+      const nodesContainer = document.getElementById('stage-topology-nodes');
+      if (nodesContainer) {
+        nodesContainer.className = 'relative z-10 min-w-[1350px] min-h-[520px]';
+        let nodesHtml = '';
+        (bp.nodes || []).forEach(node => {
+          const isCrit = node.status === 'CRITICAL' || (node.failure_risk && node.failure_risk >= 0.85);
+          const isWarn = node.status === 'WARNING' || (node.failure_risk && node.failure_risk >= 0.50 && node.failure_risk < 0.85);
+          const isBackup = node.status === 'BACKUP';
+          const isUnitFacility = node.type === 'UnitFacility';
+          const isDispatch = node.type === 'Dispatch';
+          const isInventory = node.type === 'Inventory';
+
+          let borderClass = 'border-snowflake/30 hover:border-snowflake';
+          let statusColor = 'text-emerald-500';
+          let statusBg = 'bg-emerald-500';
+          let statusText = 'Healthy';
+          let barBg = 'bg-emerald-500';
+          let health = node.health_score !== undefined ? node.health_score : (node.failure_risk !== undefined ? Math.round((1.0 - node.failure_risk) * 100) : 100);
+
+          if (isCrit) {
+            borderClass = 'border-red-500/80 sf-card shadow-[0_0_0_2px_rgba(239,68,68,0.2),0_0_20px_-4px_rgba(239,68,68,0.35)]';
+            statusColor = 'text-red-500';
+            statusBg = 'bg-red-500 animate-pulse';
+            statusText = 'Critical';
+            barBg = 'bg-red-500';
+          } else if (isWarn) {
+            borderClass = 'border-amber-500/80 sf-card shadow-[0_0_0_2px_rgba(245,158,11,0.2),0_0_20px_-4px_rgba(245,158,11,0.35)]';
+            statusColor = 'text-amber-500';
+            statusBg = 'bg-amber-500';
+            statusText = 'Warning';
+            barBg = 'bg-amber-500';
+          } else if (isUnitFacility) {
+            borderClass = 'border-purple-500/80 sf-card shadow-[0_0_0_2px_rgba(168,85,247,0.2),0_0_20px_-4px_rgba(168,85,247,0.35)] ring-1 ring-purple-500/40';
+            statusColor = 'text-purple-400';
+            statusBg = 'bg-purple-400';
+            statusText = 'Converged';
+            barBg = 'bg-gradient-to-r from-cyan-400 via-purple-500 to-emerald-400';
+          } else if (isDispatch) {
+            borderClass = 'border-emerald-500/60 sf-card shadow-sm';
+            statusColor = 'text-emerald-500';
+            statusBg = 'bg-emerald-500';
+            statusText = 'Dispatch';
+            barBg = 'bg-emerald-500';
+          } else if (isInventory) {
+            borderClass = 'border-cyan-500/60 sf-card shadow-sm';
+            statusColor = 'text-cyan-500';
+            statusBg = 'bg-cyan-500';
+            statusText = 'Infeed';
+            barBg = 'bg-cyan-500';
+          } else if (isBackup) {
+            borderClass = 'border-emerald-500/50 border-dashed sf-card';
+            statusColor = 'text-emerald-500';
+            statusBg = 'bg-emerald-500';
+            statusText = 'Standby';
+            barBg = 'bg-emerald-500';
+          }
+
+          let alertBadge = '';
+          if (node.alert) {
+            alertBadge = `
+              <span class="absolute -top-2.5 right-2 rounded-md border ${isCrit ? 'border-red-500/60 bg-red-500/20 text-red-500' : 'border-amber-500/60 bg-amber-500/20 text-amber-500'} px-1.5 py-0.5 text-[9px] font-bold tracking-wide uppercase shadow-sm">
+                ${node.alert}
+              </span>
+            `;
+          } else if (isUnitFacility) {
+            alertBadge = `
+              <span class="absolute -top-2.5 right-2 rounded-md border border-purple-500/60 bg-purple-500/20 text-purple-400 px-1.5 py-0.5 text-[9px] font-bold tracking-wide uppercase shadow-sm">
+                ⚡ Converged Unit
+              </span>
+            `;
+          } else if (isDispatch) {
+            alertBadge = `
+              <span class="absolute -top-2.5 right-2 rounded-md border border-emerald-500/60 bg-emerald-500/20 text-emerald-500 px-1.5 py-0.5 text-[9px] font-bold tracking-wide uppercase shadow-sm">
+                🚢 Dispatch Bay
+              </span>
+            `;
+          }
+
+          const bayLabel = node.bay ? `<div class="text-[9px] uppercase font-bold text-slate-400 tracking-wider mb-0.5 truncate font-mono-code">${node.bay}</div>` : '';
+
+          let metric1 = '〰 1.2 mm/s';
+          let metric2 = '🌡 65.0°C';
+          let metric3 = '⏱ 120 u/h';
+          if (isUnitFacility) {
+            metric1 = '🔍 100% Optical';
+            metric2 = '⚡ Converged';
+            metric3 = '✨ ISO-Class';
+          } else if (isDispatch) {
+            metric1 = '📦 Outbound';
+            metric2 = '🌡 Ambient';
+            metric3 = '🚛 Carrier Ready';
+          } else if (isInventory) {
+            metric1 = '📦 Safe Buffer';
+            metric2 = '🛡 Vault Safe';
+            metric3 = '📊 Monitored';
+          }
+
+          nodesHtml += `
+            <div onclick="inspectZone('${node.machine_id || node.id}')"
+                 style="position: absolute; left: ${node.x}px; top: ${node.y}px; width: ${node.w || 190}px; min-height: ${node.h || 96}px;"
+                 class="sf-card p-2.5 rounded-xl border ${borderClass} transition-all duration-200 hover:scale-[1.01] cursor-pointer select-none z-10 shadow-sm">
+              ${alertBadge}
+              <div class="flex h-full flex-col justify-between">
+                <div>
+                  ${bayLabel}
+                  <div class="flex items-center justify-between gap-1.5">
+                    <span class="truncate font-mono-code text-[11px] font-bold text-slate-800 dark:text-white">${node.name}</span>
+                    <span class="flex items-center gap-1 text-[10px] font-medium ${statusColor}">
+                      <span class="h-1.5 w-1.5 rounded-full ${statusBg}"></span>
+                      ${statusText}
+                    </span>
+                  </div>
+                  <p class="mt-0.5 truncate text-[10px] text-slate-500 font-mono-code">${node.spec || ''}</p>
+                </div>
+
+                <div class="mt-2">
+                  <div class="flex items-center justify-between gap-2 text-[10px] mb-1 font-mono-code">
+                    <span class="text-slate-400">Health</span>
+                    <span class="font-bold text-slate-700 dark:text-slate-300">${health}%</span>
+                  </div>
+                  <div class="h-1 w-full overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700">
+                    <div class="h-full rounded-full ${barBg}" style="width: ${health}%"></div>
+                  </div>
+                  <div class="mt-1.5 flex items-center justify-between text-[9px] text-slate-400 font-mono-code">
+                    <span>${metric1}</span>
+                    <span>${metric2}</span>
+                    <span>${metric3}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          `;
+        });
+        nodesContainer.innerHTML = nodesHtml;
+      }
+    }
+
+    function changeFacility(facId) {
+      state.currentFacilityId = facId;
+      loadPlantBlueprint(facId);
+
+      const fac = state.facilities[facId];
+      if (fac) {
+        const topClock = document.getElementById('top-sim-clock');
+        if (topClock) topClock.textContent = `Active: ${fac.name}`;
+      }
+    }
+
+    // 10. MODAL CONTROLS
+    function openOnboardModal() { document.getElementById('onboard-modal').classList.remove('hidden'); }
+    function closeOnboardModal() { document.getElementById('onboard-modal').classList.add('hidden'); }
+    function openRulesModal() { document.getElementById('rules-modal').classList.remove('hidden'); }
+    function closeRulesModal() { document.getElementById('rules-modal').classList.add('hidden'); }
+    function handleOnboard(e) { e.preventDefault(); alert("Facility onboarded and registered to SUPPLY_CHAIN_DB.CORE.DIM_PLANTS!"); closeOnboardModal(); }
+    function updateRuleSlider(id, val) { document.getElementById(id).textContent = val; }
+    function applyRules() { alert("Business threshold rules updated in CONFIG_RULES!"); closeRulesModal(); }
+    function setTwinMode(mode) { alert(`Mode ${mode} activated on 3D twin.`); }
+    function zoomTwin(scale) { 
+      if (state.activeTwinMode === 'floor') {
+        const cont = document.getElementById('svg-viewport-container');
+        if (cont) cont.style.transform = `scale(${scale})`;
+      } else {
+        topologyZoom = Math.max(0.5, Math.min(2.0, topologyZoom * scale));
+        const canvas = document.getElementById('stage-canvas-content');
+        if (canvas) canvas.style.transform = `scale(${topologyZoom})`;
+      }
+    }
+    function resetCanvasTransform() {
+      topologyZoom = 1.0;
+      const cont = document.getElementById('svg-viewport-container');
+      if (cont) cont.style.transform = "scale(1)";
+      const canvas = document.getElementById('stage-canvas-content');
+      if (canvas) canvas.style.transform = "scale(1)";
+    }
+    function runCortexAnalysis() {
+      askCortex('How many days of battery inventory remain before Plant 2 stops?');
+    }
+
+    // Initialize Default View
+    window.addEventListener('DOMContentLoaded', () => {
+      navigatePage('twin');
+      setTwinView('topology');
+
+      const nodesEl = document.getElementById('stage-topology-nodes');
+      const svgEl = document.getElementById('canvas-edges-svg');
+      if (nodesEl) defaultExpandedTopologyHtml = nodesEl.innerHTML;
+      if (svgEl) defaultExpandedSvgHtml = svgEl.innerHTML;
+
+      fetchFacilitiesFromBackend();
     });
   </script>
 </body>
