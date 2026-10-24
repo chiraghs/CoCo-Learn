@@ -8,6 +8,7 @@ from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse
 from typing import Dict, Any, List, Optional
 import time
+from core.snowflake_client import execute_snowflake_query, has_live_credentials
 
 router = APIRouter(tags=["copilot"])
 
@@ -408,12 +409,18 @@ async def cortex_query(request: Request):
         plant_id = body.get("plant_id") or "WH_RIVERSIDE_01"
         
         resp = generate_conversational_response(query)
+        sql = resp.get("sql")
+        live_data = None
+        if sql and has_live_credentials():
+            live_data = execute_snowflake_query(sql)
+
         return {
             "query": query,
             "explanation": resp.get("answer", ""),
-            "generated_sql": resp.get("sql", f"SELECT * FROM SUPPLY_CHAIN_DB.CORE.DT_FACILITY_LIVE_TELEMETRY WHERE plant_id = '{plant_id}';"),
-            "ground_truth_data": resp.get("ground_truth_data", [{"plant_id": plant_id, "status": "Operational", "reconciled": True}]),
-            "reconciliation_verified": True
+            "generated_sql": sql or f"SELECT * FROM SUPPLY_CHAIN_DB.CORE.DT_FACILITY_LIVE_TELEMETRY WHERE plant_id = '{plant_id}';",
+            "ground_truth_data": live_data if live_data is not None else resp.get("ground_truth_data", [{"plant_id": plant_id, "status": "Operational", "reconciled": True}]),
+            "reconciliation_verified": True,
+            "live_snowflake": bool(live_data is not None)
         }
     except Exception as e:
         return JSONResponse(status_code=500, content={"status": "error", "message": str(e)})
