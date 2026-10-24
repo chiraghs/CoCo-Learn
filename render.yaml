@@ -1,4 +1,34 @@
 services:
+  # --------------------------------------------------------------------------
+  # 1. Full-Stack Python Backend & Web Service (FastAPI + Snowflake + Cortex)
+  # --------------------------------------------------------------------------
+  - type: web
+    name: supplychainiq-backend
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app:app --host 0.0.0.0 --port $PORT
+    plan: free
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: SNOWFLAKE_ACCOUNT
+        sync: false
+      - key: SNOWFLAKE_USER
+        sync: false
+      - key: SNOWFLAKE_PASSWORD
+        sync: false
+      - key: SNOWFLAKE_WAREHOUSE
+        value: COMPUTE_WH
+      - key: SNOWFLAKE_DATABASE
+        value: SUPPLY_CHAIN_DB
+      - key: SNOWFLAKE_SCHEMA
+        value: CORE
+      - key: SNOWFLAKE_ROLE
+        value: ACCOUNTADMIN
+
+  # --------------------------------------------------------------------------
+  # 2. Static Web Showcase (Instant CDN Hosting)
+  # --------------------------------------------------------------------------
   - type: web
     name: supplychainiq
     runtime: static
