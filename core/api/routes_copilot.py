@@ -8,6 +8,7 @@ from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse
 from typing import Dict, Any, List, Optional
 import time
+import re
 from core.snowflake_client import execute_snowflake_query, has_live_credentials
 
 router = APIRouter(tags=["copilot"])
@@ -16,105 +17,9 @@ router = APIRouter(tags=["copilot"])
 def generate_conversational_response(query: str, history: Optional[List[Dict[str, str]]] = None) -> Dict[str, Any]:
     """Generates an intelligent conversational response with grounded Snowflake metadata."""
     q = query.lower().strip()
-    
-    # 1. Greetings & Introductions
-    if any(greet in q for greet in ["hello", "hi", "hey", "who are you", "what are you", "good morning", "good afternoon"]):
-        return {
-            "status": "success",
-            "mode": "conversation",
-            "provider": "Snowflake Cortex Agent",
-            "model": "Cortex AI / Multi-Turn Copilot",
-            "question": query,
-            "answer": (
-                "## Hello! 👋 I'm CoCo\n\n"
-                "I am your autonomous **Snowflake Cortex Supply Chain Copilot**. I continuously monitor our multi-plant global network, tracking live telemetry across **Snowflake Dynamic Tables** (1-min lag), Iceberg tables, and our 3D digital twins.\n\n"
-                "### What would you like to investigate today?\n"
-                "- ⚡ **Austin Gigafactory Stockout**: *\"Why is Austin battery DOI at 3.8 days?\"*\n"
-                "- ⚖️ **Contractual SLA Breach**: *\"What are our liquidated damages from Apex Battery?\"*\n"
-                "- 🤖 **Predictive Machine Health**: *\"What is the failure risk on assembly robot M7?\"*\n"
-                "- 🚢 **Maritime Bottlenecks**: *\"Which inbound shipments are delayed at Port of Long Beach?\"*\n"
-                "- 🔄 **3-Way Reconciliation**: *\"How does CoCo verify ground truth without hallucination?\"*\n"
-                "- 🛠️ **Autonomous Mitigation**: *\"Can we trigger 1-click PO expediting via MCP?\"*\n\n"
-                "Feel free to ask in plain English or select any topic above!"
-            ),
-            "sql": None,
-            "suggested_actions": [
-                {"label": "⚡ Austin Battery Risk", "prompt": "Why is Austin battery DOI at 3.8 days?"},
-                {"label": "⚖️ Apex Liquidated Damages", "prompt": "What are our liquidated damages from Apex Battery?"},
-                {"label": "🤖 Robot M7 Health", "prompt": "What is the failure risk on Detroit robot M7?"}
-            ],
-            "total_latency_ms": 18.4
-        }
-        
-    # 2. Capabilities & "What can you do?" / "Help"
-    if any(h in q for h in ["what can you do", "help", "capabilities", "features", "how do you work", "commands"]):
-        return {
-            "status": "success",
-            "mode": "conversation",
-            "provider": "Snowflake Cortex Agent",
-            "model": "Cortex Analyst / Semantic Model",
-            "question": query,
-            "answer": (
-                "### CoCo Autonomous Capabilities\n\n"
-                "As an integrated Snowflake Cortex agent, I perform continuous reasoning across four key pillars:\n\n"
-                "1. **Continuous Telemetry & DOI Runway Forecasting:**\n"
-                "   I poll Snowflake Dynamic Tables (`DT_PLANT_STOCKOUT_RISK`, `DT_ZONE_LIVE_TELEMETRY`) every 60 seconds to detect stockout threats before ERP alerts fire.\n\n"
-                "2. **Governed Cortex Contract Mining:**\n"
-                "   Using `SNOWFLAKE.CORTEX.SEARCH_PREVIEW` over vectorized supplier MSAs, I parse delay clauses (e.g., Section 8.2) and compute exact liquidated damages automatically.\n\n"
-                "3. **Predictive Equipment Failure Diagnostics:**\n"
-                "   I analyze vibration RMS, bearing temperatures, and cycle anomalies on plant floor robotics (e.g. Robot M7) to trigger proactive maintenance or hot-standby reroutes.\n\n"
-                "4. **Human-in-the-Loop MCP Action Dispatch:**\n"
-                "   When a disruption occurs, I formulate executable prescriptions (e.g., emergency air freight PO to Shenzhen EnerTech) ready for 1-click execution through our Model Context Protocol (MCP) server.\n\n"
-                "Ask me about any plant, component, supplier, or disruption scenario!"
-            ),
-            "sql": "SELECT table_name, target_lag, refresh_mode FROM SUPPLY_CHAIN_DB.INFORMATION_SCHEMA.DYNAMIC_TABLES WHERE table_schema = 'CORE';",
-            "suggested_actions": [
-                {"label": "⚡ Test Austin Risk", "prompt": "Why is Austin battery DOI at 3.8 days?"},
-                {"label": "📊 View Dynamic Tables", "prompt": "Explain Snowflake Dynamic Tables pipeline"}
-            ],
-            "total_latency_ms": 22.1
-        }
 
-    # 3. Austin Gigafactory / Battery Shortfall / Stockout
-    if any(w in q for w in ["austin", "battery", "doi", "4680", "shortfall", "runway", "stockout", "plant 2"]):
-        return {
-            "status": "success",
-            "mode": "analytical",
-            "provider": "Snowflake Cortex Analyst",
-            "model": "inventory_capacity_transportation.yaml",
-            "question": query,
-            "answer": (
-                "### 🚨 Critical Risk: Austin Gigafactory Battery Stockout\n\n"
-                "- **Plant:** Austin Gigafactory (`PLANT_02`)\n"
-                "- **Component:** 4680 High-Density Battery Cells (`PART_BAT_402`)\n"
-                "- **Current Days of Inventory (DOI):** **3.8 Days** *(CRITICAL: threshold is 5.0 Days)*\n"
-                "- **Active Buffer:** 2,280 units on-hand | Daily burn rate: **600 units/day**\n\n"
-                "**Root Cause Analysis:**\n"
-                "Consignment `#SHP-78442` from Apex Battery Cells is held up due to a **14-day delay** caused by severe berth congestion at the **Port of Long Beach**. Without intervention, Line 1 assembly will halt in 3.8 days, resulting in **$140,000/day plant downtime costs**.\n\n"
-                "**Prescribed Mitigation:**\n"
-                "Dispatch an emergency air-freight PO for **2,500 units** to qualified backup vendor **Shenzhen EnerTech Express**. This arrives in 48h and restores Austin DOI runway to **14.2 Days**."
-            ),
-            "sql": "SELECT plant_id, plant_name, part_id, part_name, days_of_inventory, stockout_risk_level FROM SUPPLY_CHAIN_DB.CORE.DT_PLANT_STOCKOUT_RISK WHERE plant_id = 'PLANT_02';",
-            "ground_truth_data": [
-                {
-                    "plant_id": "PLANT_02",
-                    "plant_name": "Austin Gigafactory",
-                    "part_id": "PART_BAT_402",
-                    "part_name": "High-Density Battery Cells",
-                    "days_of_inventory": 3.8,
-                    "stockout_risk_level": "CRITICAL_STOCKOUT_RISK",
-                    "reconciliation_verified": True
-                }
-            ],
-            "suggested_actions": [
-                {"label": "⚡ 1-Click Air Expedite via MCP", "action": "EXPEDITE"},
-                {"label": "⚖️ Audit Apex SLA Penalties", "prompt": "What are our liquidated damages from Apex Battery?"}
-            ],
-            "total_latency_ms": 31.8
-        }
-
-    # 4. Apex / Contract / Liquidated Damages / Section 8 / Penalties
-    if any(w in q for w in ["penalty", "penalties", "section 8", "liquidated", "damages", "apex", "contract", "legal", "sla"]):
+    # 1. Apex / Liquidated damages / Contract Audit (Prioritized over general battery queries)
+    if any(k in q for k in ['penalty', 'penalties', 'liquidated', 'damages', 'section 8', 'sla', 'contract']) or ('apex' in q and not 'stockout' in q):
         return {
             "status": "success",
             "mode": "analytical",
@@ -153,73 +58,8 @@ def generate_conversational_response(query: str, history: Optional[List[Dict[str
             "total_latency_ms": 28.5
         }
 
-    # 5. Machine M7 / Detroit Powertrain / Assembly Robot / Equipment Failure
-    if any(w in q for w in ["m7", "robot", "machine", "vibration", "spindle", "bearing", "detroit", "equipment", "sensor"]):
-        return {
-            "status": "success",
-            "mode": "analytical",
-            "provider": "Snowflake Cortex Telemetry Stream",
-            "model": "DT_MACHINE_TELEMETRY",
-            "question": query,
-            "answer": (
-                "### 🤖 Asset Health Warning: Detroit Assembly Robot A3 (M7)\n\n"
-                "- **Node:** Detroit Powertrain Plant (`PLANT_01`), Assembly Cell 2\n"
-                "- **Machine:** High-Speed Robotic Articulator A3 (`MACHINE_M7`)\n"
-                "- **Predicted Failure Risk:** **94.0% (CRITICAL ALERT)**\n"
-                "- **Predicted Runway:** **2 Days until Bearing Seizure**\n\n"
-                "**Telemetry Anomaly:**\n"
-                "- Spindle Vibration RMS: **1.82 mm/s** (Normal baseline: < 0.45 mm/s)\n"
-                "- Drive Motor Temperature: **78.4°C** (Approaching 85°C thermal trip threshold)\n\n"
-                "**Automated Failover Mitigation:**\n"
-                "Hot-Standby Twin `M15` on Standby Bay 4 is pre-calibrated. CoCo can execute an automated workload transfer to eliminate unplanned powertrain assembly stoppage."
-            ),
-            "sql": "SELECT machine_id, plant_id, failure_risk, predicted_failure_days, vibration_rms, temperature_c FROM SUPPLY_CHAIN_DB.CORE.DT_MACHINE_TELEMETRY WHERE machine_id = 'M7';",
-            "ground_truth_data": [
-                {
-                    "machine_id": "M7",
-                    "machine_name": "Assembly Robot A3",
-                    "failure_risk_pct": 94.0,
-                    "days_to_failure": 2.0,
-                    "vibration_rms": 1.82,
-                    "temp_c": 78.4
-                }
-            ],
-            "suggested_actions": [
-                {"label": "🔄 Workload Reroute to M15", "action": "REROUTE_M15"},
-                {"label": "🔍 Inspect Detroit Digital Twin", "action": "INSPECT_DETROIT"}
-            ],
-            "total_latency_ms": 25.7
-        }
-
-    # 6. Maritime / Port of Long Beach / Logistics Congestion
-    if any(w in q for w in ["port", "long beach", "maritime", "carrier", "vessel", "transit", "shipment", "trk-2051", "shp-78442"]):
-        return {
-            "status": "success",
-            "mode": "analytical",
-            "provider": "Snowflake Cortex Logistics Service",
-            "model": "DT_ACTIVE_DISRUPTIONS",
-            "question": query,
-            "answer": (
-                "### 🚢 Maritime Logistics Disruption: Port of Long Beach\n\n"
-                "- **Disruption Node:** Port of Long Beach Container Terminal Pier G\n"
-                "- **Affected Carrier:** Pacific Horizon Shipping (`CARRIER_PAC_09`)\n"
-                "- **Consignment:** `#SHP-78442` (2,280 Battery Modules for Austin Gigafactory)\n"
-                "- **Cumulative Delay:** **14 Days beyond ETA**\n\n"
-                "**Port Conditions:**\n"
-                "Berth congestion index is currently at **8.8/10** with 22 vessels at outer anchorage. Estimated offload wait time is currently 96 additional hours.\n\n"
-                "**Impact Summary:**\n"
-                "Directly causing the Austin Gigafactory stockout risk (3.8 Days DOI). Immediate mitigation is recommended via alternate air route."
-            ),
-            "sql": "SELECT shipment_id, carrier, origin_port, destination_plant, delay_days, status FROM SUPPLY_CHAIN_DB.CORE.DT_ACTIVE_DISRUPTIONS WHERE origin_port = 'Port of Long Beach';",
-            "suggested_actions": [
-                {"label": "⚡ Dispatch Shenzhen Air Freight", "action": "EXPEDITE"},
-                {"label": "⚖️ View Apex Liability", "prompt": "What are our liquidated damages from Apex Battery?"}
-            ],
-            "total_latency_ms": 29.3
-        }
-
-    # 6b. Red Sea / Suez Canal Shipping Crisis (Cape of Good Hope Reroute)
-    if any(w in q for w in ["red sea", "suez", "bab-el-mandeb", "cape of good hope", "houthi", "inverter", "munich", "shp-suez-992"]):
+    # 2. Red Sea / Suez Canal Shipping Crisis (Cape of Good Hope Reroute)
+    if any(k in q for k in ['red sea', 'suez', 'cape of good hope', 'bab-el-mandeb', 'inverter', 'munich', 'shp-suez-992']):
         return {
             "status": "success",
             "mode": "analytical",
@@ -257,34 +97,8 @@ def generate_conversational_response(query: str, history: Optional[List[Dict[str
             "total_latency_ms": 26.4
         }
 
-    # 6c. Baltimore Bridge Collapse & Intermodal Drayage Reroute
-    if any(w in q for w in ["baltimore", "bridge", "key bridge", "norfolk", "virginia", "shp-balt-104", "stampings"]):
-        return {
-            "status": "success",
-            "mode": "analytical",
-            "provider": "Snowflake Cortex Intermodal Service",
-            "model": "DT_ACTIVE_DISRUPTIONS",
-            "question": query,
-            "answer": (
-                "### 🌉 Infrastructure Disruption: Baltimore Key Bridge Port Diversion\n\n"
-                "- **Consignment:** `#SHP-BALT-104` (3,400 High-Tensile Chassis Stampings)\n"
-                "- **Original Destination:** Port of Baltimore &rarr; Diverted to **Port of Virginia (Norfolk)**\n"
-                "- **Destination Node:** Detroit Powertrain Plant (`PLANT_01`)\n"
-                "- **Intermodal Drayage Delay:** **+6.0 Calendar Days**\n"
-                "- **Demurrage & Rail Surcharge:** **$28,000.00 USD**\n\n"
-                "**Operational Status:**\n"
-                "Chassis buffer at Detroit remains at 8.1 days DOI, which is above the 5.0-day safety boundary. No line stoppage is anticipated."
-            ),
-            "sql": "SELECT shipment_id, carrier, origin_port, destination_plant, delay_days, demurrage_usd FROM SUPPLY_CHAIN_DB.CORE.DT_ACTIVE_DISRUPTIONS WHERE shipment_id = 'SHP-BALT-104';",
-            "suggested_actions": [
-                {"label": "🔍 Inspect Detroit Line", "action": "INSPECT_DETROIT"},
-                {"label": "🤖 Check Robot M7 Risk", "prompt": "What is the failure risk on Detroit robot M7?"}
-            ],
-            "total_latency_ms": 24.1
-        }
-
-    # 6d. Taiwan TSMC Semiconductor Wafer Allocation Throttle
-    if any(w in q for w in ["tsmc", "semiconductor", "chip", "mcu", "taiwan", "hsinchu", "seismic", "shp-tsmc-501"]):
+    # 3. TSMC Semiconductor / Taiwan Quota Throttle
+    if any(k in q for k in ['tsmc', 'semiconductor', 'chip', 'taiwan', '5nm', 'hsinchu', 'shp-tsmc-501']):
         return {
             "status": "success",
             "mode": "analytical",
@@ -309,8 +123,137 @@ def generate_conversational_response(query: str, history: Optional[List[Dict[str
             "total_latency_ms": 28.0
         }
 
-    # 7. 3-Way Reconciliation & Architecture Questions
-    if any(w in q for w in ["reconciliation", "3-way", "ledger", "dynamic table", "iceberg", "hallucination", "architecture"]):
+    # 4. Baltimore Key Bridge Port Diversion
+    if any(k in q for k in ['baltimore', 'key bridge', 'norfolk', 'virginia', 'shp-balt-104', 'stampings']):
+        return {
+            "status": "success",
+            "mode": "analytical",
+            "provider": "Snowflake Cortex Intermodal Service",
+            "model": "DT_ACTIVE_DISRUPTIONS",
+            "question": query,
+            "answer": (
+                "### 🌉 Infrastructure Disruption: Baltimore Key Bridge Port Diversion\n\n"
+                "- **Consignment:** `#SHP-BALT-104` (3,400 High-Tensile Chassis Stampings)\n"
+                "- **Original Destination:** Port of Baltimore &rarr; Diverted to **Port of Virginia (Norfolk)**\n"
+                "- **Destination Node:** Detroit Powertrain Plant (`PLANT_01`)\n"
+                "- **Intermodal Drayage Delay:** **+6.0 Calendar Days**\n"
+                "- **Demurrage & Rail Surcharge:** **$28,000.00 USD**\n\n"
+                "**Operational Status:**\n"
+                "Chassis buffer at Detroit remains at 8.1 days DOI, which is above the 5.0-day safety boundary. No line stoppage is anticipated."
+            ),
+            "sql": "SELECT shipment_id, carrier, origin_port, destination_plant, delay_days, demurrage_usd FROM SUPPLY_CHAIN_DB.CORE.DT_ACTIVE_DISRUPTIONS WHERE shipment_id = 'SHP-BALT-104';",
+            "suggested_actions": [
+                {"label": "🔍 Inspect Detroit Line", "action": "INSPECT_DETROIT"},
+                {"label": "🤖 Check Robot M7 Risk", "prompt": "What is the failure risk on Detroit robot M7?"}
+            ],
+            "total_latency_ms": 24.1
+        }
+
+    # 5. Machine M7 / Robotics Failure Risk (Detroit Powertrain)
+    if any(k in q for k in ['m7', 'robot', 'machine', 'vibration', 'spindle', 'bearing', 'detroit', 'equipment', 'sensor', 'failure risk']):
+        return {
+            "status": "success",
+            "mode": "analytical",
+            "provider": "Snowflake Cortex Telemetry Stream",
+            "model": "DT_MACHINE_TELEMETRY",
+            "question": query,
+            "answer": (
+                "### 🤖 Asset Health Warning: Detroit Assembly Robot A3 (M7)\n\n"
+                "- **Node:** Detroit Powertrain Plant (`PLANT_01`), Assembly Cell 2\n"
+                "- **Machine:** High-Speed Robotic Articulator A3 (`MACHINE_M7`)\n"
+                "- **Predicted Failure Risk:** **94.0% (CRITICAL ALERT)**\n"
+                "- **Predicted Runway:** **2 Days until Bearing Seizure**\n\n"
+                "**Telemetry Anomaly:**\n"
+                "- Spindle Vibration RMS: **1.82 mm/s** (Normal baseline: < 0.45 mm/s)\n"
+                "- Drive Motor Temperature: **78.4°C** (Approaching 85°C thermal trip threshold)\n\n"
+                "**Automated Failover Mitigation:**\n"
+                "Hot-Standby Twin `M15` on Standby Bay 4 is pre-calibrated. CoCo can execute an automated workload transfer to eliminate unplanned powertrain assembly stoppage."
+            ),
+            "sql": "SELECT machine_id, plant_id, failure_risk, predicted_failure_days, vibration_rms, temperature_c FROM SUPPLY_CHAIN_DB.CORE.DT_MACHINE_TELEMETRY WHERE machine_id = 'M7';",
+            "ground_truth_data": [
+                {
+                    "machine_id": "M7",
+                    "machine_name": "Assembly Robot A3",
+                    "failure_risk_pct": 94.0,
+                    "days_to_failure": 2.0,
+                    "vibration_rms": 1.82,
+                    "temp_c": 78.4
+                }
+            ],
+            "suggested_actions": [
+                {"label": "🔄 Workload Reroute to M15", "action": "REROUTE_M15"},
+                {"label": "🔍 Inspect Detroit Digital Twin", "action": "INSPECT_DETROIT"}
+            ],
+            "total_latency_ms": 25.7
+        }
+
+    # 6. Austin Gigafactory / 4680 Battery / DOI Shortfall
+    if any(k in q for k in ['austin', 'battery', 'doi', '4680', 'shortfall', 'runway', 'stockout', 'plant 2', 'burn rate']):
+        return {
+            "status": "success",
+            "mode": "analytical",
+            "provider": "Snowflake Cortex Analyst",
+            "model": "inventory_capacity_transportation.yaml",
+            "question": query,
+            "answer": (
+                "### 🚨 Critical Risk: Austin Gigafactory Battery Stockout\n\n"
+                "- **Plant:** Austin Gigafactory (`PLANT_02`)\n"
+                "- **Component:** 4680 High-Density Battery Cells (`PART_BAT_402`)\n"
+                "- **Current Days of Inventory (DOI):** **3.8 Days** *(CRITICAL: threshold is 5.0 Days)*\n"
+                "- **Active Buffer:** 2,280 units on-hand | Daily burn rate: **600 units/day**\n\n"
+                "**Root Cause Analysis:**\n"
+                "Consignment `#SHP-78442` from Apex Battery Cells is held up due to a **14-day delay** caused by severe berth congestion at the **Port of Long Beach**. Without intervention, Line 1 assembly will halt in 3.8 days, resulting in **$140,000/day plant downtime costs**.\n\n"
+                "**Prescribed Mitigation:**\n"
+                "Dispatch an emergency air-freight PO for **2,500 units** to qualified backup vendor **Shenzhen EnerTech Express**. This arrives in 48h and restores Austin DOI runway to **14.2 Days**."
+            ),
+            "sql": "SELECT plant_id, plant_name, part_id, part_name, days_of_inventory, stockout_risk_level FROM SUPPLY_CHAIN_DB.CORE.DT_PLANT_STOCKOUT_RISK WHERE plant_id = 'PLANT_02';",
+            "ground_truth_data": [
+                {
+                    "plant_id": "PLANT_02",
+                    "plant_name": "Austin Gigafactory",
+                    "part_id": "PART_BAT_402",
+                    "part_name": "High-Density Battery Cells",
+                    "days_of_inventory": 3.8,
+                    "stockout_risk_level": "CRITICAL_STOCKOUT_RISK",
+                    "reconciliation_verified": True
+                }
+            ],
+            "suggested_actions": [
+                {"label": "⚡ 1-Click Air Expedite via MCP", "action": "EXPEDITE"},
+                {"label": "⚖️ Audit Apex SLA Penalties", "prompt": "What are our liquidated damages from Apex Battery?"}
+            ],
+            "total_latency_ms": 31.8
+        }
+
+    # 7. Port of Long Beach / Maritime Disruption
+    if any(k in q for k in ['port', 'long beach', 'berth', 'maritime', 'vessel', 'transit', 'shipment', 'delayed', 'trk-2051', 'shp-78442']):
+        return {
+            "status": "success",
+            "mode": "analytical",
+            "provider": "Snowflake Cortex Logistics Service",
+            "model": "DT_ACTIVE_DISRUPTIONS",
+            "question": query,
+            "answer": (
+                "### 🚢 Maritime Logistics Disruption: Port of Long Beach\n\n"
+                "- **Disruption Node:** Port of Long Beach Container Terminal Pier G\n"
+                "- **Affected Carrier:** Pacific Horizon Shipping (`CARRIER_PAC_09`)\n"
+                "- **Consignment:** `#SHP-78442` (2,280 Battery Modules for Austin Gigafactory)\n"
+                "- **Cumulative Delay:** **14 Days beyond ETA**\n\n"
+                "**Port Conditions:**\n"
+                "Berth congestion index is currently at **8.8/10** with 22 vessels at outer anchorage. Estimated offload wait time is currently 96 additional hours.\n\n"
+                "**Impact Summary:**\n"
+                "Directly causing the Austin Gigafactory stockout risk (3.8 Days DOI). Immediate mitigation is recommended via alternate air route."
+            ),
+            "sql": "SELECT shipment_id, carrier, origin_port, destination_plant, delay_days, status FROM SUPPLY_CHAIN_DB.CORE.DT_ACTIVE_DISRUPTIONS WHERE origin_port = 'Port of Long Beach';",
+            "suggested_actions": [
+                {"label": "⚡ Dispatch Shenzhen Air Freight", "action": "EXPEDITE"},
+                {"label": "⚖️ View Apex Liability", "prompt": "What are our liquidated damages from Apex Battery?"}
+            ],
+            "total_latency_ms": 29.3
+        }
+
+    # 8. 3-Way Reconciliation Ledger & Hallucination Elimination
+    if any(k in q for k in ['reconciliation', '3-way', 'ledger', 'hallucination', 'ground truth', 'dynamic table', 'iceberg', 'architecture']):
         return {
             "status": "success",
             "mode": "conversation",
@@ -336,8 +279,108 @@ def generate_conversational_response(query: str, history: Optional[List[Dict[str
             "total_latency_ms": 20.2
         }
 
-    # 8. Gratitude & Closing
-    if any(w in q for w in ["thank", "thanks", "great", "awesome", "perfect", "good job"]):
+    # 9. What-If Simulation / Shenzhen Air Freight
+    if any(k in q for k in ['simulate', 'simulation', 'what-if', 'what if', 'air freight', 'shenzhen', 'roi', 'expedite']):
+        return {
+            "status": "success",
+            "mode": "simulation",
+            "provider": "Snowflake Cortex What-If Engine",
+            "model": "SC_WHAT_IF_SIMULATOR",
+            "question": query,
+            "answer": (
+                "### 📊 What-If Mitigation Simulation: Air Freight vs Plant Downtime\n\n"
+                "- **Target Facility:** Austin Gigafactory (`PLANT_02`)\n"
+                "- **Critical Part:** 4680 Battery Cells (`PART_BAT_402`)\n\n"
+                "**Scenario Comparison:**\n"
+                "1. **Baseline (Wait for Ocean Cargo):**\n"
+                "   - Assembly line halts in 3.8 days for 2.4 days of idle downtime.\n"
+                "   - Financial Loss: **$3,200,000.00 USD** in overhead, idle labor, and OEM SLA delivery penalties.\n\n"
+                "2. **Prescribed Mitigation (Shenzhen Air Expedite):**\n"
+                "   - Dispatch 4,500 units via expedited air freight from pre-approved backup **Shenzhen EnerTech Express**.\n"
+                "   - Delivery Lead Time: **36 Hours** (Arrives before safety stock depletion).\n"
+                "   - Expedited Freight Cost: **$42,000.00 USD** ($9.33/unit premium).\n"
+                "   - Restored Runway: **14.2 Days of Inventory**.\n\n"
+                "**Executive Recommendation:**\n"
+                "Net saved financial exposure is **$3,158,000.00 USD** (75.2x ROI on air freight). Ready for 1-click execution via Action MCP."
+            ),
+            "sql": "SELECT 3200000.0 as downtime_loss_usd, 42000.0 as air_freight_cost_usd, 3158000.0 as net_savings_usd, 14.2 as restored_doi_days;",
+            "ground_truth_data": [
+                {
+                    "scenario": "AIR_EXPEDITE_SHENZHEN",
+                    "units": 4500,
+                    "cost_usd": 42000.0,
+                    "saved_loss_usd": 3200000.0,
+                    "net_roi": "75.2x",
+                    "restored_doi": 14.2
+                }
+            ],
+            "suggested_actions": [
+                {"label": "⚡ Execute 1-Click MCP Dispatch", "action": "EXPEDITE"},
+                {"label": "📄 View Horizon Audit Trail", "action": "NAVIGATE_AUDIT"}
+            ],
+            "total_latency_ms": 28.1
+        }
+
+    # 10. Capabilities & Help
+    if any(k in q for k in ['what can you do', 'help', 'capabilities', 'features', 'how do you work', 'commands']):
+        return {
+            "status": "success",
+            "mode": "conversation",
+            "provider": "Snowflake Cortex Agent",
+            "model": "Cortex Analyst / Semantic Model",
+            "question": query,
+            "answer": (
+                "### CoCo Autonomous Capabilities\n\n"
+                "As an integrated Snowflake Cortex agent, I perform continuous reasoning across four key pillars:\n\n"
+                "1. **Continuous Telemetry & DOI Runway Forecasting:**\n"
+                "   I poll Snowflake Dynamic Tables (`DT_PLANT_STOCKOUT_RISK`, `DT_ZONE_LIVE_TELEMETRY`) every 60 seconds to detect stockout threats before ERP alerts fire.\n\n"
+                "2. **Governed Cortex Contract Mining:**\n"
+                "   Using `SNOWFLAKE.CORTEX.SEARCH_PREVIEW` over vectorized supplier MSAs, I parse delay clauses (e.g., Section 8.2) and compute exact liquidated damages automatically.\n\n"
+                "3. **Predictive Equipment Failure Diagnostics:**\n"
+                "   I analyze vibration RMS, bearing temperatures, and cycle anomalies on plant floor robotics (e.g. Robot M7) to trigger proactive maintenance or hot-standby reroutes.\n\n"
+                "4. **Human-in-the-Loop MCP Action Dispatch:**\n"
+                "   When a disruption occurs, I formulate executable prescriptions (e.g., emergency air freight PO to Shenzhen EnerTech) ready for 1-click execution through our Model Context Protocol (MCP) server.\n\n"
+                "Ask me about any plant, component, supplier, or disruption scenario!"
+            ),
+            "sql": "SELECT table_name, target_lag, refresh_mode FROM SUPPLY_CHAIN_DB.INFORMATION_SCHEMA.DYNAMIC_TABLES WHERE table_schema = 'CORE';",
+            "suggested_actions": [
+                {"label": "⚡ Test Austin Risk", "prompt": "Why is Austin battery DOI at 3.8 days?"},
+                {"label": "📊 View Dynamic Tables", "prompt": "Explain Snowflake Dynamic Tables pipeline"}
+            ],
+            "total_latency_ms": 22.1
+        }
+
+    # 11. Pure Greeting
+    if re.search(r'\b(hello|hi|hey|howdy|greetings|good morning|good afternoon|who are you|what are you)\b', q):
+        return {
+            "status": "success",
+            "mode": "conversation",
+            "provider": "Snowflake Cortex Agent",
+            "model": "Cortex AI / Multi-Turn Copilot",
+            "question": query,
+            "answer": (
+                "## Hello! 👋 I'm CoCo\n\n"
+                "I am your autonomous **Snowflake Cortex Supply Chain Copilot**. I continuously monitor our multi-plant global network, tracking live telemetry across **Snowflake Dynamic Tables** (1-min lag), Iceberg tables, and our 3D digital twins.\n\n"
+                "### What would you like to investigate today?\n"
+                "- ⚡ **Austin Gigafactory Stockout**: *\"Why is Austin battery DOI at 3.8 days?\"*\n"
+                "- ⚖️ **Contractual SLA Breach**: *\"What are our liquidated damages from Apex Battery?\"*\n"
+                "- 🤖 **Predictive Machine Health**: *\"What is the failure risk on assembly robot M7?\"*\n"
+                "- 🚢 **Maritime Bottlenecks**: *\"Which inbound shipments are delayed at Port of Long Beach?\"*\n"
+                "- 🔄 **3-Way Reconciliation**: *\"How does CoCo verify ground truth without hallucination?\"*\n"
+                "- 🛠️ **Autonomous Mitigation**: *\"Can we trigger 1-click PO expediting via MCP?\"*\n\n"
+                "Feel free to ask in plain English or select any topic above!"
+            ),
+            "sql": None,
+            "suggested_actions": [
+                {"label": "⚡ Austin Battery Risk", "prompt": "Why is Austin battery DOI at 3.8 days?"},
+                {"label": "⚖️ Apex Liquidated Damages", "prompt": "What are our liquidated damages from Apex Battery?"},
+                {"label": "🤖 Robot M7 Health", "prompt": "What is the failure risk on Detroit robot M7?"}
+            ],
+            "total_latency_ms": 18.4
+        }
+
+    # 12. Gratitude & Closing
+    if any(k in q for k in ['thank', 'thanks', 'great', 'awesome', 'perfect', 'good job']):
         return {
             "status": "success",
             "mode": "conversation",
@@ -357,7 +400,7 @@ def generate_conversational_response(query: str, history: Optional[List[Dict[str
             "total_latency_ms": 12.1
         }
 
-    # 9. General / Domain Fallback
+    # 13. General / Domain Fallback
     return {
         "status": "success",
         "mode": "analytical",
@@ -382,6 +425,7 @@ def generate_conversational_response(query: str, history: Optional[List[Dict[str
         ],
         "total_latency_ms": 34.2
     }
+
 
 
 @router.post("/api/copilot")
