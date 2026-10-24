@@ -49,6 +49,7 @@ app.include_router(copilot_router)
 app.include_router(factories_router)
 
 
+
 # Single Page Application Routes (Catch-all for clean SPA client-side routing)
 @app.get("/", response_class=HTMLResponse)
 @app.get("/home", response_class=HTMLResponse)

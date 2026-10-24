@@ -13,6 +13,8 @@ async def health_check():
     try:
         g = get_graph()
         g.query("RETURN 1").result_set
+        from core.snowflake_client import has_live_credentials, get_snowflake_config
+        sf_cfg = get_snowflake_config()
         return {
             "status": "healthy",
             "database": "FalkorDB",
@@ -20,6 +22,10 @@ async def health_check():
             "graph": cfg["graph_name"],
             "environment": "Cloud" if cfg["is_cloud"] else "Local",
             "tls_enabled": cfg["ssl"],
+            "snowflake_connected": has_live_credentials(),
+            "snowflake_account": sf_cfg["account"],
+            "snowflake_database": sf_cfg["database"],
+            "snowflake_schema": sf_cfg["schema"]
         }
     except Exception as e:
         return {
